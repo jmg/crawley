@@ -2,7 +2,7 @@ import sys
 from optparse import OptionParser
 
 from crawley.crawlers import BaseCrawler 
-from crawley.persistance import Entity, session
+from crawley.persistance import UrlEntity, session
 from crawley.persistance import setup
 
 
@@ -18,7 +18,7 @@ models = import_user_module("models")
 crawler = import_user_module("crawler")
 
 def inspect_module(module, klass):
-    
+        
     for k,v in module.__dict__.iteritems():
         try:
             if issubclass(v, klass) and v is not klass:
@@ -27,10 +27,12 @@ def inspect_module(module, klass):
             pass        
 
 def start():
-        
-    setup()
+            
     Spider = inspect_module(crawler, BaseCrawler)
-    Storage = inspect_module(models, Entity)
+    Storage = inspect_module(models, UrlEntity)
+    
+    setup([Storage])
+    
     spider = Spider(storage=Storage, session=session)
     spider.start()
 
