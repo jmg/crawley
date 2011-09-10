@@ -1,11 +1,14 @@
 from eventlet.green import urllib2
 from eventlet import GreenPool
-from re import compile
+
+from re import compile, match
+from pyquery import PyQuery
 
 class BaseCrawler(object):
     
     start_urls = []
-    max_depth = -1
+    scrappers = []
+    max_depth = -1    
     
     _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
     
@@ -21,13 +24,18 @@ class BaseCrawler(object):
         except Exception:
             return 
             
+        for Scrapper in self.scrappers:
+            if [match_url for match_url in Scrapper.matching_urls if match_url in url]:
+                scrapper = Scrapper()
+                scrapper.scrape(PyQuery(data))
+            
         for url_match in self._url_regex.finditer(data):
             
             new_url = url_match.group(0)
             
             if self.storage is not None:
                 self.storage(parent=url, href=new_url)
-                self.session.commit()
+                self.session.commit()                            
             
             if depth_level > self.max_depth:
                 return
@@ -41,5 +49,4 @@ class BaseCrawler(object):
         for url in self.start_urls:            
             self.fetch(url, depth_level=0)
             
-        self.pool.waitall()
-                        
+        self.pool.waitall()                        
