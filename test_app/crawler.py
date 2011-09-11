@@ -16,5 +16,5 @@ class GoogleCrawler(BaseCrawler):
     
     start_urls = ["http://www.google.com"]
     scrappers = [GoogleScrapper]
-    max_depth = 0
+    max_depth = 1
     

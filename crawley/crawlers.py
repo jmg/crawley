@@ -16,38 +16,51 @@ class BaseCrawler(object):
         
         self.storage = storage
         self.session = session
-    
-    def fetch(self, url, depth_level=0):
-                                
+        
+    def _get_data(self, url):
+        
         try:
-            data = urllib2.urlopen(url).read()
+            return urllib2.urlopen(url).read()
         except Exception:
-            return 
-            
+            return None 
+    
+    def _manage_scrapers(self, url, data):
+        
         for Scrapper in self.scrappers:
             if [match_url for match_url in Scrapper.matching_urls if match_url in url]:
                 scrapper = Scrapper()
                 scrapper.scrape(PyQuery(data))
+    
+    def _save_urls(self, url, new_url):
+        
+        if self.storage is not None:
+            self.storage(parent=url, href=new_url)
+            self.session.commit()
+    
+    def _fetch(self, url, depth_level=0):
+                                            
+        data = self._get_data(url);
+        if data is None:
+            return
             
-        for new_url in self.get_urls(data):                        
+        self._manage_scrapers(url, data)                
             
-            if self.storage is not None:
-                self.storage(parent=url, href=new_url)
-                self.session.commit()                            
+        for new_url in self.get_urls(data):
+                                    
+            self._save_urls(url, new_url)            
             
-            if depth_level > self.max_depth:
+            if depth_level >= self.max_depth:
                 return
-            self.pool.spawn_n(self.fetch, new_url, depth_level + 1)            
+            self.pool.spawn_n(self._fetch, new_url, depth_level + 1)
             
     def start(self):
         
         self.pool = GreenPool()
-        self.urls = set()
         
         for url in self.start_urls:            
-            self.fetch(url, depth_level=0)
+            self.pool.spawn_n(self._fetch, url, depth_level=0)
             
-        self.pool.waitall()                        
+        self.pool.waitall()
 
 
     #overridables
@@ -60,5 +73,3 @@ class BaseCrawler(object):
         for url_match in self._url_regex.finditer(html):
             urls.append(url_match.group(0))
         return urls
-        
-        
