@@ -48,7 +48,4 @@ def run(settings):
         pool.spawn_n(spider.start)
         
     pool.waitall()    
-
-
-
-
+    
