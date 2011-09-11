@@ -29,9 +29,7 @@ class BaseCrawler(object):
                 scrapper = Scrapper()
                 scrapper.scrape(PyQuery(data))
             
-        for url_match in self._url_regex.finditer(data):
-            
-            new_url = url_match.group(0)
+        for new_url in self.get_urls(data):                        
             
             if self.storage is not None:
                 self.storage(parent=url, href=new_url)
@@ -50,3 +48,17 @@ class BaseCrawler(object):
             self.fetch(url, depth_level=0)
             
         self.pool.waitall()                        
+
+
+    #overridables
+    
+    def get_urls(self, html):
+        """
+            Returns a list of urls found in the current html page
+        """
+        urls = []
+        for url_match in self._url_regex.finditer(html):
+            urls.append(url_match.group(0))
+        return urls
+        
+        
