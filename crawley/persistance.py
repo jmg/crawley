@@ -1,9 +1,6 @@
 import elixir
 from elixir import Field, Unicode, UnicodeText
 
-elixir.metadata.bind = "sqlite:///crawler_test.sqlite"
-elixir.metadata.bind.echo = True
-
 session = elixir.session
 
 class Entity(elixir.EntityBase):                
