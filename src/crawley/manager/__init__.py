@@ -26,5 +26,5 @@ def verify_settings(settings):
 def manage(settings):
     
     settings = verify_settings(settings)
-    sys.path.append(settings.PROJECT_ROOT)
+    sys.path.append(settings.PROJECT_ROOT)    
     run_cmd(settings, sys.argv)

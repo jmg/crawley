@@ -4,11 +4,12 @@ from eventlet import GreenPool
 from re import compile, match
 from pyquery import PyQuery
 
+
 class BaseCrawler(object):
     
     start_urls = []
-    scrappers = []
-    max_depth = -1    
+    scrapers = []
+    max_depth = -1
     
     _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
     
@@ -16,20 +17,30 @@ class BaseCrawler(object):
         
         self.storage = storage
         self.session = session
+            
+    def _get_response(self , url):
         
+        request = urllib2.Request(url)        
+        opener = urllib2.build_opener()
+        
+        try:            
+            return opener.open(request)
+        except Exception:
+            return None
+    
     def _get_data(self, url):
         
-        try:
-            return urllib2.urlopen(url).read()
-        except Exception:
-            return None 
+        response = self._get_response(url)
+        if response is None or response.getcode() != 200:
+            return None
+        return response.read()
     
     def _manage_scrapers(self, url, data):
         
-        for Scrapper in self.scrappers:
-            if [match_url for match_url in Scrapper.matching_urls if match_url in url]:
-                scrapper = Scrapper()
-                scrapper.scrape(PyQuery(data))
+        for Scraper in self.scrapers:
+            if [match_url for match_url in Scraper.matching_urls if match_url in url]:
+                scraper = Scraper()
+                scraper.scrape(PyQuery(data))
     
     def _save_urls(self, url, new_url):
         
@@ -43,7 +54,7 @@ class BaseCrawler(object):
         if data is None:
             return
             
-        self._manage_scrapers(url, data)                
+        self._manage_scrapers(url, data)
             
         for new_url in self.get_urls(data):
                                     
