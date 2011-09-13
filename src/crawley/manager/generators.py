@@ -22,14 +22,13 @@ def generator(f):
 
 def generate_template(tm_name, project_name):
 
-    path = "crawley/manager/templates"
-    with open(os.path.join(path, "%s.tm") % tm_name, 'r') as f:
+    with open(os.path.join("crawley", "manager", "templates", "%s.tm") % tm_name, 'r') as f:
         
         template = f.read()
         data = template % { 'project_name' : project_name }
         
     with open(os.path.join(project_name, "%s.py" % tm_name), 'w') as f:
-        f.write(data)            
+        f.write(data)
         
 
 @generator
@@ -44,5 +43,5 @@ def startproject(*args):
     if not os.path.exists(project_name):
         shutil.os.mkdir(project_name)
     
-    generate_template("models", project_name)        
-    generate_template("crawlers", project_name)    
+    generate_template("models", project_name)
+    generate_template("crawlers", project_name)
