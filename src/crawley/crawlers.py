@@ -18,13 +18,14 @@ class BaseCrawler(object):
         self.storage = storage
         self.session = session
             
-    def _get_response(self , url):
-        
-        request = urllib2.Request(url)        
-        opener = urllib2.build_opener()
+    def _get_response(self, url):
+
+        request = urllib2.Request(url)
+        opener = urllib2.build_opener()        
         
         try:            
-            return opener.open(request)
+            response = opener.open(request)            
+            return response
         except Exception:
             return None
     

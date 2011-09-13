@@ -35,7 +35,7 @@ def syncdb(settings):
 def run(settings):
     
     syncdb(settings)
-    crawler = import_user_module("crawler")
+    crawler = import_user_module("crawlers")
     models = import_user_module("models")
     
     Spiders = inspect_module(crawler, BaseCrawler)    
