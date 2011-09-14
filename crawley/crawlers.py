@@ -6,6 +6,9 @@ from pyquery import PyQuery
 
 
 class BaseCrawler(object):
+    """
+        Base crawler class
+    """
     
     start_urls = []
     scrapers = []
