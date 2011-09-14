@@ -1,2 +1,5 @@
 *.pyc
 *.sqlite
+*.egg-info
+build
+dist
