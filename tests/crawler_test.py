@@ -1,5 +1,5 @@
 import unittest
-from src.crawley.crawlers import BaseCrawler
+from crawley.crawlers import BaseCrawler
 
 import webbrowser
 
