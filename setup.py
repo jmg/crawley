@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
-
-__version__ = "0.0.1"
+from crawley import __version__
 
 setup(
-    name='crawley',
+    name="crawley",
     version=__version__,
-    description='Pythonic Scraping / Crawling FrameWork built On Eventlet',
-    author='',
+    description="Pythonic Scraping / Crawling FrameWork built On Eventlet",
+    author="",
     author_email = "",
     license = "GPL v3",
     keywords = "Scarping Crawling Framework Python",
-    packages=['src.crawley'],
+    include_package_data = True,
+    package_data = { 'templates' : [ 'crawley/manager/templates/*' ] },    
+    packages=['crawley', 'crawley.manager'],
+    scripts=['crawley/bin/crawley-admin.py'],
     url='',
 )
