@@ -6,9 +6,9 @@ To statisfy crawley's dependencies run:
 
 To start a new project run:
 
-~$ python crawley-admin.py startproject [project_name]
+~$ crawley-admin.py startproject [project_name]
 
-To run the crawler run:
+Finally, to crawl just run:
 
-~$ python manage.py run
+~$ ./manage.py run
 

@@ -1,4 +1,8 @@
 import sys
+import os
+
+PATH = os.path.dirname(os.path.abspath(__file__))
+TEMPLATES_DIR = os.path.join(PATH, "..", "conf", "project_template")
 
 def import_user_module(module):
     
@@ -7,6 +11,7 @@ def import_user_module(module):
     except ImportError:
         print "%s.py file not found!" % module
         sys.exit(1)  
+
 
 def inspect_module(module, klass, get_first=False):
         
@@ -22,3 +27,19 @@ def inspect_module(module, klass, get_first=False):
     if get_first:
         return None
     return objects
+
+
+def generate_template(tm_name, project_name, output_dir):
+
+    with open(os.path.join(TEMPLATES_DIR, "%s.py") % tm_name, 'r') as f:
+        
+        template = f.read()
+        data = template % { 'project_name' : project_name }
+        
+    with open(os.path.join(output_dir, "%s.py" % tm_name), 'w') as f:
+        f.write(data)
+
+
+def get_full_template_path(tm_name):
+    
+    return os.path.join(TEMPLATES_DIR, "%s.py" % tm_name)

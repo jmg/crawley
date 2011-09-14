@@ -12,8 +12,7 @@ setup(
     license = "GPL v3",
     keywords = "Scarping Crawling Framework Python",
     include_package_data = True,
-    package_data = { 'templates' : [ 'crawley/manager/templates/*' ] },    
-    packages=['crawley', 'crawley.manager'],
+    packages=['crawley', 'crawley.manager', 'crawley.conf.project_template'],
     scripts=['crawley/bin/crawley-admin.py'],
     url='',
 )

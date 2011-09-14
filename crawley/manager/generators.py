@@ -8,6 +8,8 @@ import sys
 import shutil
 import os.path
 
+from utils import generate_template, get_full_template_path
+
 generators = {}
 
 def generator(f):
@@ -20,17 +22,6 @@ def generator(f):
     return decorated
 
 
-def generate_template(tm_name, project_name):
-
-    with open(os.path.join("crawley", "manager", "templates", "%s.tm") % tm_name, 'r') as f:
-        
-        template = f.read()
-        data = template % { 'project_name' : project_name }
-        
-    with open(os.path.join(project_name, "%s.py" % tm_name), 'w') as f:
-        f.write(data)
-        
-
 @generator
 def startproject(*args):
     
@@ -42,6 +33,13 @@ def startproject(*args):
     
     if not os.path.exists(project_name):
         shutil.os.mkdir(project_name)
+            
+    shutil.copy(get_full_template_path("manage"), project_name)    
+    generate_template("settings", project_name, project_name)
     
-    generate_template("models", project_name)
-    generate_template("crawlers", project_name)
+    crawler_dir = os.path.join(project_name, project_name)
+    if not os.path.exists(crawler_dir):
+        shutil.os.mkdir(crawler_dir)
+        
+    generate_template("models", project_name, crawler_dir)
+    generate_template("crawlers", project_name, crawler_dir)

@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from crawley.manager import manage
 import settings
 
