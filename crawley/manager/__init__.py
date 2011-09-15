@@ -3,6 +3,9 @@ from commands import commands
 from generators import generators
 
 def run_cmd(settings, args):
+    """
+        Runs a crawley's command
+    """
         
     if len(args) <= 1:
         print "Subcommand not specified"
@@ -27,6 +30,9 @@ def run_cmd(settings, args):
         
 
 def verify_settings(settings):
+    """
+        Check for errors and warnings in the settings.py file 
+    """
     
     if settings.DATABASE_ENGINE == 'sqlite':
         if not settings.DATABASE_NAME.endswith(".sqlite"):
@@ -35,6 +41,9 @@ def verify_settings(settings):
     
 
 def manage(settings):
+    """
+        Called when using the manage.py file
+    """
     
     settings = verify_settings(settings)
     sys.path.append(settings.PROJECT_ROOT)    
@@ -42,5 +51,8 @@ def manage(settings):
 
 
 def execute():
+    """
+        Called when using the crawley-admin.py file
+    """
     
     run_cmd(None, sys.argv)

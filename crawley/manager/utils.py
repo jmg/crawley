@@ -5,6 +5,9 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 TEMPLATES_DIR = os.path.join(PATH, "..", "conf", "project_template")
 
 def import_user_module(module):
+    """
+        Imports a user module
+    """
     
     try:
         return __import__(module, locals(), globals(), [])
@@ -13,7 +16,10 @@ def import_user_module(module):
         sys.exit(1)  
 
 
-def inspect_module(module, klass, get_first=False):
+def inspect_module(module, klass, get_first=False):    
+    """
+        Inspect a user module looking for [klass] type objects
+    """
         
     objects = []
     for k,v in module.__dict__.iteritems():
@@ -29,7 +35,26 @@ def inspect_module(module, klass, get_first=False):
     return objects
 
 
+def command(store):
+    """
+        Decorator that adds a command to a dictionary
+    """
+            
+    def wrap(f):            
+
+        store[f.__name__] = f
+    
+        def decorated(*args, **kwargs):
+            f(*args, **kwargs)
+    
+        return decorated
+    return wrap
+
+
 def generate_template(tm_name, project_name, output_dir):
+    """
+        Generates a project's file from a template 
+    """
 
     with open(os.path.join(TEMPLATES_DIR, "%s.py") % tm_name, 'r') as f:
         
@@ -41,5 +66,10 @@ def generate_template(tm_name, project_name, output_dir):
 
 
 def get_full_template_path(tm_name):
+    """
+        Returns the full template path 
+    """
     
     return os.path.join(TEMPLATES_DIR, "%s.py" % tm_name)
+
+

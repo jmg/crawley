@@ -8,22 +8,19 @@ import sys
 import shutil
 import os.path
 
-from utils import generate_template, get_full_template_path
+from utils import generate_template, get_full_template_path, command
 
 generators = {}
 
-def generator(f):
-    
-    generators[f.__name__] = f
-    
-    def decorated(*args, **kwargs):
-        f(*args, **kwargs)
-    
-    return decorated
 
-
-@generator
+@command(generators)
 def startproject(*args):
+    """
+        Starts a new crawley project. 
+        
+        Copies the files inside conf/project_template in order 
+        to generate a new project
+    """
     
     if len(args) < 1:
         print "No given project name"
