@@ -5,23 +5,18 @@ from crawley.crawlers import BaseCrawler
 from crawley.persistance import Entity, UrlEntity, session
 from crawley.persistance import setup
 
-from utils import import_user_module, inspect_module
-
+from utils import import_user_module, inspect_module, command
 
 commands = {}
 
-def command(f):
-    
-    commands[f.__name__] = f
-    
-    def decorated(*args, **kwargs):
-        f(*args, **kwargs)
-    
-    return decorated
 
-
-@command 
-def syncdb(settings):
+@command(commands)
+def syncdb(settings):    
+    """
+        Build up the DataBase. 
+        
+        Reads the models.py user's file and generate a database from it.        
+    """
     
     elixir.metadata.bind = "%s:///%s" % (settings.DATABASE_ENGINE, settings.DATABASE_NAME)
     elixir.metadata.bind.echo = settings.SHOW_DEBUG_INFO
@@ -31,8 +26,14 @@ def syncdb(settings):
     setup(Entities)
     
 
-@command
+@command(commands)
 def run(settings):
+    """
+        Run the user's crawler
+        
+        Reads the crawlers.py file to obtain the user's crawler classes
+        and then run these crawlers.
+    """
     
     syncdb(settings)
     crawler = import_user_module("crawlers")
