@@ -45,7 +45,7 @@ def run(settings):
     pool = GreenPool()    
     for Spider in Spiders:
     
-        spider = Spider(storage=UrlStorage, session=session)        
+        spider = Spider(storage=UrlStorage, session=session)
         pool.spawn_n(spider.start)
         
     pool.waitall()    

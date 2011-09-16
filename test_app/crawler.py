@@ -4,7 +4,7 @@ from models import GoogleText
 
 class GoogleScraper(BaseScraper):
     
-    matching_urls = ["www.google.com"]
+    matching_urls = ["%www.google.com%"]
     
     def scrape(self, html):
                 
