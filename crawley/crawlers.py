@@ -4,6 +4,8 @@ from eventlet import GreenPool
 from re import compile, match
 from pyquery import PyQuery
 
+from utils import url_matcher
+
 
 class BaseCrawler(object):
     """
@@ -42,7 +44,7 @@ class BaseCrawler(object):
     def _manage_scrapers(self, url, data):
         
         for Scraper in self.scrapers:
-            if [match_url for match_url in Scraper.matching_urls if match_url in url]:
+            if [pattern for pattern in Scraper.matching_urls if url_matcher(url, pattern)]:
                 scraper = Scraper()
                 scraper.scrape(PyQuery(data))
     
