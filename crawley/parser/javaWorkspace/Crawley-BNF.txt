@@ -42,7 +42,7 @@ Basic Single Sentence: (BASIC_SENTENCE)
     ACTION < PROPERTY_SECTION => GET_ATTRIBUTE
     
 Basic Recursive Sentence: (RECURSIVE_SENTENCE) //Valid only for innerHTML
-    ACTION < PROPERTY:'value' => innerHTML (-> SENTENCE)*
+    ACTION < PROPERTY_SECTION => innerHTML (-> SENTENCE)*
     
 /-----------------------------------------------------------------/
 Basic Single Sentence Example:
