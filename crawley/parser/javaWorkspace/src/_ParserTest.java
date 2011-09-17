@@ -32,4 +32,10 @@ public class _ParserTest {
 		assertEquals("pido todos los 'ol' del html", "return PyQuery(html).query('ol')", new Parser().parse("all < tag:'ol' => innerHTML"));
 		assertEquals("pido todos los 'ul' del html", "return PyQuery(html).query('ul')", new Parser().parse("all < tag:'ul' => innerHTML"));
 	}
+	
+	@Test
+	public void pidoUnElementoPorID() {
+		assertEquals("pido el elemento que tiene id = unID","return PyQuery(html).query('#unID')[0]", new Parser().parse("all < id:'unID' => innerHTML"));
+		assertEquals("pido el elemento que tiene id = otroID","return PyQuery(html).query('#otroID')[0]", new Parser().parse("all < id:'otroID' => innerHTML"));
+	}
 }
