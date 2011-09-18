@@ -11,12 +11,28 @@ from crawley.crawlers import BaseCrawler
 from crawley.persistance import Entity, UrlEntity, session
 from crawley.persistance import setup
 
-from utils import import_user_module, inspect_module, generate_template, get_full_template_path, command
+from utils import import_user_module, inspect_module, generate_template, get_full_template_path
 
 commands = {}
 
 
-@command(commands)
+def command(store=commands):
+    """
+        Decorator that adds a command to a dictionary
+    """
+            
+    def wrap(f):            
+
+        store[f.__name__] = f
+    
+        def decorated(*args, **kwargs):
+            f(*args, **kwargs)
+    
+        return decorated
+    return wrap
+
+
+@command
 def startproject(*args):
     """
         Starts a new crawley project. 
@@ -44,7 +60,7 @@ def startproject(*args):
     generate_template("crawlers", project_name, crawler_dir)
 
 
-@command(commands)
+@command
 def syncdb(settings):    
     """
         Build up the DataBase. 
@@ -60,7 +76,7 @@ def syncdb(settings):
     setup(Entities)
     
 
-@command(commands)
+@command
 def shell(*args):
         
     if len(args) < 1:
@@ -83,7 +99,7 @@ def shell(*args):
     shell()
         
         
-@command(commands)
+@command
 def run(settings):
     """
         Run the user's crawler

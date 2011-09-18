@@ -4,6 +4,7 @@ import os
 PATH = os.path.dirname(os.path.abspath(__file__))
 TEMPLATES_DIR = os.path.join(PATH, "..", "conf", "project_template")
 
+
 def import_user_module(module):
     """
         Imports a user module
@@ -33,22 +34,6 @@ def inspect_module(module, klass, get_first=False):
     if get_first:
         return None
     return objects
-
-
-def command(store):
-    """
-        Decorator that adds a command to a dictionary
-    """
-            
-    def wrap(f):            
-
-        store[f.__name__] = f
-    
-        def decorated(*args, **kwargs):
-            f(*args, **kwargs)
-    
-        return decorated
-    return wrap
 
 
 def generate_template(tm_name, project_name, output_dir):
