@@ -1,13 +1,47 @@
 from eventlet import GreenPool
 import elixir
 
+import urllib2
+import shutil
+import os.path
+from lxml import etree
+from StringIO import StringIO
+
 from crawley.crawlers import BaseCrawler 
 from crawley.persistance import Entity, UrlEntity, session
 from crawley.persistance import setup
 
-from utils import import_user_module, inspect_module, command
+from utils import import_user_module, inspect_module, generate_template, get_full_template_path, command
 
 commands = {}
+
+
+@command(commands)
+def startproject(*args):
+    """
+        Starts a new crawley project. 
+        
+        Copies the files inside conf/project_template in order 
+        to generate a new project
+    """
+    
+    if len(args) < 1:
+        print "No given project name"
+        sys.exit(1)
+    
+    project_name = args[0]
+    
+    if not os.path.exists(project_name):
+        shutil.os.mkdir(project_name)        
+                
+    generate_template("settings", project_name, project_name)
+    
+    crawler_dir = os.path.join(project_name, project_name)
+    if not os.path.exists(crawler_dir):
+        shutil.os.mkdir(crawler_dir)
+        
+    generate_template("models", project_name, crawler_dir)
+    generate_template("crawlers", project_name, crawler_dir)
 
 
 @command(commands)
@@ -26,6 +60,29 @@ def syncdb(settings):
     setup(Entities)
     
 
+@command(commands)
+def shell(*args):
+        
+    if len(args) < 1:
+        print "No given url"
+        sys.exit(1)
+        
+    try:
+        import IPython
+    except ImportError:
+        print "Please install the ipython console"
+        sys.exit(1)
+        
+    url = args[0]
+    html = urllib2.urlopen(url).read()
+    
+    parser = etree.HTMLParser()
+    html = etree.parse(StringIO(html), parser)
+    
+    shell = IPython.Shell.IPShellEmbed(argv=[], user_ns={ 'html' : html })
+    shell()
+        
+        
 @command(commands)
 def run(settings):
     """
@@ -48,5 +105,4 @@ def run(settings):
         spider = Spider(storage=UrlStorage, session=session)
         pool.spawn_n(spider.start)
         
-    pool.waitall()    
-    
+    pool.waitall() 
