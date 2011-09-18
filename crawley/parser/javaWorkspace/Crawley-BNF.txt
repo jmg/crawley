@@ -1,0 +1,58 @@
+ACTION:
+    Any of the following:
+        first
+        last
+        all
+
+PROPERTY:
+    Any of the following:
+        tag
+        class
+        id
+        contains
+        
+VALUE:
+    Any [0-9a-zA-Z] string surrounded by single quotes
+        
+SINGLE_PROPERTY:
+    PROPERTY:VALUE
+    
+COMPOUND_PROPERTY:
+    PROPERTY:[VALUE(,VALUE)*]
+
+PROPERTY_STATEMENT:
+    Any of the following:
+        SINGLE_PROPERTY
+        COMPUOND_PROPERTY
+    
+PROPERTY_SECTION:
+    PROPERTY_STATEMENT (PROPERTY_STATEMENT)*        
+
+GET_ATTRIBUTE:
+    Any of the following:
+        innerHTML
+        innerText
+
+SENTENCE:
+    Any of the following:
+        BASIC_SENTENCE
+        RECURSIVE_SENTENCE
+
+Basic Single Sentence: (BASIC_SENTENCE)
+    ACTION < PROPERTY_SECTION => GET_ATTRIBUTE
+    
+Basic Recursive Sentence: (RECURSIVE_SENTENCE) //Valid only for innerHTML
+    ACTION < PROPERTY_SECTION => innerHTML (-> SENTENCE)*
+    
+/-----------------------------------------------------------------/
+Basic Single Sentence Example:
+    first < tag:'div' => innerHTML
+    
+Basic Compound Sentence Example:
+    all < tag:'p' class:'a-class' => innerText
+    
+Basic Single Sentence Multiple Property Values Example:
+    last < class:['class-1','class-2'] => innerHTML
+    
+Hierarchic HTML Search Example:
+    all < id:'buscado' => innerHTML -> all < tag:'p' => innerHTML 
