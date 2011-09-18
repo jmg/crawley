@@ -12,14 +12,16 @@ Start a New Project
 -----------------------------------
 .. code-block:: bash
     
-    crawley-admin.py startproject [project_name]
+    crawley startproject [project_name]
+    cd [project_name]
 
 Example
 -----------------------------------
 
 .. code-block:: bash
     
-    crawley-admin.py startproject Google
+    crawley startproject Google
+    cd Google
     
     
 Then you have a crawley's project directory with 2 files like these
@@ -87,11 +89,12 @@ Another one named settings.py in wich you can set up the project's configuration
     SHOW_DEBUG_INFO = True
 
 
-And a manage.py file that allows you to run the crawler:
+Running the crawler
+-----------------------------------
 
 .. code-block:: bash
     
-    python manage.py run
+    crawley run
 
 Indices and tables
 ==================

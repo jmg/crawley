@@ -29,7 +29,7 @@ class BaseCrawler(object):
         opener = urllib2.build_opener()        
         
         try:            
-            response = opener.open(request)            
+            response = opener.open(request)
             return response
         except Exception:
             return None
@@ -74,7 +74,7 @@ class BaseCrawler(object):
         
         self.pool = GreenPool()
         
-        for url in self.start_urls:            
+        for url in self.start_urls:
             self.pool.spawn_n(self._fetch, url, depth_level=0)
             
         self.pool.waitall()
