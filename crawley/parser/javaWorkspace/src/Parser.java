@@ -60,7 +60,7 @@ public class Parser {
 	}
 
 	protected String removeBraces(String propertyValues) {
-		return propertyValues.replace("{", "").replace("}", "");
+		return propertyValues.replace("[", "").replace("]", "");
 	}
 
 	protected String compoundPropertyEndingBraces(String properties) {
@@ -73,7 +73,7 @@ public class Parser {
 
 	protected String compoundPropertyBraces(String properties,
 			Boolean startingPosition) {
-		return (properties.contains("{") && properties.contains("}") ? 
+		return (properties.contains("[") && properties.contains("]") ? 
 				((startingPosition) ? "[" : "]")
 				: "");
 	}
