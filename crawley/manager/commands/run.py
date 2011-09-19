@@ -3,12 +3,12 @@ from eventlet import GreenPool
 from crawley.crawlers import BaseCrawler 
 from crawley.persistance import Entity, UrlEntity, setup
 
-from command import BaseCommand
+from command import ProjectCommand
 from syncdb import SyncDbCommand
 from utils import inspect_module, import_user_module
 
 
-class RunCommand(BaseCommand):
+class RunCommand(ProjectCommand):
     """
         Run the user's crawler
         
@@ -16,8 +16,7 @@ class RunCommand(BaseCommand):
         and then run these crawlers.
     """
     
-    name = "run"    
-    requires_settings = True
+    name = "run"
     
     def execute(self):
                 

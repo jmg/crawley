@@ -3,13 +3,13 @@ import os
 
 from utils import exit_with_error, import_user_module
 
+
 class BaseCommand(object):
     """
         Base Crawley's Command
     """
     
     name = "BaseCommand"
-    requires_settings = False
     
     def __init__(self, args):
         
@@ -45,20 +45,35 @@ class BaseCommand(object):
         """
         
         self.check_validations()
-        if self.requires_settings:
-            self.settings = self._check_for_settings()
-        self.execute()
+        self.execute()        
         
+
+class ProjectCommand(BaseCommand):
+    """
+        A command that requires a settings.py file to run
+    """
+    
+    def checked_execute(self):
+        """
+            Checks for settings before run
+        """
+        
+        self.settings = self._check_for_settings()
+        BaseCommand.checked_execute(self)
+    
     def _check_for_settings(self):
         """
             tries to import the user's settings file
         """
-        
+                
         if len(self.args) > 0 and "--settings=" in self.args[0]:
+            
             settings_str = self.args[0].split("=")[1]
-            settings_dir, file_name = settings_str.rsplit("/")
+            settings_dir, file_name = os.path.split(settings_str)
+            
             sys.path.append(settings_dir)
-            settings_file = file_name[:-3]
+            settings_file = os.path.splitext(file_name)[0]
+            
         else:
             sys.path.append(os.getcwd())
             settings_file = "settings"
@@ -70,6 +85,9 @@ class BaseCommand(object):
         return settings
             
     def _check_setttings_errors(self, settings):
+        """
+            Fix errors in settings.py
+        """
         
         if settings.DATABASE_ENGINE == 'sqlite':
             if not settings.DATABASE_NAME.endswith(".sqlite"):

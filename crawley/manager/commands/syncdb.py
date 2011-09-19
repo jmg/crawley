@@ -1,11 +1,11 @@
 import elixir
 from crawley.persistance import Entity, setup
 
-from command import BaseCommand
+from command import ProjectCommand
 from utils import inspect_module, import_user_module
 
 
-class SyncDbCommand(BaseCommand):
+class SyncDbCommand(ProjectCommand):
     """
         Build up the DataBase. 
         
@@ -13,7 +13,6 @@ class SyncDbCommand(BaseCommand):
     """
     
     name = "syncdb"
-    requires_settings = True
         
     def execute(self):
                 
