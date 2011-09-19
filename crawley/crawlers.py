@@ -2,26 +2,30 @@ from eventlet.green import urllib2
 from eventlet import GreenPool
 
 from re import compile, match
-from pyquery import PyQuery
 
+from persistance import session
+from extractors import XPathExtractor, PyQueryExtractor
 from utils import url_matcher
 
 
 class BaseCrawler(object):
     """
-        Base crawler class
+        User's Crawlers must inherit from this class, may
+        override some methods and define the start_urls list,
+        the scrapers and the max crawling depth.
     """
     
     start_urls = []
     scrapers = []
     max_depth = -1
+    extractor_class = XPathExtractor
     
     _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
     
-    def __init__(self, storage=None, session=None):
+    def __init__(self, storage=None):
         
         self.storage = storage
-        self.session = session
+        self.extractor = self.extractor_class()
             
     def _get_response(self, url):
 
@@ -46,13 +50,14 @@ class BaseCrawler(object):
         for Scraper in self.scrapers:
             if [pattern for pattern in Scraper.matching_urls if url_matcher(url, pattern)]:
                 scraper = Scraper()
-                scraper.scrape(PyQuery(data))
+                html = self.extractor.get_object(data)
+                scraper.scrape(html)
     
     def _save_urls(self, url, new_url):
         
         if self.storage is not None:
             self.storage(parent=url, href=new_url)
-            self.session.commit()
+            session.commit()
     
     def _fetch(self, url, depth_level=0):
                                             
