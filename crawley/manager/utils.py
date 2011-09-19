@@ -5,6 +5,14 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 TEMPLATES_DIR = os.path.join(PATH, "..", "conf", "project_template")
 
 
+def exit_with_error(error="Non Specified Error"):
+    """
+        Terminates crawley with an error
+    """
+    print error
+    sys.exit(1)
+
+
 def import_user_module(module):
     """
         Imports a user module
