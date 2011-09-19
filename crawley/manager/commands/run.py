@@ -5,7 +5,7 @@ from crawley.persistance import Entity, UrlEntity, setup
 
 from command import BaseCommand
 from syncdb import SyncDbCommand
-from ..utils import inspect_module, import_user_module
+from utils import inspect_module, import_user_module
 
 
 class RunCommand(BaseCommand):
@@ -22,7 +22,7 @@ class RunCommand(BaseCommand):
         
         settings = self.args[0]
         
-        syncdb = SyncDbCommand(settings)
+        syncdb = SyncDbCommand(self.args)
         syncdb.execute()
         
         crawler = import_user_module("crawlers")

@@ -2,7 +2,7 @@ from crawley.crawlers import BaseCrawler
 from crawley.extractors import XPathExtractor
 
 from command import BaseCommand
-from ..utils import exit_with_error
+from utils import exit_with_error
 
 
 class ShellCommand(BaseCommand):
@@ -13,7 +13,7 @@ class ShellCommand(BaseCommand):
     
     name = "shell"
     
-    def validate(self):
+    def validations(self):
         
         return [(len(self.args) >= 1, "No given url")]
     

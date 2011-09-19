@@ -2,7 +2,7 @@ import shutil
 import os.path
 
 from command import BaseCommand
-from ..utils import generate_template
+from utils import generate_template
 
 
 class StartProjectCommand(BaseCommand):
@@ -15,7 +15,7 @@ class StartProjectCommand(BaseCommand):
     
     name = "startproject"
     
-    def validate(self):
+    def validations(self):
                 
         return [(len(self.args) >= 1, "No given project name")]
 
