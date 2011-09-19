@@ -2,7 +2,7 @@ import elixir
 from crawley.persistance import Entity, setup
 
 from command import BaseCommand
-from ..utils import inspect_module, import_user_module
+from utils import inspect_module, import_user_module
 
 
 class SyncDbCommand(BaseCommand):

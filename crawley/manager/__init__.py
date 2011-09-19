@@ -1,8 +1,8 @@
 import sys
 import os
 
-from utils import exit_with_error
 from commands import commands
+from commands.utils import exit_with_error
 
 def run_cmd(args):
     """
@@ -15,18 +15,10 @@ def run_cmd(args):
     cmd_name = args[1]
     cmd_args = args[2:]
     
-    cmd = commands.get(cmd_name)
-        
-    if cmd is None:
-        exit_with_error("[%s] Subcommand not valid" % (cmd_name))
+    cmd = commands.get(cmd_name)        
     
-    command = cmd(*cmd_args)
-
-    for validation, message in command.validate():
-        if not validation:
-            exit_with_error(message)
-    
-    command.execute()
+    command = cmd(cmd_args)    
+    command.checked_execute()
         
 
 def verify_settings():
@@ -37,7 +29,7 @@ def verify_settings():
     try:
         sys.path.append(os.getcwd())
         import settings
-    except:
+    except ImportError:
         return []
     
     if settings.DATABASE_ENGINE == 'sqlite':
