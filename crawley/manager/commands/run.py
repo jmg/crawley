@@ -16,14 +16,13 @@ class RunCommand(BaseCommand):
         and then run these crawlers.
     """
     
-    name = "run"        
-
+    name = "run"    
+    requires_settings = True
+    
     def execute(self):
-        
-        settings = self.args[0]
-        
+                
         syncdb = SyncDbCommand(self.args)
-        syncdb.execute()
+        syncdb.checked_execute()
         
         crawler = import_user_module("crawlers")
         models = import_user_module("models")

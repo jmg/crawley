@@ -13,13 +13,12 @@ class SyncDbCommand(BaseCommand):
     """
     
     name = "syncdb"
+    requires_settings = True
         
     def execute(self):
-        
-        settings = self.args[0]
-        
-        elixir.metadata.bind = "%s:///%s" % (settings.DATABASE_ENGINE, settings.DATABASE_NAME)
-        elixir.metadata.bind.echo = settings.SHOW_DEBUG_INFO
+                
+        elixir.metadata.bind = "%s:///%s" % (self.settings.DATABASE_ENGINE, self.settings.DATABASE_NAME)
+        elixir.metadata.bind.echo = self.settings.SHOW_DEBUG_INFO
         
         models = import_user_module("models")
         Entities = inspect_module(models, Entity)
