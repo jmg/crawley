@@ -2,7 +2,7 @@
     Data Extractors classes
 """
 
-import pyquery
+from pyquery import PyQuery
 
 from lxml import etree
 from StringIO import StringIO
@@ -15,7 +15,7 @@ class PyQueryExtractor(object):
     
     def get_object(self, data):
         
-        html = pyquery(data)
+        html = PyQuery(data)
         return html
         
 

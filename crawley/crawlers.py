@@ -18,13 +18,14 @@ class BaseCrawler(object):
     start_urls = []
     scrapers = []
     max_depth = -1
-    extractor = XPathExtractor()
+    extractor_class = XPathExtractor
     
     _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
     
     def __init__(self, storage=None):
         
         self.storage = storage
+        self.extractor = self.extractor_class()
             
     def _get_response(self, url):
 
