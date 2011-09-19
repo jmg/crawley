@@ -1,22 +1,20 @@
 from eventlet import GreenPool
 import elixir
 
-import urllib2
 import shutil
 import os.path
-from lxml import etree
-from StringIO import StringIO
 
 from crawley.crawlers import BaseCrawler 
 from crawley.persistance import Entity, UrlEntity, session
 from crawley.persistance import setup
+from crawley.extractors import XPathExtractor, PyQueryExtractor
 
-from utils import import_user_module, inspect_module, generate_template, get_full_template_path
+from utils import *
 
 commands = {}
 
 
-def command(store=commands):
+def command(store):
     """
         Decorator that adds a command to a dictionary
     """
@@ -32,7 +30,7 @@ def command(store=commands):
     return wrap
 
 
-@command
+@command(commands)
 def startproject(*args):
     """
         Starts a new crawley project. 
@@ -42,8 +40,7 @@ def startproject(*args):
     """
     
     if len(args) < 1:
-        print "No given project name"
-        sys.exit(1)
+        exit_with_error("No given project name")
     
     project_name = args[0]
     
@@ -60,7 +57,7 @@ def startproject(*args):
     generate_template("crawlers", project_name, crawler_dir)
 
 
-@command
+@command(commands)
 def syncdb(settings):    
     """
         Build up the DataBase. 
@@ -76,30 +73,28 @@ def syncdb(settings):
     setup(Entities)
     
 
-@command
+@command(commands)
 def shell(*args):
         
     if len(args) < 1:
-        print "No given url"
-        sys.exit(1)
+        exit_with_error("No given url")
         
     try:
         import IPython
     except ImportError:
-        print "Please install the ipython console"
-        sys.exit(1)
-        
-    url = args[0]
-    html = urllib2.urlopen(url).read()
+        exit_with_error("Please install the ipython console")
     
-    parser = etree.HTMLParser()
-    html = etree.parse(StringIO(html), parser)
+    url = args[0]
+    crawler = BaseCrawler()
+    
+    data = crawler._get_data(url)
+    html = XPathExtractor().get_object(data)
     
     shell = IPython.Shell.IPShellEmbed(argv=[], user_ns={ 'html' : html })
     shell()
         
         
-@command
+@command(commands)
 def run(settings):
     """
         Run the user's crawler
@@ -118,7 +113,7 @@ def run(settings):
     pool = GreenPool()    
     for Spider in Spiders:
     
-        spider = Spider(storage=UrlStorage, session=session)
+        spider = Spider(storage=UrlStorage)
         pool.spawn_n(spider.start)
         
     pool.waitall() 
