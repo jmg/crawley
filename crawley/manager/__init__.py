@@ -1,15 +1,8 @@
 import sys
 import os
+
+from utils import exit_with_error
 from commands import commands
-
-
-def exit_with_error(error="Non Specified Error"):
-    """
-        Terminates crawley with an error
-    """
-    print error
-    sys.exit(1)
-
 
 def run_cmd(args):
     """
@@ -25,9 +18,15 @@ def run_cmd(args):
     cmd = commands.get(cmd_name)
         
     if cmd is None:
-        exit_with_error("[%s] Subcommand not valid" % (cmd_name))        
-        
-    cmd(*cmd_args)
+        exit_with_error("[%s] Subcommand not valid" % (cmd_name))
+    
+    command = cmd(*cmd_args)
+
+    for validation, message in command.validate():
+        if not validation:
+            exit_with_error(message)
+    
+    command.execute()
         
 
 def verify_settings():

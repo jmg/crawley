@@ -11,7 +11,7 @@ setup(
     author_email = "jmg.utn@gmail.com",
     license = "GPL v3",
     keywords = "Scarping Crawling Framework Python",    
-    packages=['crawley', 'crawley.manager', 'crawley.conf.project_template'],
+    packages=['crawley', 'crawley.manager', 'crawley.manager.commands', 'crawley.conf.project_template'],
     scripts=['crawley/bin/crawley'],
     url='https://github.com/jmg/crawley',
 )
