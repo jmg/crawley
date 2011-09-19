@@ -8,8 +8,9 @@ class %(project_name)sScraper(BaseScraper):
     
     def scrape(self, html):
                 
-        data = html("#als").html()
-        %(project_name)sClass(%(project_name)s_attribute=data)
+        data = html.xpath("//html/body/center/div[2]/div/font/a")
+        if data:
+            %(project_name)Class(%(project_name)_attribute=data[0].text)
 
 
 class %(project_name)sCrawler(BaseCrawler):
