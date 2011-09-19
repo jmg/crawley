@@ -1,6 +1,6 @@
 from crawley.crawlers import BaseCrawler
 from crawley.scrapers import BaseScraper
-from crawley.extractors import PyQueryExtractor, XPathExtractor
+from crawley.extractors import XPathExtractor
 from models import *
 
 class %(project_name)sScraper(BaseScraper):
@@ -19,4 +19,4 @@ class %(project_name)sCrawler(BaseCrawler):
     start_urls = ["http://www.google.com"]    
     scrapers = [%(project_name)sScraper]
     max_depth = 1
-    extractor_class = XPathExtractor
+    extractor_class = XPathExtractor 

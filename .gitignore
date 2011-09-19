@@ -1,6 +1,8 @@
 *.pyc
 *.sqlite
 *.egg-info
+*.project
+*.pydevproject
 build
 dist
 docs/build

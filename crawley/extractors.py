@@ -29,3 +29,14 @@ class XPathExtractor(object):
         parser = etree.HTMLParser()
         html = etree.parse(StringIO(data), parser)
         return html
+
+
+class RawExtractor(object):
+    """
+        Returns the raw html data
+        Use your favourite python tool to scarpe the html        
+    """
+    
+    def get_object(self, data):
+        
+        return data
