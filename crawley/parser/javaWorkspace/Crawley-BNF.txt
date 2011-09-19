@@ -39,10 +39,10 @@ SENTENCE:
         RECURSIVE_SENTENCE
 
 Basic Single Sentence: (BASIC_SENTENCE)
-    ACTION < PROPERTY_SECTION => GET_ATTRIBUTE
+    ACTION < PROPERTY_STATEMENT => GET_ATTRIBUTE
     
 Basic Recursive Sentence: (RECURSIVE_SENTENCE) //Valid only for innerHTML
-    ACTION < PROPERTY_SECTION => innerHTML (-> SENTENCE)*
+    ACTION < PROPERTY_STATEMENT => innerHTML (-> SENTENCE)*
     
 /-----------------------------------------------------------------/
 Basic Single Sentence Example:
