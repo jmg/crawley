@@ -1,5 +1,6 @@
 import sys
 import os 
+from optparse import OptionParser
 
 from utils import exit_with_error, import_user_module
 
@@ -58,18 +59,28 @@ class ProjectCommand(BaseCommand):
             Checks for settings before run
         """
         
+        self._add_options()
         self.settings = self._check_for_settings()
         BaseCommand.checked_execute(self)
+        
+    def _add_options(self):
+        """
+            Add options that can be procesed by OptionParser
+        """
+        
+        self.parser = OptionParser()
+        self.parser.add_option("-s", "--settings", help="Indicates the settings.py file")                                
     
     def _check_for_settings(self):
         """
             tries to import the user's settings file
         """
-                
-        if len(self.args) > 0 and "--settings=" in self.args[0]:
-            
-            settings_str = self.args[0].split("=")[1]
-            settings_dir, file_name = os.path.split(settings_str)
+        
+        (options, args) = self.parser.parse_args(self.args)
+        
+        if options.settings is not None:
+
+            settings_dir, file_name = os.path.split(options.settings)
             
             sys.path.append(settings_dir)
             settings_file = os.path.splitext(file_name)[0]
