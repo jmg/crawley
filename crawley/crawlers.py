@@ -16,6 +16,7 @@ class BaseCrawler(object):
     """
     
     start_urls = []
+    allowed_urls = []
     scrapers = []
     max_depth = -1
     extractor_class = XPathExtractor
@@ -59,8 +60,18 @@ class BaseCrawler(object):
             self.storage(parent=url, href=new_url)
             session.commit()
     
+    def _validate_url(self, url):
+        
+        if not self.allowed_urls:
+            return True
+            
+        return bool([True for pattern in self.allowed_urls if url_matcher(url, pattern)])
+    
     def _fetch(self, url, depth_level=0):
-                                            
+                                   
+        if not self._validate_url(url):
+            return
+        
         data = self._get_data(url);
         if data is None:
             return
