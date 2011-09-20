@@ -7,29 +7,6 @@ public class Parser {
 	private static final String RETURN = "return ";
 	private static final String ACTION_SEPARATOR = " < ";
 	private static final String QUERY_SEPARATOR = " => ";
-	private Map<String, Action> actionElements = new HashMap<String, Action>();
-	private Map<String, Property> propertyElements = new HashMap<String, Property>();
-
-	public Parser() {
-		this.populateMaps();
-	}
-
-	protected void populateMaps() {
-		populateActions();
-		populateProperties();
-	}
-
-	protected void populateProperties() {
-		propertyElements.put("id", new IDProperty());
-		propertyElements.put("tag", new TagProperty());
-		propertyElements.put("class", new ClassProperty());
-	}
-
-	protected void populateActions() {
-		actionElements.put("first", new FirstAction());
-		actionElements.put("last", new LastAction());
-		actionElements.put("all", new AllAction());
-	}
 
 	public String parse(String crawleyDSL) {
 		String[] parsingString = crawleyDSL.split(QUERY_SEPARATOR);
@@ -51,9 +28,9 @@ public class Parser {
 		for (String property : propertyMap.keySet()) {
 			for (int j = 0; j < propertyMap.get(property).length; j++)
 				result += ((j == 0) ? "" : ", ") + PYQUERY_HEAD
-						+ this.propertyElements.get(property)
+						+ Property.getProperty(property)
 						+ this.trimSingleQuotes(propertyMap.get(property)[j])
-						+ CLOSING_PARENTHESIS + this.actionElements.get(action);
+						+ CLOSING_PARENTHESIS + Action.getAction(action);
 		}
 
 		return result + this.compoundPropertyEndingBraces(properties);
