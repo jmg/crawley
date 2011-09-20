@@ -1,5 +1,5 @@
 
-public class AllAction implements Action {
+public class AllAction extends Action {
 	@Override
 	public String toString() {
 		return "";

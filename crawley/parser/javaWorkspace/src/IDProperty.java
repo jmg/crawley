@@ -1,5 +1,5 @@
 
-public class IDProperty implements Property{
+public class IDProperty extends Property{
 	@Override
 	public String toString() {
 		return "#";
