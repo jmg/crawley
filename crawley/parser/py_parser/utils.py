@@ -2,19 +2,19 @@
     Parser utils
 """
 
-def removeBraces(propertyValues):
+def remove_braces(property_values):
     
-    return propertyValues.replace("[", "").replace("]", "")
+    return property_values.replace("[", "").replace("]", "")
 
-def compoundPropertyEndingBraces(properties):
+def compound_property_ending_braces(properties):
     
-    return compoundPropertyBraces(properties, False)
+    return compound_property_braces(properties, False)
 
-def compoundPropertyStartingBraces(properties):
+def compound_property_starting_braces(properties):
     
-    return compoundPropertyBraces(properties, True)
+    return compound_property_braces(properties, True)
 
-def compoundPropertyBraces(properties, starting_position):
+def compound_property_braces(properties, starting_position):
     
     if "[" in properties and "]" in properties:
         if starting_position:
@@ -22,6 +22,6 @@ def compoundPropertyBraces(properties, starting_position):
         return "]"
     return ""
 
-def trimSingleQuotes(htmlElement):
+def trim_single_quotes(html_element):
 
-    return htmlElement.replace("'", "")
+    return html_element.replace("'", "")

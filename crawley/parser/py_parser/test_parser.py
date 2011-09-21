@@ -3,7 +3,7 @@ from parser import Parser
 
 class ParserTest(unittest.TestCase):
 
-	def test_primerosElementos(self):
+	def test_primeros_elementos(self):
         
 		self.assertEquals("return PyQuery(html).query('p')[0]", Parser().parse("first < tag:'p' => innerHTML"), "pido el primer 'p' del html")
 		self.assertEquals("return [PyQuery(html).query('p')[0], PyQuery(html).query('div')[0]]", Parser().parse("first < tag:['p','div'] => innerHTML"), "pido el primer elemento con tag = p o tag = div")
@@ -14,7 +14,7 @@ class ParserTest(unittest.TestCase):
 		self.assertEquals("return PyQuery(html).query('.mi-clase')[0]", Parser().parse("first < class:'mi-clase' => innerHTML"), "pido el primer elemento que tiene clase = mi-clase")
 		self.assertEquals("return [PyQuery(html).query('.mi-clase')[0], PyQuery(html).query('.otra-clase')[0]]",Parser().parse("first < class:['mi-clase','otra-clase'] => innerHTML"), "pido el primer elemento con clase = mi-clase o clase = otra-clase")
 	
-	def test_ultimosElementos(self):
+	def test_ultimos_elementos(self):
         
 		self.assertEquals("return PyQuery(html).query('p')[-1]", Parser().parse("last < tag:'p' => innerHTML"), "pido el ultimo 'p' del html")
 		self.assertEquals("return [PyQuery(html).query('p')[-1], PyQuery(html).query('div')[-1]]",Parser().parse("last < tag:['p','div'] => innerHTML"), "pido el ultimo elemento con tag = p o tag = div")
@@ -25,7 +25,7 @@ class ParserTest(unittest.TestCase):
 		self.assertEquals("return PyQuery(html).query('.mi-clase')[-1]", Parser().parse("last < class:'mi-clase' => innerHTML"), "pido el ultimo elemento que tiene clase = mi-clase")
 		self.assertEquals("return [PyQuery(html).query('.mi-clase')[-1], PyQuery(html).query('.otra-clase')[-1]]",Parser().parse("last < class:['mi-clase','otra-clase'] => innerHTML"), "pido el ultimo elemento con clase = mi-clase o clase = otra-clase")
 
-	def test_todosLosElementos(self):
+	def test_todos_los_elementos(self):
 		
 		self.assertEquals("return PyQuery(html).query('p')", Parser().parse("all < tag:'p' => innerHTML"), "pido todos los 'p' del html")
 		self.assertEquals("return [PyQuery(html).query('p'), PyQuery(html).query('div')]",Parser().parse("all < tag:['p','div'] => innerHTML"), "pido todos los elementos con tag = p o tag = div")
