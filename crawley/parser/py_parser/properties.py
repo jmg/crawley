@@ -2,33 +2,25 @@
     Properties
 """
 
-class Property(object):
+class Property(dict):
     
-    @classmethod
-    def populateProperties(self):
-        
-        propertyElements = {}
-        propertyElements["id"] = IDProperty()
-        propertyElements["tag"] = TagProperty()
-        propertyElements["class"] = ClassProperty()
-        return propertyElements
+    def __init__(self):
+        dict.__init__(self)
+        self["id"] = IDProperty().__str__()
+        self["tag"] = TagProperty().__str__()
+        self["class"] = ClassProperty().__str__()
     
-    @classmethod
-    def getProperty(self, property):
-        return self.populateProperties().get(property);
-        
-
-class ClassProperty(Property):
+class ClassProperty(object):
     
     def __str__(self):
         return "."
 
-class IDProperty(Property):
+class IDProperty(object):
     
     def __str__(self):
         return "#"
 
-class TagProperty(Property):
+class TagProperty(object):
     
     def __str__(self):
         return ""

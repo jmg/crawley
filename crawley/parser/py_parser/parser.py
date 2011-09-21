@@ -10,31 +10,28 @@ class Parser(object):
     ACTION_SEPARATOR = " < "
     QUERY_SEPARATOR = " => "
 
-    def parse(self, crawleyDSL):
+    def parse(self, crawley_DSL):
         
-        parsingString = crawleyDSL.split(self.QUERY_SEPARATOR)
-        action, properties = parsingString[0].lower().split(self.ACTION_SEPARATOR)
-        getSection = parsingString[1]
+        action_section, get_section = crawley_DSL.split(self.QUERY_SEPARATOR)
+        action, properties = action_section.lower().split(self.ACTION_SEPARATOR)
 
-        return self.getFinalQuery(action, properties)
+        return self.get_final_query(action, properties)
         
-    def getFinalQuery(self, action, properties):
+    def get_final_query(self, action, properties):
         
-        propertyMap = {}
+        property_map = {}
 
         for name in properties.split(): 
-            propertyMap[name.split(":")[0]] = utils.removeBraces(name.split(":")[1]).split(",")
+            property_map[name.split(":")[0]] = utils.remove_braces(name.split(":")[1]).split(",")
 
-        result = self.RETURN + utils.compoundPropertyStartingBraces(properties)
+        result = self.RETURN + utils.compound_property_starting_braces(properties)
         
-        for property in propertyMap.keys():
-            for j, x in enumerate(propertyMap.get(property)):
-                result = "%s%s%s%s%s%s%s" % (result, "" if j == 0 else ", ", self.PYQUERY_HEAD, 
-                         Property.getProperty(property),
-                         utils.trimSingleQuotes(propertyMap.get(property)[j]),
-                         self.CLOSING_PARENTHESIS,
-                         Action.getAction(action))
+        for property in property_map.keys():
+            for index, property_element in enumerate(property_map.get(property)):
+                result = ''.join([result, "" if index == 0 else ", ", self.PYQUERY_HEAD, 
+                                  Property().get(property),
+                                  utils.trim_single_quotes(property_element),
+                                  self.CLOSING_PARENTHESIS,
+                                  Action().get(action)])
                 
-        res = "%s%s" % (result, utils.compoundPropertyEndingBraces(properties))
-        print res
-        return res
+        return "%s%s" % (result, utils.compound_property_ending_braces(properties))
