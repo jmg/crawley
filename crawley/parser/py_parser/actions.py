@@ -3,7 +3,20 @@
 """
 
 class Action(object):
-    pass    
+    
+    @classmethod
+    def populateActions(self):
+        
+        actionElements = {}
+        actionElements["first"] = FirstAction()
+        actionElements["last"] = LastAction()
+        actionElements["all"] = AllAction()
+        return actionElements
+    
+    @classmethod
+    def getAction(self, action):
+        return self.populateActions().get(action)
+        
 
 class FirstAction(Action):
     

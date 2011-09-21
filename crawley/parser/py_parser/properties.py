@@ -3,7 +3,20 @@
 """
 
 class Property(object):
-    pass
+    
+    @classmethod
+    def populateProperties(self):
+        
+        propertyElements = {}
+        propertyElements["id"] = IDProperty()
+        propertyElements["tag"] = TagProperty()
+        propertyElements["class"] = ClassProperty()
+        return propertyElements
+    
+    @classmethod
+    def getProperty(self, property):
+        return self.populateProperties().get(property);
+        
 
 class ClassProperty(Property):
     

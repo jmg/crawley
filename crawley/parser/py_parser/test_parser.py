@@ -24,18 +24,18 @@ class ParserTest(unittest.TestCase):
 
 		self.assertEquals("return PyQuery(html).query('.mi-clase')[-1]", Parser().parse("last < class:'mi-clase' => innerHTML"), "pido el ultimo elemento que tiene clase = mi-clase")
 		self.assertEquals("return [PyQuery(html).query('.mi-clase')[-1], PyQuery(html).query('.otra-clase')[-1]]",Parser().parse("last < class:['mi-clase','otra-clase'] => innerHTML"), "pido el ultimo elemento con clase = mi-clase o clase = otra-clase")
-	
+
 	def test_todosLosElementos(self):
-        
+		
 		self.assertEquals("return PyQuery(html).query('p')", Parser().parse("all < tag:'p' => innerHTML"), "pido todos los 'p' del html")
 		self.assertEquals("return [PyQuery(html).query('p'), PyQuery(html).query('div')]",Parser().parse("all < tag:['p','div'] => innerHTML"), "pido todos los elementos con tag = p o tag = div")
-		
+
 		self.assertEquals("return PyQuery(html).query('#unid')", Parser().parse("all < id:'unID' => innerHTML"), "pido todos los elementos que tiene id = unid")
 		self.assertEquals("return [PyQuery(html).query('#unid'), PyQuery(html).query('#otroid')]",Parser().parse("all < id:['unid','otroid'] => innerHTML"), "pido el ultimo elemento con id = unid o id = otroid")
 
 		self.assertEquals("return PyQuery(html).query('.mi-clase')", Parser().parse("all < class:'mi-clase' => innerHTML"), "pido todos los elementos que tiene clase = mi-clase")
 		self.assertEquals("return [PyQuery(html).query('.mi-clase'), PyQuery(html).query('.otra-clase')]",Parser().parse("all < class:['mi-clase','otra-clase'] => innerHTML"), "pido todos los elementos con clase = mi-clase o clase = otra-clase")
-	
+
 
 if __name__ == "__main__":
     
