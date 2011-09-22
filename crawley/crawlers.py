@@ -4,7 +4,7 @@ from eventlet import GreenPool
 from re import compile, match
 
 from persistance import session
-from extractors import XPathExtractor, PyQueryExtractor
+from extractors import XPathExtractor
 from utils import url_matcher
 
 
