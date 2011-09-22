@@ -1,53 +1,42 @@
-#Mr. Crawley Language Parser
+import utils
+from properties import Property
+from actions import Action
 
-from Actions import *
+class Parser(object):
 
-class TextParser(object):
-    def parse(self, inputText):
-        lineNumber = 0
-        for line in inputText.split("\n"):
-            self.parseLine(line, lineNumber)
-            lineNumber += 1
+    CLOSING_PARENTHESIS = "')"
+    PYQUERY_HEAD = "PyQuery(html).query('"
+    RETURN = "return "
+    ACTION_SEPARATOR = " < "
+    QUERY_SEPARATOR = " => "
 
-    def parseLine(self, line, lineNumber):
-        sectionNumber = 0
-        for codeSection in line.lower().split(" get "):
-            SectionParser().parse(codeSection, sectionNumber, lineNumber)
-            sectionNumber += 1
+    def parse(self, crawley_DSL):
+        
+        action_section, get_section = utils.trim(crawley_DSL).split(self.QUERY_SEPARATOR)
+        action, properties = action_section.lower().split(self.ACTION_SEPARATOR)
 
-class SectionParser(object):
-    def parse(self, codeSection, sectionNumber, lineNumber):
-        if sectionNumber = 0:
-            ActionParser().parse(codeSection, lineNumber)
-        elif sectionNumber = 1:
-            GetParser().parse(codeSection, lineNumber)
-        else
-            raise CrawleyParserException("Invalid code section found")
+        return self.get_final_query(action, properties)
+        
 
-class ActionParser(object):
-    def __init__(self):
-        self.actions = [First, Last, For]
+    def not_first_element_comma(self, index):
+        return "" if index == 0 else ", "
 
-    def parse(self, codeSection, lineNumber):
-        ##TODO
-        pass
+    def get_final_query(self, action, properties):
+        
+        property_map = {}
 
-    def parseAction(self, word, lineNumber):
-        for action in self.actions:
-            if word == action().__str__():
-                self.addAction(action, lineNumber)
-                return
-        raise CrawleyActionNotFoundException("Action Not Found")
+        for property_and_values in properties.split():
+            key, values =  property_and_values.split(":")
+            property_map[key] = utils.remove_braces(values).split(",")
 
-    def addAction(self, action, lineNumber):
-        ##TODO
-        pass
-
-class GetParser(object):
-    def parse(self, codeSection, lineNumber):
-        ##TODO
-        pass
-
-class CrawleyParserException(Exception):
-    def __init__(self, message):
-        self.message = message
+        result = self.RETURN + utils.compound_property_starting_braces(properties)
+        
+        for key, value in property_map.iteritems():
+            for index, property_element in enumerate(value):
+                result += ''.join([self.not_first_element_comma(index), self.PYQUERY_HEAD, 
+                                  Property().get(key),
+                                  utils.trim_single_quotes(property_element),
+                                  self.CLOSING_PARENTHESIS,
+                                  Action().get(action)])
+                
+        return "%s%s" % (result, utils.compound_property_ending_braces(properties))
