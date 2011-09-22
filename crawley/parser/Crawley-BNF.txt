@@ -54,5 +54,8 @@ Basic Compound Sentence Example:
 Basic Single Sentence Multiple Property Values Example:
     last < class:['class-1','class-2'] => innerHTML
     
+Basic Compound Sentence Multiple Property Values Example:
+    last < tag:'p' class:['class-1','class-2'] => innerHTML
+    
 Hierarchic HTML Search Example:
     all < id:'buscado' => innerHTML -> all < tag:'p' => innerHTML 
