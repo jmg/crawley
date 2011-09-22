@@ -3,6 +3,7 @@ from eventlet import GreenPool
 
 from re import compile, match
 
+from http.request import Request
 from persistance import session
 from extractors import XPathExtractor
 from utils import url_matcher
@@ -29,13 +30,11 @@ class BaseCrawler(object):
         self.extractor = self.extractor_class()
             
     def _get_response(self, url):
-
-        request = urllib2.Request(url)
-        opener = urllib2.build_opener()        
-        
+                
+        request = Request(url)        
+                    
         try:            
-            response = opener.open(request)
-            return response
+            return request.get_response()            
         except Exception:
             return None
     
