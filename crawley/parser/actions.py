@@ -1,21 +1,26 @@
-#Mr. Crawley Parser Actions
+"""
+    Actions
+"""
 
-class Action(object):
+class Action(dict):
+    
     def __init__(self):
-        raise Exception("Abstract Class")
+        dict.__init__(self)
+        self["first"] = FirstAction().__str__()
+        self["last"] = LastAction().__str__()
+        self["all"] = AllAction().__str__()
 
-class First(Action):
+class FirstAction(object):
+    
     def __str__(self):
-        return "first"
+        return "[0]"
 
-class Last(Action):
+class LastAction(object):
+    
     def __str__(self):
-        return "last"
+        return "[-1]"
 
-class For(Action):
+class AllAction(object):
+    
     def __str__(self):
-        return "for"
-
-class CrawleyActionNotFoundException(Exception):
-    def __init__(self, message):
-        self.message = message
+        return ""
