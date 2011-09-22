@@ -12,24 +12,29 @@ class Parser(object):
 
     def parse(self, crawley_DSL):
         
-        action_section, get_section = crawley_DSL.split(self.QUERY_SEPARATOR)
+        action_section, get_section = utils.trim(crawley_DSL).split(self.QUERY_SEPARATOR)
         action, properties = action_section.lower().split(self.ACTION_SEPARATOR)
 
         return self.get_final_query(action, properties)
         
+
+    def not_first_element_comma(self, index):
+        return "" if index == 0 else ", "
+
     def get_final_query(self, action, properties):
         
         property_map = {}
 
-        for name in properties.split(): 
-            property_map[name.split(":")[0]] = utils.remove_braces(name.split(":")[1]).split(",")
+        for property_and_values in properties.split():
+            key, values =  property_and_values.split(":")
+            property_map[key] = utils.remove_braces(values).split(",")
 
         result = self.RETURN + utils.compound_property_starting_braces(properties)
         
-        for property in property_map.keys():
-            for index, property_element in enumerate(property_map.get(property)):
-                result = ''.join([result, "" if index == 0 else ", ", self.PYQUERY_HEAD, 
-                                  Property().get(property),
+        for key, value in property_map.iteritems():
+            for index, property_element in enumerate(value):
+                result += ''.join([self.not_first_element_comma(index), self.PYQUERY_HEAD, 
+                                  Property().get(key),
                                   utils.trim_single_quotes(property_element),
                                   self.CLOSING_PARENTHESIS,
                                   Action().get(action)])
