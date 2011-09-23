@@ -19,7 +19,7 @@ class CrawlerTest(unittest.TestCase):
             a facebook's page that requires to be logged in.
         """
         testCrawler = BaseCrawler()        
-        data = urllib.urlencode({'email' : 'jm_elektro@hotmail.com', 'pass': 'manchita'})
+        data = urllib.urlencode({'email' : 'your_user', 'pass': 'your_pass'})
         
         response = testCrawler._get_response("https://www.facebook.com/login.php?login_attempt=1", data)
         response = testCrawler._get_response("http://www.facebook.com/profile.php?id=1271577281")
