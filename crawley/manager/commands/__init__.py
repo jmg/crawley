@@ -21,8 +21,10 @@ class CommandsDict(dict):
 
 commands = CommandsDict()
 
-commands.update({ RunCommand.name : RunCommand,
-                  ShellCommand.name : ShellCommand,
-                  StartProjectCommand.name : StartProjectCommand,
-                  SyncDbCommand.name : SyncDbCommand})
+d = { RunCommand.name : RunCommand,
+      ShellCommand.name : ShellCommand,
+      StartProjectCommand.name : StartProjectCommand,
+      SyncDbCommand.name : SyncDbCommand }
+
+commands.update(d)
 

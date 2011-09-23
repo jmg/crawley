@@ -34,7 +34,7 @@ class XPathExtractor(object):
 class RawExtractor(object):
     """
         Returns the raw html data
-        Use your favourite python tool to scarpe it.        
+        Use your favourite python tool to scrape it.        
     """
     
     def get_object(self, data):

@@ -19,4 +19,4 @@ class %(project_name)sCrawler(BaseCrawler):
     start_urls = ["http://www.google.com"]    
     scrapers = [%(project_name)sScraper]
     max_depth = 1
-    extractor_class = XPathExtractor 
+    extractor = XPathExtractor 
