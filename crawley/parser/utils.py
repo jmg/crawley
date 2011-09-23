@@ -35,3 +35,23 @@ def trim(a_string):
     
     pattern = re.compile(r'\s+')
     return re.sub(pattern, ' ', a_string)
+
+def not_first_element_comma(index):
+    
+    return "" if index == 0 else ", "
+
+class UncasedDict(dict):
+    
+    def __getitem__(self, key):
+        
+        return dict.__getitem__(self._check_key_case(key))
+        
+    def __setitem__(self, key, value):
+        
+        dict.__setitem__(self._check_key_case(key), value)
+    
+    def _check_key_case(self, key):
+    
+        if isinstance(key, basestring):
+            key = key.lower()
+        return key
