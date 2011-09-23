@@ -6,20 +6,26 @@ class Request(object):
 
     USER_AGENT = "Mozilla/5.0 (X11; Linux i686) AppleWebKit/534.30 (KHTML, like Gecko) Ubuntu/10.10 Chromium/12.0.742.112 Chrome/12.0.742.112 Safari/534.30"
     
-    def __init__(self, url):
+    def __init__(self, url, cookie_handler=None):
+        
+        if cookie_handler is None:
+           cookie_handler = CookieHanlder() 
         
         self.url = url
-        self.headers = {"user_agent" : self.USER_AGENT }
+        self.headers = {}
+        self.headers["User-Agent"] = self.USER_AGENT
+        self.headers["Accept-Charset"] = "ISO-8859-1,utf-8;q=0.7,*;q=0.3"
+        self.headers["Accept-Language"] = "es-419,es;q=0.8"
+        
+        self.cookie_handler = cookie_handler
     
     def get_response(self, data=None):
         
         request = urllib2.Request(self.url, data, self.headers)        
-        
-        self._cookie_hanlder = CookieHanlder()
-        opener = urllib2.build_opener(self._cookie_hanlder)
+        opener = urllib2.build_opener(self.cookie_handler)
         
         response = opener.open(request)
-        self._cookie_hanlder.save_cookies()
+        self.cookie_handler.save_cookies()
         
         return response
         
@@ -30,16 +36,13 @@ class CookieHanlder(urllib2.HTTPCookieProcessor):
     
     def __init__(self, *args, **kwargs):
         
-        self._jar = cookielib.LWPCookieJar()
+        self._jar = cookielib.LWPCookieJar(self.COOKIE_FILE)
+        self._jar.load()        
         
-        if os.path.isfile(self.COOKIE_FILE):
-            self._jar.load(self.COOKIE_FILE)
-        
-        urllib2.HTTPCookieProcessor.__init__(self, self._jar, *args, **kwargs)
-        
+        urllib2.HTTPCookieProcessor.__init__(self, self._jar, *args, **kwargs)        
     
     def save_cookies(self):
         
         if self._jar is not None:
-            self._jar.save(self.COOKIE_FILE) 
+            self._jar.save() 
     
