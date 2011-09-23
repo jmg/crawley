@@ -20,14 +20,14 @@ class BaseCrawler(object):
     allowed_urls = []
     scrapers = []
     max_depth = -1
-    extractor_class = XPathExtractor
+    extractor = XPathExtractor
     
     _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
     
-    def __init__(self, storage=None):        
+    def __init__(self, storage=None):
         
         self.storage = storage
-        self.extractor = self.extractor_class()
+        self.extractor = self.extractor()
         self.cookie_hanlder = CookieHanlder()
             
     def _get_response(self, url, data=None):
@@ -66,10 +66,9 @@ class BaseCrawler(object):
         """
         
         for Scraper in self.scrapers:
-            if [pattern for pattern in Scraper.matching_urls if url_matcher(url, pattern)]:
-                scraper = Scraper()
+            if [pattern for pattern in Scraper.matching_urls if url_matcher(url, pattern)]: 
                 html = self.extractor.get_object(data)
-                scraper.scrape(html)
+                Scraper().scrape(html)
     
     def _save_urls(self, url, new_url):
         """
