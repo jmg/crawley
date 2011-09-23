@@ -20,3 +20,5 @@ class GoogleCrawler(BaseCrawler):
     scrapers = [GoogleScraper]
     max_depth = 1
     
+    login = ("http://www.google.com/login", {'user' : 'user', 'pass' : 'pass'})
+
