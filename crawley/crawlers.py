@@ -21,6 +21,7 @@ class BaseCrawler(object):
     scrapers = []
     max_depth = -1
     extractor = XPathExtractor
+    login = None
     
     _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
     
@@ -114,13 +115,26 @@ class BaseCrawler(object):
             if depth_level >= self.max_depth:
                 return
             self.pool.spawn_n(self._fetch, new_url, depth_level + 1)
+    
+    def _login(self):
+        """
+            If target pages are hidden behind a login then
+            pass through it first.
+        """
+        if self.login is None:
+            return        
             
+        url, data = self.login
+        if self._get_response(url, data) is None:
+            raise Exception("Can't login")
+    
     def start(self):
         """
             Crawler's entry point 
         """
+        self._login()
         
-        self.pool = GreenPool()
+        self.pool = GreenPool()        
         
         for url in self.start_urls:
             self.pool.spawn_n(self._fetch, url, depth_level=0)
