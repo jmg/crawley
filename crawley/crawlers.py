@@ -3,7 +3,7 @@ from eventlet import GreenPool
 
 from re import compile, match
 
-from http.request import Request
+from http.request import Request, CookieHanlder
 from persistance import session
 from extractors import XPathExtractor
 from utils import url_matcher
@@ -24,28 +24,46 @@ class BaseCrawler(object):
     
     _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
     
-    def __init__(self, storage=None):
+    def __init__(self, storage=None):        
         
         self.storage = storage
         self.extractor = self.extractor_class()
+        self.cookie_hanlder = CookieHanlder()
             
-    def _get_response(self, url):
+    def _get_response(self, url, data=None):
+        """
+            Returns the response object from a request
+            
+            params:
+                data: if this param is present it makes a POST.
+        """
                 
-        request = Request(url)        
+        request = Request(url, cookie_handler=self.cookie_hanlder)
                     
         try:            
-            return request.get_response()            
-        except Exception:
+            return request.get_response(data)
+        except Exception, e:
             return None
     
-    def _get_data(self, url):
+    def _get_data(self, url, data=None):
+        """
+            Returns the response data from a request
+            
+            params:
+                data: if this param is present it makes a POST.
+        """
         
-        response = self._get_response(url)
-        if response is None or response.getcode() != 200:
+        response = self._get_response(url, data)
+        if response is None or response.getcode() != 200:            
             return None
         return response.read()
     
     def _manage_scrapers(self, url, data):
+        """
+            Checks if some scraper is suited for data extraction on the current url.
+            If so, gets the extractor object and delegate the scraping task
+            to the scraper Object
+        """
         
         for Scraper in self.scrapers:
             if [pattern for pattern in Scraper.matching_urls if url_matcher(url, pattern)]:
@@ -54,12 +72,18 @@ class BaseCrawler(object):
                 scraper.scrape(html)
     
     def _save_urls(self, url, new_url):
+        """
+            Stores the url in an [UrlEntity] Object
+        """
         
         if self.storage is not None:
             self.storage(parent=url, href=new_url)
             session.commit()
     
     def _validate_url(self, url):
+        """
+            Validates if the url is in the crawler's [allowed_urls] list.
+        """
         
         if not self.allowed_urls:
             return True
@@ -67,6 +91,13 @@ class BaseCrawler(object):
         return bool([True for pattern in self.allowed_urls if url_matcher(url, pattern)])
     
     def _fetch(self, url, depth_level=0):
+        """
+            Recursive url fetching. 
+            
+            Params:
+                depth_level: The maximun recursion level
+                url: The url to start crawling
+        """
                                    
         if not self._validate_url(url):
             return
@@ -86,6 +117,9 @@ class BaseCrawler(object):
             self.pool.spawn_n(self._fetch, new_url, depth_level + 1)
             
     def start(self):
+        """
+            Crawler's entry point 
+        """
         
         self.pool = GreenPool()
         
