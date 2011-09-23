@@ -1,8 +1,9 @@
 """
     Actions
 """
+from utils import UncasedDict
 
-class Action(dict):
+class Action(UncasedDict):
     
     def __init__(self):
         dict.__init__(self)
