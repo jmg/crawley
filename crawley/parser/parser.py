@@ -10,16 +10,12 @@ class Parser(object):
     ACTION_SEPARATOR = " < "
     QUERY_SEPARATOR = " => "
 
-    def parse(self, crawley_DSL):
+    def parse(self, crawley_dsl):
         
-        action_section, get_section = utils.trim(crawley_DSL).split(self.QUERY_SEPARATOR)
+        action_section, get_section = utils.trim(crawley_dsl).split(self.QUERY_SEPARATOR)
         action, properties = action_section.lower().split(self.ACTION_SEPARATOR)
 
         return self.get_final_query(action, properties)
-        
-
-    def not_first_element_comma(self, index):
-        return "" if index == 0 else ", "
 
     def get_final_query(self, action, properties):
         
@@ -33,7 +29,7 @@ class Parser(object):
         
         for key, value in property_map.iteritems():
             for index, property_element in enumerate(value):
-                result += ''.join([self.not_first_element_comma(index), self.PYQUERY_HEAD, 
+                result += ''.join([utils.not_first_element_comma(index), self.PYQUERY_HEAD, 
                                   Property().get(key),
                                   utils.trim_single_quotes(property_element),
                                   self.CLOSING_PARENTHESIS,

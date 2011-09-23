@@ -1,8 +1,9 @@
 """
     Properties
 """
+from utils import UncasedDict
 
-class Property(dict):
+class Property(UncasedDict):
     
     def __init__(self):
         dict.__init__(self)
