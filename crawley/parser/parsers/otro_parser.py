@@ -10,28 +10,18 @@ class OtroParser(Parser):
     
     def parse(self):
         
-        action_section, get_section = utils.trim(self.dsl).split(self.QUERY_SEPARATOR)
-        action, properties = action_section.lower().split(self.ACTION_SEPARATOR)
+        result = self.RETURN + self.COMPREHENSION_LIST_HEAD
 
-        property_map = {}
-
-        for property_and_values in properties.split():
-            key, values =  property_and_values.split(":")
-            property_map[key] = utils.remove_braces(values).split(",")
-
-        result = self.RETURN + self.COMPREHENSION_LIST_HEAD \
-                 + utils.compound_property_starting_braces(properties)
-        
-        for key, value in property_map.iteritems():
+        for key, value in self.dsl.properties.iteritems():
             for index, property_element in enumerate(value):
-                result += ''.join([utils.not_first_element_comma(index), self.PYQUERY_HEAD, 
-                                  Property().get(key),
-                                  utils.trim_single_quotes(property_element),
-                                  self.CLOSING_PARENTHESIS,
-                                  Action().get(action)])
-                
-        return "%s%s" % (result, utils.compound_property_ending_braces(properties))
+                result += ''.join([utils.not_first_element_plus(index), self.PYQUERY_HEAD, 
+                              Property().get(key),
+                              utils.trim_single_quotes(property_element),
+                              self.CLOSING_PARENTHESIS,
+                              Action().get(self.dsl.action)])
+
+        return "%s%s" % (result, self.COMPREHENSION_LIST_TAIL)
 
     def can_parse(self):
         
-        return ""
+        return "" if self.dsl.is_simple() else "Can't Parse, only Simple admitted, Line %d" % self.dsl.number
