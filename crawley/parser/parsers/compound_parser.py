@@ -13,31 +13,24 @@ class CompoundParser(Parser):
         count = 0
         for key, value in self.dsl.properties.iteritems():
             for index, property_element in enumerate(value):
-                if count == 0:
-                    result += ''.join([utils.not_first_element_plus(index), self.PYQUERY_HEAD, 
-                              Property().get(key),
-                              utils.trim_single_quotes(property_element),
-                              self.CLOSING_PARENTHESIS,
-                              Action().get(self.dsl.action)])
-                else:
-                    if count == 1:
-                        result += ''.join([" if x in ",
-                                  utils.not_first_element_plus(index), self.PYQUERY_HEAD, 
-                                  Property().get(key),
-                                  utils.trim_single_quotes(property_element),
-                                  self.CLOSING_PARENTHESIS,
-                                  Action().get(self.dsl.action)])
-                    else:
-                        result += ''.join([" and x in ",
-                                          utils.not_first_element_plus(index), self.PYQUERY_HEAD, 
-                                          Property().get(key),
-                                          utils.trim_single_quotes(property_element),
-                                          self.CLOSING_PARENTHESIS,
-                                          Action().get(self.dsl.action)])
-
+                result += ''.join([self._get_compound_positional_element(count),
+                          utils.not_first_element_plus(index), self.PYQUERY_HEAD, 
+                          Property().get(key),
+                          utils.trim_single_quotes(property_element),
+                          self.CLOSING_PARENTHESIS,
+                          Action().get(self.dsl.action)])
             count += 1
         
         return "%s%s" % (result, self.COMPREHENSION_LIST_TAIL)
+
+    def _get_compound_positional_element(self, count):
+        
+        if count == 0:
+            return ""
+        elif count == 1:
+            return " if x in "
+        else:
+            return " and x in "
     
     def _can_parse(self):
         
