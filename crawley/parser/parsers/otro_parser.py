@@ -3,11 +3,14 @@ from parser import Parser
 from properties import Property
 from actions import Action
 
-class SimpleParser(Parser):
+class OtroParser(Parser):
+    
+    COMPREHENSION_LIST_HEAD = "[x for x in "
+    COMPREHENSION_LIST_TAIL = "]"
     
     def parse(self):
-
-        action_section, get_section = self.dsl.split(self.QUERY_SEPARATOR)
+        
+        action_section, get_section = utils.trim(self.dsl).split(self.QUERY_SEPARATOR)
         action, properties = action_section.lower().split(self.ACTION_SEPARATOR)
 
         property_map = {}
@@ -16,7 +19,8 @@ class SimpleParser(Parser):
             key, values =  property_and_values.split(":")
             property_map[key] = utils.remove_braces(values).split(",")
 
-        result = self.RETURN + utils.compound_property_starting_braces(properties)
+        result = self.RETURN + self.COMPREHENSION_LIST_HEAD \
+                 + utils.compound_property_starting_braces(properties)
         
         for key, value in property_map.iteritems():
             for index, property_element in enumerate(value):
@@ -29,4 +33,5 @@ class SimpleParser(Parser):
         return "%s%s" % (result, utils.compound_property_ending_braces(properties))
 
     def can_parse(self):
+        
         return ""
