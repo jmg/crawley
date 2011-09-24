@@ -13,7 +13,7 @@ class CrawleyDSL(object):
 
     def _get_lines(self):
         
-        return enumerate(self.dsl.split("\n"))
+        return enumerate(utils.replace_escape_char(self.dsl, "\\\n").split("\n"))
 
 class Line(object):
     

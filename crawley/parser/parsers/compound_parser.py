@@ -13,8 +13,8 @@ class CompoundParser(Parser):
     
     def _can_parse(self):
         
-        return self.dsl.is_compound()
+        return self.dsl.is_compound() or self.dsl.is_simple()
     
     def _get_exception(self):
         
-        return ParserException("Can't Parse, only Compound admitted, Line %d" % self.dsl.number)
+        return ParserException("Can't Parse, only Simple and Compound admitted, Line %d" % self.dsl.number)

@@ -27,14 +27,17 @@ def trim_single_quotes(html_element):
 
     return html_element.replace("'", "")
 
-def intersect(first_list, second_list):
-
-    return [x for x in first_list if x in second_list]
-
 def trim(a_string):
     
-    pattern = re.compile(r'\s+')
-    return re.sub(pattern, ' ', a_string)
+    return _replace_by_regex(a_string, r'\s+')
+
+def replace_escape_char(a_string):
+    
+    return _replace_by_regex(a_string, r'\[\s|\n]*')
+
+def _replace_by_regex(a_string, a_pattern, replace_char=' '):
+    
+    return re.sub(re.compile(a_pattern), replace_char, a_string)
 
 def not_first_element_plus(index):
     
