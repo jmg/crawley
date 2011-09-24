@@ -52,6 +52,10 @@ class UncasedDict(dict):
     def __setitem__(self, key, value):
         
         dict.__setitem__(self, self._check_key_case(key), value)
+
+    def __delitem__(self, key):
+        
+        dict.__delitem__(self, self._check_key_case(key))
     
     def _check_key_case(self, key):
     
