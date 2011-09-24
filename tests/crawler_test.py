@@ -5,7 +5,7 @@ import urllib
 
 class CrawlerTest(unittest.TestCase):
     
-    def _test_requests(self):
+    def test_requests(self):
         """
             Very basic and foolish test
         """

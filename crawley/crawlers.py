@@ -3,7 +3,7 @@ from eventlet import GreenPool
 
 from re import compile, match
 
-from http.request import Request, CookieHanlder
+from http.request import Request, CookieHandler
 from persistance import session
 from extractors import XPathExtractor
 from utils import url_matcher
@@ -29,7 +29,7 @@ class BaseCrawler(object):
         
         self.storage = storage
         self.extractor = self.extractor()
-        self.cookie_hanlder = CookieHanlder()
+        self.cookie_hanlder = CookieHandler()
             
     def _get_response(self, url, data=None):
         """

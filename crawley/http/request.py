@@ -27,19 +27,24 @@ class Request(object):
         response = opener.open(request)
         self.cookie_handler.save_cookies()
         
-        return response
+        return response        
         
     
-class CookieHanlder(urllib2.HTTPCookieProcessor):
+class CookieHandler(urllib2.HTTPCookieProcessor):
     
     COOKIE_FILE = "/tmp/crawley-cookie"
     
     def __init__(self, *args, **kwargs):
-        
+                
         self._jar = cookielib.LWPCookieJar(self.COOKIE_FILE)
-        self._jar.load()        
+        self.load_cookies()
         
         urllib2.HTTPCookieProcessor.__init__(self, self._jar, *args, **kwargs)        
+    
+    def load_cookies(self):
+        
+        if os.path.isfile(self.COOKIE_FILE):
+            self._jar.load()
     
     def save_cookies(self):
         
