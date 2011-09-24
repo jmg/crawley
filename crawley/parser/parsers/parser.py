@@ -1,5 +1,3 @@
-from properties import Property
-from actions import Action
 import utils
 
 class Parser(object):
@@ -7,34 +5,11 @@ class Parser(object):
     CLOSING_PARENTHESIS = "')"
     PYQUERY_HEAD = "PyQuery(html).query('"
     RETURN = "return "
-    COMPREHENSION_LIST_HEAD = "[x for x in "
     COMPREHENSION_LIST_TAIL = "]"
     
     def __init__(self, crawley_line):
         
         self.dsl = crawley_line
-    
-    def parse(self):
-        
-        result = self.RETURN + self.COMPREHENSION_LIST_HEAD
-
-        for count, (key, value) in enumerate(self.dsl.properties.iteritems()):
-            for index, property_element in enumerate(value):
-                result += ''.join([self._get_compound_positional_element(count),
-                          utils.not_first_element_plus(index), self.PYQUERY_HEAD,
-                          Property().get(key),
-                          utils.trim_single_quotes(property_element),
-                          self.CLOSING_PARENTHESIS,
-                          Action().get(self.dsl.action)])
-        
-        return "%s%s" % (result, self.COMPREHENSION_LIST_TAIL)
-
-
-    def can_parse(self):
-        
-        if not self._can_parse():
-            raise self._get_exception()
-        return ""
     
     def _can_parse(self):
         
@@ -48,6 +23,27 @@ class Parser(object):
         
         raise Exception("Abstract")
 
+    def _do_parse(self):
+        
+        raise Exception("Abstract")
+
+    def parse(self):
+        
+        result = self.RETURN + self._get_comprehension_list_head()
+
+        result += self._do_parse()
+        
+        return "%s%s" % (result, self.COMPREHENSION_LIST_TAIL)
+
+    def can_parse(self):
+        
+        if not self._can_parse():
+            raise self._get_exception()
+        return ""
+
+    def _get_comprehension_list_head(self, head_val='x'):
+        return '[%s for %s in ' % (head_val, head_val)
+    
 class ParserException(Exception):
     
     def __init__(self, message):

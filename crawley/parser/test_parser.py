@@ -8,7 +8,7 @@ class DSLAnalizerTest(unittest.TestCase):
 
     def test_primeros_elementos(self):
         
-	    self.assertEquals("return [x for x in PyQuery(html).query('p')[0]]", DSLAnalizer().parse(Line("first < tag:'p' => innerHTML", 0)), "pido el primer 'p' del html")
+	    self.assertEquals("return [x for x in PyQuery(html).query('p')[0]]", DSLAnalizer().parse(Line("first < tag:'p' => innerHTML", 0)))#, "pido el primer 'p' del html")
 	    self.assertEquals("return [x for x in PyQuery(html).query('p')[0] + PyQuery(html).query('div')[0]]", DSLAnalizer().parse(Line("first < tag:['p','div'] => innerHTML", 0)), "pido el primer elemento con tag = p o tag = div")
 
 	    self.assertEquals("return [x for x in PyQuery(html).query('#unid')[0]]", DSLAnalizer().parse(Line("first < id:'unID' => innerHTML", 0)), "pido el primer elemento que tiene id = unid")
