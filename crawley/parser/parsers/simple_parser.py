@@ -1,5 +1,5 @@
 import utils
-from parser import Parser
+from parser import Parser, ParserException
 from properties import Property
 from actions import Action
 
@@ -22,6 +22,10 @@ class SimpleParser(Parser):
 
         return "%s%s" % (result, self.COMPREHENSION_LIST_TAIL)
 
-    def can_parse(self):
+    def _can_parse(self):
         
-        return "" if self.dsl.is_simple() else "Can't Parse, only Simple admitted, Line %d" % self.dsl.number
+        return self.dsl.is_simple()
+    
+    def _get_exception(self):
+        
+        return ParserException("Can't Parse, only Simple admitted, Line %d" % self.dsl.number)
