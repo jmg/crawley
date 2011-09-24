@@ -36,9 +36,9 @@ def trim(a_string):
     pattern = re.compile(r'\s+')
     return re.sub(pattern, ' ', a_string)
 
-def not_first_element_comma(index):
+def not_first_element_plus(index):
     
-    return "" if index == 0 else ", "
+    return "" if index == 0 else " + "
 
 class UncasedDict(dict):
     
