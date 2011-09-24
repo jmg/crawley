@@ -10,7 +10,7 @@ setup(
     author="Crawley Developers",
     author_email = "jmg.utn@gmail.com",
     license = "GPL v3",
-    keywords = "Scarping Crawling Framework Python",    
+    keywords = "Scraping Crawling Framework Python",    
     packages=['crawley', 'crawley.manager', 'crawley.manager.commands', 'crawley.conf.project_template'],
     scripts=['crawley/bin/crawley'],
     url='https://github.com/jmg/crawley',
