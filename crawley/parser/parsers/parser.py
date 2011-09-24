@@ -5,7 +5,9 @@ class Parser(object):
     CLOSING_PARENTHESIS = "')"
     PYQUERY_HEAD = "PyQuery(html).query('"
     RETURN = "return "
-
+    COMPREHENSION_LIST_HEAD = "[x for x in "
+    COMPREHENSION_LIST_TAIL = "]"
+    
     def __init__(self, crawley_line):
         
         self.dsl = crawley_line

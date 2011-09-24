@@ -5,9 +5,6 @@ from actions import Action
 
 class SimpleParser(Parser):
     
-    COMPREHENSION_LIST_HEAD = "[x for x in "
-    COMPREHENSION_LIST_TAIL = "]"
-    
     def parse(self):
         
         result = self.RETURN + self.COMPREHENSION_LIST_HEAD
