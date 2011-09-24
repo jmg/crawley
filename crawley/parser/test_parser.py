@@ -1,7 +1,6 @@
 import unittest
 from analizer import DSLAnalizer
 from parsers.crawley_dsl import Line
-from parsers.simple_parser import SimpleParser
 from parsers.compound_parser import CompoundParser
 from parsers.parser import ParserException
 
@@ -40,13 +39,6 @@ class DSLAnalizerTest(unittest.TestCase):
 	    self.assertEquals("return [x for x in PyQuery(html).query('.mi-clase')]", DSLAnalizer().parse(Line("all < class:'mi-clase' => innerHTML", 0)), "pido todos los elementos que tiene clase = mi-clase")
 	    self.assertEquals("return [x for x in PyQuery(html).query('.mi-clase') + PyQuery(html).query('.otra-clase')]", DSLAnalizer().parse(Line("all < class:['mi-clase','otra-clase'] => innerHTML", 0)), "pido todos los elementos con clase = mi-clase o clase = otra-clase")
 
-    def test_linea_compuesta_a_simple_parser_debe_fallar(self):
-        
-        try:
-            self.assertEquals("Should raise ParserException", SimpleParser(Line("first < tag:'p' class:'mi-clase' => innerHTML", 0)).can_parse())
-        except ParserException, e:
-            self.assertEquals(e.args[0], "Can't Parse, only Simple admitted, Line 0")
-            
     def test_linea_compuesta_a_compound_parser_debe_pasar(self):
         
         self.assertEquals("", CompoundParser(Line("first < tag:'p' class:'mi-clase' => innerHTML", 0)).can_parse())
