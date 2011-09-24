@@ -3,10 +3,20 @@
 """
 
 import unittest
+from tests.crawler_test import CrawlerTest
+from tests.utils_test import UtilsTest 
+from tests.commands_test import CommandsTest
+
+def load_tests(tests):
+    
+    suite = unittest.TestSuite()
+    for test_class in tests:
+        tests = unittest.defaultTestLoader.loadTestsFromTestCase(test_class)
+        suite.addTests(tests)
+    return suite
 
 if __name__ == "__main__":
     
-    tests = ["tests.crawler_test", "tests.utils_test"]
-    
-    test_suite = unittest.defaultTestLoader.loadTestsFromNames(tests)
-    unittest.TextTestRunner(verbosity=2).run(test_suite)
+    tests = (CrawlerTest, UtilsTest, CommandsTest)
+    suite = load_tests(tests)
+    unittest.TextTestRunner(verbosity=2).run(suite)
