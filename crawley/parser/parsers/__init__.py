@@ -1,3 +1,3 @@
-from simple_parser import SimpleParser
+from compound_parser import CompoundParser
 
-parsers = [SimpleParser]
+parsers = [CompoundParser]
