@@ -2,6 +2,7 @@ import unittest
 from analizer import DSLAnalizer
 from parsers.crawley_dsl import Line
 from parsers.simple_parser import SimpleParser
+from parsers.parser import ParserException
 
 class DSLAnalizerTest(unittest.TestCase):
 
@@ -40,7 +41,10 @@ class DSLAnalizerTest(unittest.TestCase):
 
     def test_linea_compuesta_a_simple_parser_debe_fallar(self):
         
-            self.assertEquals("Can't Parse, only Simple admitted, Line 0", SimpleParser(Line("first < tag:'p' class:'mi-clase' => innerHTML", 0)).can_parse())
+        try:
+            self.assertEquals("Should raise ParserException", SimpleParser(Line("first < tag:'p' class:'mi-clase' => innerHTML", 0)).can_parse())
+        except ParserException, e:
+            self.assertEquals(e.message, "Can't Parse, only Simple admitted, Line 0")
             
 if __name__ == "__main__":
     
