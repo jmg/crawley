@@ -45,7 +45,7 @@ class DSLAnalizerTest(unittest.TestCase):
         try:
             self.assertEquals("Should raise ParserException", SimpleParser(Line("first < tag:'p' class:'mi-clase' => innerHTML", 0)).can_parse())
         except ParserException, e:
-            self.assertEquals(e.message, "Can't Parse, only Simple admitted, Line 0")
+            self.assertEquals(e.args[0], "Can't Parse, only Simple admitted, Line 0")
             
     def test_linea_compuesta_a_compound_parser_debe_pasar(self):
         
