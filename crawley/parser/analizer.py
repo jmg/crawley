@@ -24,8 +24,10 @@ class AnalizerException(Exception):
     
     def __init__(self, message):
         
-        Exception(self, message)
+        self.message = message
+        self.args = (self.message,)
         
     def __init__(self, message, inner_exception):
         
-        Exception(self, message, inner_exception)
+        self.message = message
+        self.args = (self.message, inner_exception)
