@@ -1,8 +1,12 @@
 from crawley.persistance import Entity, UrlEntity, Field, Unicode
 
 class %(project_name)sUrls(UrlEntity):    
+    
+    #this entity is intended for save urls
     pass
     
 class %(project_name)sClass(Entity):
     
-    %(project_name)s_attribute = Field(Unicode(255))
+    #add your table fields here
+    #example: text = Field(Unicode(255))
+    pass
