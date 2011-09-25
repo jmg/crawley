@@ -5,7 +5,7 @@ import urllib
 
 class CrawlerTest(unittest.TestCase):
     
-    def test_requests(self):
+    def _test_requests(self):
         """
             Very basic and foolish test
         """
@@ -13,7 +13,7 @@ class CrawlerTest(unittest.TestCase):
         response = testCrawler._get_response("https://github.com/jmg")
         self.assertEqual(response.getcode(), 200)        
     
-    def test_cookies(self):
+    def _test_cookies(self):
         """
             This test asserts if the login was successful and the second request retrieves 
             a facebook's page that requires to be logged in.
