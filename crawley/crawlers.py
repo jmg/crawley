@@ -3,9 +3,11 @@ from eventlet import GreenPool
 
 from re import compile, match
 
-from http.request import Request, CookieHandler
+from http.request import Request
+from http.cookies import CookieHandler
 from persistance import session
 from extractors import XPathExtractor
+from exceptions import AuthenticationError
 from utils import url_matcher
 
 
@@ -120,13 +122,16 @@ class BaseCrawler(object):
         """
             If target pages are hidden behind a login then
             pass through it first.
+            
+            self.login can be None or a tuple containing 
+            (login_url, params_dict)
         """
         if self.login is None:
             return        
             
         url, data = self.login
         if self._get_response(url, data) is None:
-            raise Exception("Can't login")
+            raise AuthenticationError("Can't login")
     
     def start(self):
         """

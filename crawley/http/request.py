@@ -1,8 +1,10 @@
 import urllib2
-import cookielib
-import os
+from cookies import CookieHandler
 
 class Request(object):
+    """
+        Custom request object 
+    """
 
     USER_AGENT = "Mozilla/5.0 (X11; Linux i686) AppleWebKit/534.30 (KHTML, like Gecko) Ubuntu/10.10 Chromium/12.0.742.112 Chrome/12.0.742.112 Safari/534.30"
     
@@ -20,6 +22,10 @@ class Request(object):
         self.cookie_handler = cookie_handler
     
     def get_response(self, data=None):
+        """
+            Returns the response object from a request.
+            Cookies are supported via a CookieHandler object
+        """
         
         request = urllib2.Request(self.url, data, self.headers)        
         opener = urllib2.build_opener(self.cookie_handler)
@@ -27,27 +33,4 @@ class Request(object):
         response = opener.open(request)
         self.cookie_handler.save_cookies()
         
-        return response        
-        
-    
-class CookieHandler(urllib2.HTTPCookieProcessor):
-    
-    COOKIE_FILE = "/tmp/crawley-cookie"
-    
-    def __init__(self, *args, **kwargs):
-                
-        self._jar = cookielib.LWPCookieJar(self.COOKIE_FILE)
-        self.load_cookies()
-        
-        urllib2.HTTPCookieProcessor.__init__(self, self._jar, *args, **kwargs)        
-    
-    def load_cookies(self):
-        
-        if os.path.isfile(self.COOKIE_FILE):
-            self._jar.load()
-    
-    def save_cookies(self):
-        
-        if self._jar is not None:
-            self._jar.save() 
-    
+        return response
