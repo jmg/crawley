@@ -72,6 +72,7 @@ class BaseCrawler(object):
             if [pattern for pattern in Scraper.matching_urls if url_matcher(url, pattern)]: 
                 html = self.extractor.get_object(data)
                 Scraper().scrape(html)
+                session.commit()
     
     def _save_urls(self, url, new_url):
         """
