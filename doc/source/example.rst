@@ -109,7 +109,7 @@ with --settings=path/to/your/settings.py)
 And we are done. Check the results in your database!
 
 Downloading the Code
-===========
+====================
 
 The entire code is located in the crawley's official repository at:
 
