@@ -18,18 +18,35 @@ class BaseCrawler(object):
         the scrapers and the max crawling depth.
     """
     
-    start_urls = []
+    start_urls = []    
+    """ A list containing the start urls for the crawler"""
+    
     allowed_urls = []
-    scrapers = []
+    """ A list of urls allowed for crawl"""
+    
+    scrapers = []    
+    """ A list of scrapers classes"""
+    
     max_depth = -1
-    extractor = XPathExtractor
+    """ The maximun crawling recursive level"""
+    
+    extractor = None
+    """ The extractor class. Default is XPathExtractor"""
+    
     login = None
+    """ The login data. A tuple of (url, login_dict).
+        Example: ("www.mypage.com/login", {'user' : 'myuser', 'pass', 'mypassword'})
+    """
     
     _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
     
-    def __init__(self, storage=None):
+    def __init__(self, storage=None):        
         
         self.storage = storage
+        
+        if self.extractor is None:
+            self.extractor = XPathExtractor
+        
         self.extractor = self.extractor()
         self.cookie_hanlder = CookieHandler()
             
@@ -136,7 +153,7 @@ class BaseCrawler(object):
     
     def start(self):
         """
-            Crawler's entry point 
+            Crawler's run method
         """
         self._login()
         

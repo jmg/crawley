@@ -9,17 +9,20 @@ class pypiScraper(BaseScraper):
     matching_urls = ["%"]
     
     def scrape(self, html):
-                
-        #parse the html and populate your model's tables here.
+                        
+        #getting the html table
         table = html.xpath("/html/body/div[5]/div/div/div[3]/table")[0]
         
+        #for rows 1 to n-1
         for tr in table[1:-1]:
-                                       
+                        
+            #obtaining the searched html inside the rows
             td_updated = tr[0]
             td_package = tr[1]
             package_link = td_package[0]
             td_description = tr[2]
             
+            #storing data in Packages table
             Package(updated=td_updated.text, package=package_link.text, description=td_description.text)
 
 
