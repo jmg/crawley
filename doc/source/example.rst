@@ -1,15 +1,15 @@
 Pypi Example
 -----------------------------------
 
-Let make a scraper that extract data from the pypi's front page
+Lets make a scraper that extract data from the pypi's front page
 
 http://pypi.python.org/pypi
 
 Supose that we want extract data from the packages table and
 store it in a database.
 
-Firts at all we need to start a new crawley's project. In this case
-it will be called pypi_packages
+First at all we need to start a new crawley's project. In this case
+it will be called pypi_packages.
 
 .. code-block:: bash
     
@@ -19,7 +19,7 @@ it will be called pypi_packages
 Then, inside the pypi_packages there will a settings.py file and another 
 directory containing a crawlers.py file and a models.py file.
 
-Let start defining the models.py wich is very simple in this case.
+Lets start defining the models.py wich is very simple in this case.
 
 Models
 ===========

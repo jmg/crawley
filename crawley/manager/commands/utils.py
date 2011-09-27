@@ -25,7 +25,7 @@ def import_user_module(module):
         sys.exit(1)  
 
 
-def inspect_module(module, klass, get_first=False):    
+def inspect_module(module, klass, identity=False, get_first=False):    
     """
         Inspect a user module looking for [klass] type objects
     """
@@ -33,7 +33,7 @@ def inspect_module(module, klass, get_first=False):
     objects = []
     for k,v in module.__dict__.iteritems():
         try:
-            if issubclass(v, klass) and v is not klass:
+            if issubclass(v, klass) and (identity or v is not klass):
                 if get_first:
                     return v
                 objects.append(v)
