@@ -20,6 +20,6 @@ class SyncDbCommand(ProjectCommand):
         elixir.metadata.bind.echo = self.settings.SHOW_DEBUG_INFO
         
         models = import_user_module("models")
-        Entities = inspect_module(models, Entity)
+        Entities = inspect_module(models, Entity)        
         setup(Entities)
         

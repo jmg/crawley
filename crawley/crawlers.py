@@ -36,13 +36,14 @@ class BaseCrawler(object):
     login = None
     """ The login data. A tuple of (url, login_dict).
         Example: ("www.mypage.com/login", {'user' : 'myuser', 'pass', 'mypassword'})
-    """
+    """        
     
     _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
     
-    def __init__(self, storage=None):        
+    def __init__(self, storage=None, debug=False):        
         
         self.storage = storage
+        self.debug = debug
         
         if self.extractor is None:
             self.extractor = XPathExtractor
@@ -84,12 +85,21 @@ class BaseCrawler(object):
             If so, gets the extractor object and delegate the scraping task
             to the scraper Object
         """
+        urls = []
         
         for Scraper in self.scrapers:
+            
             if [pattern for pattern in Scraper.matching_urls if url_matcher(url, pattern)]: 
+            
                 html = self.extractor.get_object(data)
-                Scraper().scrape(html)
+                
+                scraper = Scraper()
+                scraper.scrape(html)                
                 session.commit()
+                
+                urls.extend(scraper.get_urls(html))
+                
+        return urls
     
     def _save_urls(self, url, new_url):
         """
@@ -97,6 +107,7 @@ class BaseCrawler(object):
         """
         
         if self.storage is not None:
+            
             self.storage(parent=url, href=new_url)
             session.commit()
     
@@ -122,15 +133,20 @@ class BaseCrawler(object):
         if not self._validate_url(url):
             return
         
+        if self.debug:
+            print "crawling -> %s" % url
+        
         data = self._get_data(url);
         if data is None:
             return
             
-        self._manage_scrapers(url, data)
+        urls = self._manage_scrapers(url, data)
+        if not urls:
+            urls = self.get_urls(data)
             
-        for new_url in self.get_urls(data):
+        for new_url in urls:
                                     
-            self._save_urls(url, new_url)            
+            self._save_urls(url, new_url)     
             
             if depth_level >= self.max_depth:
                 return
