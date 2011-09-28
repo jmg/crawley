@@ -3,7 +3,8 @@ from elixir import Field, Unicode, UnicodeText
 
 session = elixir.session
 
-class Entity(elixir.EntityBase):                
+
+class Entity(elixir.EntityBase):
     """
         Base Entity
         
@@ -13,7 +14,7 @@ class Entity(elixir.EntityBase):
     __metaclass__ = elixir.EntityMeta
 
 
-class UrlEntity(elixir.EntityBase):
+class UrlEntity(Entity):
     """
         Entity intended to save urls
     """
@@ -22,7 +23,7 @@ class UrlEntity(elixir.EntityBase):
     parent = Field(Unicode(255))
     
     __metaclass__ = elixir.EntityMeta
-
+    
 
 def setup(entities):
     """

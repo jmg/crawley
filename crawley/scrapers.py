@@ -12,6 +12,12 @@ class BaseScraper(object):
     matching_urls = []
     
     def scrape(self, html):        
-        """ This method should be overrided in user scrapers """
+        """ This method should be overwritten by user's scrapers """
         
         pass
+        
+    def get_urls(self, html):
+        """ Returns a list of urls in the current html """
+        
+        return []
+        

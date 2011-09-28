@@ -3,9 +3,11 @@ from eventlet import GreenPool
 
 from re import compile, match
 
-from http.request import Request, CookieHandler
+from http.request import Request
+from http.cookies import CookieHandler
 from persistance import session
 from extractors import XPathExtractor
+from exceptions import AuthenticationError
 from utils import url_matcher
 
 
@@ -16,18 +18,36 @@ class BaseCrawler(object):
         the scrapers and the max crawling depth.
     """
     
-    start_urls = []
+    start_urls = []    
+    """ A list containing the start urls for the crawler"""
+    
     allowed_urls = []
-    scrapers = []
+    """ A list of urls allowed for crawl"""
+    
+    scrapers = []    
+    """ A list of scrapers classes"""
+    
     max_depth = -1
-    extractor = XPathExtractor
+    """ The maximun crawling recursive level"""
+    
+    extractor = None
+    """ The extractor class. Default is XPathExtractor"""
+    
     login = None
+    """ The login data. A tuple of (url, login_dict).
+        Example: ("www.mypage.com/login", {'user' : 'myuser', 'pass', 'mypassword'})
+    """        
     
     _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
     
-    def __init__(self, storage=None):
+    def __init__(self, storage=None, debug=False):        
         
         self.storage = storage
+        self.debug = debug
+        
+        if self.extractor is None:
+            self.extractor = XPathExtractor
+        
         self.extractor = self.extractor()
         self.cookie_hanlder = CookieHandler()
             
@@ -65,11 +85,21 @@ class BaseCrawler(object):
             If so, gets the extractor object and delegate the scraping task
             to the scraper Object
         """
+        urls = []
         
         for Scraper in self.scrapers:
+            
             if [pattern for pattern in Scraper.matching_urls if url_matcher(url, pattern)]: 
+            
                 html = self.extractor.get_object(data)
-                Scraper().scrape(html)
+                
+                scraper = Scraper()
+                scraper.scrape(html)                
+                session.commit()
+                
+                urls.extend(scraper.get_urls(html))
+                
+        return urls
     
     def _save_urls(self, url, new_url):
         """
@@ -77,6 +107,7 @@ class BaseCrawler(object):
         """
         
         if self.storage is not None:
+            
             self.storage(parent=url, href=new_url)
             session.commit()
     
@@ -102,15 +133,20 @@ class BaseCrawler(object):
         if not self._validate_url(url):
             return
         
+        if self.debug:
+            print "crawling -> %s" % url
+        
         data = self._get_data(url);
         if data is None:
             return
             
-        self._manage_scrapers(url, data)
+        urls = self._manage_scrapers(url, data)
+        if not urls:
+            urls = self.get_urls(data)
             
-        for new_url in self.get_urls(data):
+        for new_url in urls:
                                     
-            self._save_urls(url, new_url)            
+            self._save_urls(url, new_url)     
             
             if depth_level >= self.max_depth:
                 return
@@ -120,17 +156,20 @@ class BaseCrawler(object):
         """
             If target pages are hidden behind a login then
             pass through it first.
+            
+            self.login can be None or a tuple containing 
+            (login_url, params_dict)
         """
         if self.login is None:
             return        
             
         url, data = self.login
         if self._get_response(url, data) is None:
-            raise Exception("Can't login")
+            raise AuthenticationError("Can't login")
     
     def start(self):
         """
-            Crawler's entry point 
+            Crawler's run method
         """
         self._login()
         
