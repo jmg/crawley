@@ -1,16 +1,29 @@
-------------------------------------------------------------------
-
 # Pythonic Crawling / Scraping Framework Built on Eventlet 
 
 ------------------------------------------------------------------
 
-### To install crawley run:
+### Features
+
+* High Speed WebCrawler built on Eventlet.
+* Supports databases engines like Postgre, Mysql, Oracle, Sqlite.
+* Command line tools.
+* Extract data using your favourite tool. XPath or Pyquery (A Jquery-like library for python).
+* Cookie Handlers.
+* Very easy to use (see the example).
+
+### Documentation
+
+http://packages.python.org/crawley/
+
+------------------------------------------------------------------
+
+### To install crawley run
 
 ```bash
 ~$ python setup.py install
 ```
 
-or from pip:
+### or from pip
 
 ```bash
 ~$ pip install crawley
@@ -18,7 +31,7 @@ or from pip:
 
 ------------------------------------------------------------------
 
-### To start a new project run:
+### To start a new project run
 
 ```bash
 ~$ crawley startproject [project_name]
@@ -90,7 +103,7 @@ class pypiCrawler(BaseCrawler):
 
 ------------------------------------------------------------------
 
-### Finally, just run the crawler:
+### Finally, just run the crawler
 
 ```bash
 ~$ crawley run
