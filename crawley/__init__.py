@@ -3,4 +3,4 @@ import crawlers
 import persistance
 import scrapers
 
-__version__ = "0.0.4"
+from .version import __version__
