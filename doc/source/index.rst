@@ -27,3 +27,4 @@ Table of Contents
 
     example
     reference
+    more_examples
