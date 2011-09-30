@@ -34,7 +34,7 @@ class BaseCrawler(object):
     """ The extractor class. Default is XPathExtractor"""
     
     post_urls = []
-    """ The Post data for an url. A tuple of (url, data_dict) 
+    """ The Post data for the urls. A List of tuples containing (url, data_dict) 
         Example: ("http://www.mypage.com/post_url", {'page' : '1', 'color' : 'blue'})
     """
     
