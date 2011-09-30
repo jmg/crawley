@@ -1,5 +1,5 @@
 """
-    Scrapers.py
+    User's Scrapers Base
 """
 
 class BaseScraper(object):
@@ -12,12 +12,12 @@ class BaseScraper(object):
     matching_urls = []
     
     def scrape(self, html):        
-        """ This method should be overwritten by user's scrapers """
+        """ Define the data you want to extract here """
         
         pass
         
     def get_urls(self, html):
-        """ Returns a list of urls in the current html """
+        """ Return a list of urls in the current html """
         
         return []
         
