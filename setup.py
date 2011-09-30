@@ -1,11 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from setuptools import setup, find_packages
-from version import __version__
 
 setup(
     name="crawley",
-    version=__version__,
+    version="0.0.5",
     description="Pythonic Scraping / Crawling FrameWork built On Eventlet",
     author="Crawley Developers",
     author_email = "jmg.utn@gmail.com",
