@@ -33,9 +33,14 @@ class BaseCrawler(object):
     extractor = None
     """ The extractor class. Default is XPathExtractor"""
     
+    post_urls = []
+    """ The Post data for an url. A tuple of (url, data_dict) 
+        Example: ("http://www.mypage.com/post_url", {'page' : '1', 'color' : 'blue'})
+    """
+    
     login = None
     """ The login data. A tuple of (url, login_dict).
-        Example: ("www.mypage.com/login", {'user' : 'myuser', 'pass', 'mypassword'})
+        Example: ("http://www.mypage.com/login", {'user' : 'myuser', 'pass', 'mypassword'})
     """        
     
     _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
@@ -74,6 +79,10 @@ class BaseCrawler(object):
                 data: if this param is present it makes a POST.
         """
         
+        for pattern, post_data in self.post_urls:
+            if url_matcher(url, pattern):
+                data = post_data                
+            
         response = self._get_response(url, data)
         if response is None or response.getcode() != 200:            
             return None
