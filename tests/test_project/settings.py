@@ -5,11 +5,11 @@ PATH = os.path.dirname(os.path.abspath(__file__))
 PROJECT_NAME = "test_project"
 PROJECT_ROOT = os.path.join(PATH, PROJECT_NAME)
 
-DATABASE_ENGINE = 'postgres'     #TODO: test elixir with several DB engines
-DATABASE_NAME = 'postgres'  
-DATABASE_USER = 'postgres'             # Not used with sqlite3.
-DATABASE_PASSWORD = '1234'         # Not used with sqlite3.
-DATABASE_HOST = 'localhost'             # Set to empty string for localhost. Not used with sqlite3.
-DATABASE_PORT = '5432'     
+DATABASE_ENGINE = 'sqlite'     #TODO: test elixir with several DB engines
+DATABASE_NAME = 'test_project'  
+DATABASE_USER = ''             # Not used with sqlite3.
+DATABASE_PASSWORD = ''         # Not used with sqlite3.
+DATABASE_HOST = ''             
+DATABASE_PORT = ''     
 
 SHOW_DEBUG_INFO = True
