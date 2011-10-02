@@ -26,5 +26,7 @@ Table of Contents
 .. toctree::
 
     example
+    settings
     reference
     more_examples
+    
