@@ -10,5 +10,5 @@ def interprete(dsl):
     analzier = DSLAnalizer(dsl)
     sentenses = analzier.parse_sentences()
     
-    scrapers = Interpreter.compile(sentenses)
+    scrapers = Interpreter(sentenses).compile()
     return scrapers
