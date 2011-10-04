@@ -13,9 +13,12 @@ class SyncDbCommand(ProjectCommand):
         Reads the models.py user's file and generate a database from it.        
     """
     
-    name = "syncdb"
+    name = "syncdb"        
         
     def execute(self):
+        
+        if not hasattr(self.settings, "DATABASE_ENGINE") or not self.settings.DATABASE_ENGINE:
+            return
         
         connector = connectors[self.settings.DATABASE_ENGINE](self.settings)
         
