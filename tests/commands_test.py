@@ -32,7 +32,7 @@ class CommandsTest(unittest.TestCase):
         self.assertTrue(os.path.exists("test_project.sqlite"))
         os.remove("test_project.sqlite")
         
-    def _test_run(self):
+    def test_run(self):
         
         cmd = RunCommand(self.settings_args)
         cmd.checked_execute()
