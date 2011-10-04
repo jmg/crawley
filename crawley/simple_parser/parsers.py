@@ -22,7 +22,7 @@ class DSLAnalizer(object):
     
     def _get_lines(self):
         
-        return enumerate(utils.replace_escape_char(self.dsl, "\\\n").split("\n"))
+        return enumerate(utils.replace_escape_char(self.dsl).split("\n"))
         
     def parse_sentences(self):
         
