@@ -7,6 +7,7 @@ from tests.crawler_test import CrawlerTest
 from tests.utils_test import UtilsTest 
 from tests.commands_test import CommandsTest
 from tests.simple_parser_test import ParserTest
+from tests.persistance_test import PersistanceTest
 
 def load_tests(tests):
     
@@ -18,6 +19,6 @@ def load_tests(tests):
 
 if __name__ == "__main__":
     
-    tests = (CrawlerTest, UtilsTest, CommandsTest, ParserTest)
+    tests = (PersistanceTest, )
     suite = load_tests(tests)
     unittest.TextTestRunner(verbosity=2).run(suite)
