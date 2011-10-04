@@ -49,13 +49,13 @@ class DSLLine(object):
         
     def parse(self):
         
-        try:
-            field, selector = self.content.split(self.SEPARATOR)
-        except ValueError, e:
-            if 'many' in e.msg:
-                raise SyntaxError(self.number, "More than one '->' token found in the same line")
-            elif 'more' in e.msg:
-                raise SyntaxError(self.number, "Missed separator token '->'")
+        sentence = self.content.split(self.SEPARATOR)
         
+        if len(sentence) > 2:
+            raise SyntaxError(self.number, "More than one '->' token found in the same line")
+        elif len(sentence) < 2:            
+            raise SyntaxError(self.number, "Missed separator token '->'")
+        
+        field, selector = sentence        
         return field.strip(), selector.strip()
         
