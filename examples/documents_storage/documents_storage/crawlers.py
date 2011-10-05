@@ -22,8 +22,12 @@ class pypiScraper(BaseScraper):
             package_link = td_package[0]
             td_description = tr[2]
             
-            #storing data in Packages table
-            Package(updated=td_updated.text, package=package_link.text, description=td_description.text)                            
+            data = {"updated" : td_updated.text, "package" : package_link.text, "description" : td_description.text }
+            
+            #storing data in the xml document
+            XMLPackage(**data)
+            #storing data in the json document
+            JSONPackage(**data)
             
 
 class pypiCrawler(BaseCrawler):
