@@ -5,7 +5,6 @@ from re import compile, match
 
 from http.request import Request
 from http.cookies import CookieHandler
-from persistance import session
 from extractors import XPathExtractor
 from exceptions import AuthenticationError
 from utils import url_matcher
@@ -45,9 +44,10 @@ class BaseCrawler(object):
     
     _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
     
-    def __init__(self, storage=None, debug=False):        
+    def __init__(self, storage=None, session=None, debug=False):        
         
         self.storage = storage
+        self.session = session
         self.debug = debug
         
         if self.extractor is None:
@@ -104,7 +104,7 @@ class BaseCrawler(object):
                 
                 scraper = Scraper()
                 scraper.scrape(html)                
-                session.commit()
+                self.session.commit()
                 
                 urls.extend(scraper.get_urls(html))
                 
@@ -118,7 +118,7 @@ class BaseCrawler(object):
         if self.storage is not None:
             
             self.storage(parent=url, href=new_url)
-            session.commit()
+            self.session.commit()
     
     def _validate_url(self, url):
         """

@@ -1,7 +1,6 @@
 from crawley.crawlers import BaseCrawler
 from crawley.scrapers import BaseScraper
 from crawley.extractors import XPathExtractor
-from crawley.persistance.documents import session
 from models import *
 
 class pypiScraper(BaseScraper):
@@ -24,8 +23,7 @@ class pypiScraper(BaseScraper):
             td_description = tr[2]
             
             #storing data in Packages table
-            Package(updated=td_updated.text, package=package_link.text, description=td_description.text)                
-            session.commit()
+            Package(updated=td_updated.text, package=package_link.text, description=td_description.text)                            
             
 
 class pypiCrawler(BaseCrawler):
