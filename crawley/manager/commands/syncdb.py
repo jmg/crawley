@@ -1,8 +1,10 @@
 import elixir
 from crawley.persistance import Entity, setup
 from crawley.persistance.connectors import connectors
+
 from crawley.persistance.databases import session as database_session
-from crawley.persistance.documents import session as document_session
+from crawley.persistance.documents import json_session, JSONDocument
+from crawley.persistance.documents import xml_session, XMLDocument
 
 from command import ProjectCommand
 from utils import inspect_module, import_user_module
@@ -19,17 +21,25 @@ class SyncDbCommand(ProjectCommand):
         
     def execute(self):
         
-        if not hasattr(self.settings, "DATABASE_ENGINE") or not self.settings.DATABASE_ENGINE:
-            self.session = document_session
+        self.sessions = []
+        
+        models = import_user_module("models")
+        
+        if inspect_module(models, JSONDocument, get_first=True) is not None:
+            self.sessions.append(json_session)
+            
+        if inspect_module(models, XMLDocument, get_first=True) is not None:
+            self.sessions.append(xml_session)
+        
+        if not hasattr(self.settings, "DATABASE_ENGINE") or not self.settings.DATABASE_ENGINE:                    
             return
         
-        self.session = database_session
+        self.sessions.append(database_session)
         connector = connectors[self.settings.DATABASE_ENGINE](self.settings)
         
         elixir.metadata.bind = connector.get_connection_string()
-        elixir.metadata.bind.echo = self.settings.SHOW_DEBUG_INFO
+        elixir.metadata.bind.echo = self.settings.SHOW_DEBUG_INFO        
         
-        models = import_user_module("models")
         Entities = inspect_module(models, Entity)
         setup(Entities)
         

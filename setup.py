@@ -10,7 +10,7 @@ setup(
     author_email = "jmg.utn@gmail.com",
     license = "GPL v3",
     keywords = "Scraping Crawling Framework Python",    
-    packages=['crawley', 'crawley.manager', 'crawley.persistance', 'crawley.manager.commands', 'crawley.http', 'crawley.conf.project_template'],
+    packages=['crawley', 'crawley.manager', 'crawley.persistance', 'crawley.persistance.documents', 'crawley.manager.commands', 'crawley.http', 'crawley.conf.project_template'],
     scripts=['crawley/bin/crawley'],
     install_requires=[
         'lxml',
