@@ -44,10 +44,14 @@ class BaseCrawler(object):
     
     _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
     
-    def __init__(self, storage=None, session=None, debug=False):        
+    def __init__(self, storage=None, sessions=None, debug=False):        
         
         self.storage = storage
-        self.session = session
+        
+        if sessions is None:
+            sessions = [] 
+            
+        self.sessions = sessions
         self.debug = debug
         
         if self.extractor is None:
@@ -104,11 +108,19 @@ class BaseCrawler(object):
                 
                 scraper = Scraper()
                 scraper.scrape(html)                
-                self.session.commit()
+                self._commit()
                 
                 urls.extend(scraper.get_urls(html))
                 
         return urls
+        
+    def _commit(self):
+        """
+            Makes a Commit in all sessions
+        """
+        
+        for session in self.sessions:
+            session.commit()
     
     def _save_urls(self, url, new_url):
         """
@@ -118,7 +130,7 @@ class BaseCrawler(object):
         if self.storage is not None:
             
             self.storage(parent=url, href=new_url)
-            self.session.commit()
+            self._commit()
     
     def _validate_url(self, url):
         """
