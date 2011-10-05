@@ -33,28 +33,29 @@ class Interpreter(object):
             Returns a dictionary containing methods and attributes for the
             scraper class.
         """
+        sentences = self.sentences
         
         def scrape(self, html):
             """
                 Generated scrape method
-            """
+            """            
             
-            for field, selector in self.sentences:
+            for field, selector in sentences:
                 
-                node = html.xpath(selector)[0]
-                field = _get_text_recursive(node)            
+                nodes = html.xpath(selector)
+                if nodes:
+                    field = _get_text_recursive(nodes[0])
             
         def _get_text_recursive(node):
             """
                 Extract the text from html nodes recursively.
-            """
-                
-            if node.text is not None:
+            """            
+            if node.text is not None and node.text.strip():
                 return node.text
                 
             childs = node.getchildren()
                     
             for child in childs:
-                return _get_text_recursive(child)
-                
-        return { "scrape" : scrape, "sentences" : self.sentences }
+                return _get_text_recursive(child)            
+                                        
+        return { "scrape" : scrape }
