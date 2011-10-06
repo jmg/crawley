@@ -1,3 +1,6 @@
+"""
+    Crawley exceptions
+"""
 
 class AuthenticationError(Exception):
     """
@@ -7,3 +10,15 @@ class AuthenticationError(Exception):
     def __init__(self, *args, **kwargs):
         
         Exception.__init__(self, *args, **kwargs)
+
+
+class TemplateSyntaxError(Exception):
+    """
+        DSL Template sintax error
+    """
+        
+    def __init__(self, line=0, *args, **kwargs):
+    
+        self.line = line
+        Exception.__init__(self, *args, **kwargs)
+        

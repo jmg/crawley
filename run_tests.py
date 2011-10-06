@@ -19,6 +19,6 @@ def load_tests(tests):
 
 if __name__ == "__main__":
     
-    tests = (PersistanceTest, CrawlerTest, UtilsTest, CommandsTest)
+    tests = (ParserTest,)
     suite = load_tests(tests)
     unittest.TextTestRunner(verbosity=2).run(suite)
