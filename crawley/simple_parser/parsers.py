@@ -1,15 +1,4 @@
-import utils
-
-class SyntaxError(Exception):
-    """
-        DSL sintax errors
-    """
-        
-    def __init__(self, line=0, *args, **kwargs):
-    
-        self.line = line
-        Exception.__init__(self, *args, **kwargs)
-        
+from crawley.exceptions import TemplateSyntaxError
 
 class DSLAnalizer(object):
     """
@@ -22,7 +11,8 @@ class DSLAnalizer(object):
     
     def _get_lines(self):
         
-        return enumerate(utils.replace_escape_char(self.dsl).split("\n"))
+        lines = enumerate(self.dsl.split("\n"))        
+        return lines
         
     def parse_sentences(self):
         
@@ -49,12 +39,12 @@ class DSLLine(object):
         
     def parse(self):
         
-        sentence = self.content.split(self.SEPARATOR)
+        sentence = self.content.split(self.SEPARATOR)        
         
         if len(sentence) > 2:
-            raise SyntaxError(self.number, "More than one '->' token found in the same line")
+            raise TemplateSyntaxError(self.number, "More than one '->' token found in the same line")
         elif len(sentence) < 2:            
-            raise SyntaxError(self.number, "Missed separator token '->'")
+            raise TemplateSyntaxError(self.number, "Missed separator token '->'")
         
         field, selector = sentence        
         return field.strip(), selector.strip()
