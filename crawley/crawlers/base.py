@@ -2,11 +2,11 @@ from eventlet import GreenPool
 
 from re import compile as re_compile
 
-from http.request import Request
-from http.cookies import CookieHandler
-from extractors import XPathExtractor
-from exceptions import AuthenticationError
-from utils import url_matcher
+from crawley.http.request import Request
+from crawley.http.cookies import CookieHandler
+from crawley.extractors import XPathExtractor
+from crawley.exceptions import AuthenticationError
+from crawley.utils import url_matcher
 
 
 class BaseCrawler(object):
