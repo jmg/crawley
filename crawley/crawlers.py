@@ -1,7 +1,6 @@
-from eventlet.green import urllib2
 from eventlet import GreenPool
 
-from re import compile, match
+from re import compile as re_compile
 
 from http.request import Request
 from http.cookies import CookieHandler
@@ -42,9 +41,20 @@ class BaseCrawler(object):
         Example: ("http://www.mypage.com/login", {'user' : 'myuser', 'pass', 'mypassword'})
     """        
     
-    _url_regex = compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
+    _url_regex = re_compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
     
     def __init__(self, storage=None, sessions=None, debug=False):        
+        """
+            Initializes the crawler
+            
+            params:
+            
+                storages: A list of entities
+                
+                sessions: Database or Documents persistant sessions
+                
+                debug: indicates if the crawler logs to stdout debug info
+        """
         
         self.storage = storage
         
@@ -59,6 +69,8 @@ class BaseCrawler(object):
         
         self.extractor = self.extractor()
         self.cookie_hanlder = CookieHandler()
+        
+        self.pool = GreenPool() 
             
     def _get_response(self, url, data=None):
         """
@@ -72,7 +84,7 @@ class BaseCrawler(object):
                     
         try:            
             return request.get_response(data)
-        except Exception, e:
+        except Exception:
             return None
     
     def _get_data(self, url, data=None):
@@ -100,13 +112,13 @@ class BaseCrawler(object):
         """
         urls = []
         
-        for Scraper in self.scrapers:
+        for scraper_class in self.scrapers:
             
-            if [pattern for pattern in Scraper.matching_urls if url_matcher(url, pattern)]: 
+            if [pattern for pattern in scraper_class.matching_urls if url_matcher(url, pattern)]: 
             
                 html = self.extractor.get_object(data)
                 
-                scraper = Scraper()
+                scraper = scraper_class()
                 scraper.scrape(html)                
                 self._commit()
                 
@@ -157,7 +169,7 @@ class BaseCrawler(object):
         if self.debug:
             print "crawling -> %s" % url
         
-        data = self._get_data(url);
+        data = self._get_data(url)
         if data is None:
             return
             
@@ -192,9 +204,7 @@ class BaseCrawler(object):
         """
             Crawler's run method
         """
-        self._login()
-        
-        self.pool = GreenPool()        
+        self._login()                
         
         for url in self.start_urls:
             self.pool.spawn_n(self._fetch, url, depth_level=0)
