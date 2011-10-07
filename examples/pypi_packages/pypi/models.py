@@ -1,4 +1,4 @@
-from crawley.persistance import Entity, UrlEntity, Field, Unicode
+from crawley.persistance import Entity, Field, Unicode
 
 class Package(Entity):
     

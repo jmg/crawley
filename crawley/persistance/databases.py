@@ -32,4 +32,3 @@ def setup(entities):
     
     elixir.setup_entities(entities)
     elixir.create_all()
-
