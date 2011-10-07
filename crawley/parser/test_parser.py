@@ -2,6 +2,7 @@ import unittest
 from analizer import DSLAnalizer
 from parsers.crawley_dsl import Line
 from parsers.compound_parser import CompoundParser
+from parsers.recursive_parser import RecursiveParser
 from parsers.parser import ParserException
 
 class DSLAnalizerTest(unittest.TestCase):
@@ -44,6 +45,9 @@ class DSLAnalizerTest(unittest.TestCase):
         self.assertEquals("", CompoundParser(Line("first < tag:'p' class:'mi-clase' => innerHTML", 0)).can_parse())
         self.assertEquals("return [x for x in PyQuery(html).query('p')[0] if x in PyQuery(html).query('.mi-clase')[0]]", CompoundParser(Line("first < tag:'p' class:'mi-clase' => innerHTML", 0)).parse())
         
+    def test_linea_recursiva_a_parser_recursivo_debe_pasar(self):
+        
+        self.assertEquals("", RecursiveParser(Line("first < tag:'div' => innerHTML -> first < tag:'a' => innerHTML", 0)).can_parse())
         
 if __name__ == "__main__":
     
