@@ -22,6 +22,7 @@ class RunCommand(ProjectCommand):
                 
         syncdb = SyncDbCommand(self.args)
         syncdb.checked_execute()
+        sessions = syncdb.sessions
         
         crawler = import_user_module("crawlers")
         models = import_user_module("models")
@@ -32,7 +33,7 @@ class RunCommand(ProjectCommand):
         pool = GreenPool()    
         for Spider in Spiders:
         
-            spider = Spider(storage=UrlStorage, debug=self.settings.SHOW_DEBUG_INFO)
+            spider = Spider(storage=UrlStorage, sessions=sessions, debug=self.settings.SHOW_DEBUG_INFO)
             pool.spawn_n(spider.start)
             
         pool.waitall() 
