@@ -2,6 +2,10 @@ from parser import Parser, ParserException
 
 class RecursiveParser(Parser):
     
+    def parse(self):
+        
+        pass
+    
     def _can_parse(self):
         
         return self.dsl.is_recursive()

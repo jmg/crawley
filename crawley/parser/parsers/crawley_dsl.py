@@ -28,7 +28,7 @@ class Line(object):
         self.dsl = crawley_line
         self.number = line_number
 
-        action_section, get_section = self.dsl.split(self.QUERY_SEPARATOR)
+        action_section, get_section = self.dsl[:self.dsl.find(self.RECURSION_SEPARATOR)].split(self.QUERY_SEPARATOR)
         action, properties = action_section.lower().split(self.ACTION_SEPARATOR)
 
         self.action = action
