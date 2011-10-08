@@ -3,7 +3,7 @@ from PyQt4 import QtGui
 from command import BaseCommand
 from utils import exit_with_error
 
-from crawley.simple_web_browser.browser import Browser
+from crawley.web_browser.browser import Browser
 
 class BrowserCommand(BaseCommand):
     """
