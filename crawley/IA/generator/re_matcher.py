@@ -5,7 +5,10 @@ def _get_factor(html, html2, function):
         Generic method for getting the factor of resemblance
     """
 
-    return len([x for x in function(html) if x in function(html2)]) / min(len(function(html). function(html2))
+    elements_html_1 = function(html)
+    elements_html_2 = function(html2)
+
+    return len([x for x in elements_html_1 if x in elements_html_2]) / float(max(len(elements_html_1), len(elements_html_2)))
 
 def _re_all_single_elem_match(html, elem):
     """
