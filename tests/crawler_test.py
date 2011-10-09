@@ -20,8 +20,8 @@ class CrawlerTest(unittest.TestCase):
         """
             Very basic and foolish test
         """
-        response = self.crawler._get_response("https://github.com/jmg")
-        self.assertEqual(response.getcode(), 200)        
+        response = self.crawler._get_response("https://github.com/jmg")        
+        self.assertTrue(response)
     
     def test_cookies(self):
         """
@@ -33,7 +33,7 @@ class CrawlerTest(unittest.TestCase):
         response = self.crawler._get_response("https://www.facebook.com/login.php?login_attempt=1", data)
         response = self.crawler._get_response("http://www.facebook.com/profile.php?id=1271577281")
         with open("url.html", 'w') as f:
-            f.write(response.read())
+            f.write(response)
     
     def test_post(self):
         
