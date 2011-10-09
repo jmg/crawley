@@ -17,12 +17,12 @@ class SyncDbCommand(ProjectCommand):
         Reads the models.py user's file and generate a database from it.        
     """
     
-    name = "syncdb"        
+    name = "syncdb"
         
     def execute(self):
         
         self.sessions = []
-        
+                
         models = import_user_module("models")
         
         if inspect_module(models, JSONDocument, get_first=True) is not None:
@@ -42,4 +42,3 @@ class SyncDbCommand(ProjectCommand):
         
         Entities = inspect_module(models, Entity)
         setup(Entities)
-        

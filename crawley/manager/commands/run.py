@@ -19,8 +19,8 @@ class RunCommand(ProjectCommand):
     name = "run"
 
     def execute(self):
-
-        syncdb = SyncDbCommand(self.args)
+        
+        syncdb = SyncDbCommand(args=self.args, settings=self.settings)
         syncdb.checked_execute()
         sessions = syncdb.sessions
 
