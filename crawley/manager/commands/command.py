@@ -53,14 +53,23 @@ class ProjectCommand(BaseCommand):
     """
         A command that requires a settings.py file to run
     """
+    
+    def __init__(self, args=None, settings=None):
+        
+        self.settings = settings
+        BaseCommand.__init__(self, args)
 
     def checked_execute(self):
         """
             Checks for settings before run
         """
-
-        self._add_options()
-        self.settings = self._check_for_settings()
+        
+        if self.settings is None:
+            self._add_options()
+            self.settings = self._check_for_settings()
+        else:
+            sys.path.insert(0, self.settings.PROJECT_ROOT)
+            
         BaseCommand.checked_execute(self)
 
     def _add_options(self):
@@ -82,11 +91,11 @@ class ProjectCommand(BaseCommand):
 
             settings_dir, file_name = os.path.split(options.settings)
 
-            sys.path.append(settings_dir)
+            sys.path.insert(0, settings_dir)
             settings_file = os.path.splitext(file_name)[0]
 
         else:
-            sys.path.append(os.getcwd())
+            sys.path.insert(0, os.getcwd())
             settings_file = "settings"
 
         settings = import_user_module(settings_file)
