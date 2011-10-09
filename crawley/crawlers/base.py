@@ -2,7 +2,7 @@ from eventlet import GreenPool
 
 from re import compile as re_compile
 
-from crawley.http.request import Request
+from crawley.http.request import RequestManager
 from crawley.http.cookies import CookieHandler
 from crawley.extractors import XPathExtractor
 from crawley.exceptions import AuthenticationError
@@ -71,6 +71,7 @@ class BaseCrawler(object):
         self.cookie_hanlder = CookieHandler()
         
         self.pool = GreenPool() 
+        self.request_manager = RequestManager()
             
     def _get_response(self, url, data=None):
         """
@@ -79,13 +80,8 @@ class BaseCrawler(object):
             params:
                 data: if this param is present it makes a POST.
         """
-                
-        request = Request(url, cookie_handler=self.cookie_hanlder)
-                    
-        try:            
-            return request.get_response(data)
-        except Exception:
-            return None
+        
+        return self.request_manager.make_request(url, self.cookie_hanlder, data)        
     
     def _get_data(self, url, data=None):
         """
@@ -99,10 +95,7 @@ class BaseCrawler(object):
             if url_matcher(url, pattern):
                 data = post_data                
             
-        response = self._get_response(url, data)
-        if response is None or response.getcode() != 200:            
-            return None
-        return response.read()
+        return self._get_response(url, data)
     
     def _manage_scrapers(self, url, data):
         """

@@ -1,5 +1,82 @@
 import urllib2
+import time
+import random
 from cookies import CookieHandler
+
+class HostCounterDict(dict):
+    """
+        A counter dictionary for requested hosts 
+    """
+    
+    def increase(self, key):
+        
+        if key in self:
+            self[key] += 1
+        else:
+            self[key] = 1
+            
+    def count(self, key):
+        
+        if not key in self:
+            self[key] = 0
+            
+        return self[key]
+        
+
+class RequestManager(object):
+    """
+        Manages the http requests 
+    """
+    
+    MAX_TRIES = 3
+    
+    def __init__(self):
+        
+        self.host_counter = HostCounterDict()
+        
+    def make_request(self, url, cookie_handler=None, data=None):
+        """
+            Acumulates a counter with the requests per host and 
+            then make a Delayed Request
+        """
+        
+        host = urllib2.urlparse.urlparse(url).netloc
+                   
+        count = self.host_counter.count(host)
+        request = DelayedRequest(url, cookie_handler, delay=300, desviation=100)        
+        
+        return self.get_response(request, host)
+                
+    def get_response(self, request, host):
+        """
+            Tries [MAX_TRIES] times to get the response and
+            return the response data
+        """
+        
+        response = None
+        tries = 0
+        
+        while tries < self.MAX_TRIES and response is None:
+            
+            try:
+                response = self._get_response(request, host)
+            except:
+                pass
+                
+            tries += 1
+            
+        if response is None or response.getcode() != 200:
+            return None
+            
+        return response.read()
+    
+    def _get_response(self, request, host):
+    
+        response = request.get_response()
+        self.host_counter.increase(host)
+            
+        return response
+        
 
 class Request(object):
     """
@@ -34,3 +111,24 @@ class Request(object):
         self.cookie_handler.save_cookies()
         
         return response
+
+
+class DelayedRequest(Request):
+    """
+        A delayed custom Request 
+    """
+    
+    def __init__(self, url, cookie_handler=None, delay=0, desviation=0):
+        
+        self.delay = delay + random.randint(-desviation, desviation)
+        Request.__init__(self, url, cookie_handler)
+    
+    def get_response(self, data=None):
+        """
+            Waits [delay] miliseconds and then make the request
+        """
+        
+        mili_seconds = self.delay / 1000
+        time.sleep(mili_seconds)
+        
+        return Request.get_response(self, data)
