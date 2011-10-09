@@ -23,14 +23,18 @@ class StartProjectCommand(BaseCommand):
                         
         project_name = self.args[0]
         
-        if not os.path.exists(project_name):
-            shutil.os.mkdir(project_name)        
-                    
+        self._create_module(project_name)                    
         generate_template("settings", project_name, project_name)
         
         crawler_dir = os.path.join(project_name, project_name)
-        if not os.path.exists(crawler_dir):
-            shutil.os.mkdir(crawler_dir)
-            
+        self._create_module(crawler_dir)
+                
         generate_template("models", project_name, crawler_dir)
         generate_template("crawlers", project_name, crawler_dir)
+
+    def _create_module(self, name):
+        
+        if not os.path.exists(name):            
+            shutil.os.mkdir(name)
+            f = open(os.path.join(name, "__init__.py"), "w")            
+            f.close()
