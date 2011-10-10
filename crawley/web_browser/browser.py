@@ -1,6 +1,9 @@
+import urllib2
+
 from PyQt4 import QtCore, QtWebKit
 from baseBrowser import BaseBrowser, BaseBrowserTab
 from config import DEFAULTS
+from crawley.crawlers.fast import FastCrawler
 
 class Browser(BaseBrowser):
     """
@@ -67,6 +70,7 @@ class BrowserTab(BaseBrowserTab):
     def __init__(self, parent):
         BaseBrowserTab.__init__(self, parent)
         self.url = None
+        self.crawler = FastCrawler()
 
     def load_bar(self, value):
         """ Load the progress bar """
@@ -84,9 +88,16 @@ class BrowserTab(BaseBrowserTab):
         self.pg_load.show()
 
     def load_url(self, url):
-        """ Load the requested url in the webwiew """
-        self.url = url
-        self.html.load(QtCore.QUrl(url))
+        """ Load the requested url in the webwiew """        
+        
+        self.url = str(url)
+        html = self.crawler._get_data(self.url)
+        
+        with open("template.py", "r") as f:
+            template = f.read()
+            html = template % html
+                
+        self.html.setHtml(html)
         self.html.show()
 
     def url_changed(self, url):
@@ -94,6 +105,7 @@ class BrowserTab(BaseBrowserTab):
         if self.is_current():
             self.parent.tb_url.setText(self.url)
         self.url = url.toString()
+        #self.load_url(self.url)
 
     def back(self):
         """" Back to previous page """

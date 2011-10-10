@@ -2,6 +2,8 @@ import os.path
 from PyQt4 import QtGui, QtWebKit
 from PyQt4.uic import loadUi
 
+PATH = os.path.dirname(os.path.abspath(__file__))
+
 class BrowserGUI(QtGui.QMainWindow):
     """
         The Graphical user interface of the browser
@@ -10,7 +12,7 @@ class BrowserGUI(QtGui.QMainWindow):
     def __init__(self):
 
         QtGui.QMainWindow.__init__(self)
-        self.ui = loadUi(os.path.join(os.getcwd(), "crawley", "web_browser", "GUI", "main.ui"))
+        self.ui = loadUi(os.path.join(PATH, "main.ui"))
 
         self.ui.bt_back.setIcon(QtGui.QIcon().fromTheme("go-previous"))
         self.ui.bt_ahead.setIcon(QtGui.QIcon().fromTheme("go-next"))

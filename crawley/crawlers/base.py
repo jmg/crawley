@@ -2,7 +2,7 @@ from eventlet import GreenPool
 
 from re import compile as re_compile
 
-from crawley.http.request import RequestManager
+from crawley.http.managers import RequestManager
 from crawley.http.cookies import CookieHandler
 from crawley.extractors import XPathExtractor
 from crawley.exceptions import AuthenticationError
