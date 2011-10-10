@@ -74,6 +74,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="bt_generate">
+           <property name="text">
+            <string>Generate Template</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QLineEdit" name="tb_url">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
