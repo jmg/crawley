@@ -1,5 +1,5 @@
 from PyQt4 import QtCore, QtWebKit, QtGui
-from GUI.main import BrowserGUI, BrowserTabGUI
+from GUI import BrowserGUI, BrowserTabGUI
 
 actions = {"Alt+Left" : QtWebKit.QWebPage.Back, "Alt+Right" : QtWebKit.QWebPage.Forward, "F5" : QtWebKit.QWebPage.Reload }
 
