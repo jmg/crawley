@@ -1,9 +1,11 @@
-import urllib2
+import os
 
 from PyQt4 import QtCore, QtWebKit
 from baseBrowser import BaseBrowser, BaseBrowserTab
 from config import DEFAULTS
 from crawley.crawlers.fast import FastCrawler
+
+PATH = os.path.dirname(os.path.abspath(__file__))
 
 class Browser(BaseBrowser):
     """
@@ -46,7 +48,7 @@ class Browser(BaseBrowser):
         """ Triggered when the user close a tab """
         self.ui.tab_pages.widget(index).deleteLater()
         if self.ui.tab_pages.count() <= 1:
-            self.ui.close()
+            self.close()
 
     def tab_changed(self, index):
         """ Triggered when the current tab changes """
@@ -56,7 +58,7 @@ class Browser(BaseBrowser):
 
     def show(self):
         """ Show the main windows """
-        self.ui.show()
+        BaseBrowser.show(self)
 
 
 class BrowserTab(BaseBrowserTab):
@@ -93,7 +95,7 @@ class BrowserTab(BaseBrowserTab):
         self.url = str(url)
         html = self.crawler._get_data(self.url)
         
-        with open("template.py", "r") as f:
+        with open(os.path.join(PATH, "template.py"), "r") as f:
             template = f.read()
             html = template % html
                 
