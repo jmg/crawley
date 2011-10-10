@@ -2,8 +2,9 @@ import os
 
 from PyQt4 import QtCore, QtWebKit
 from baseBrowser import BaseBrowser, BaseBrowserTab
-from config import DEFAULTS
+from config import DEFAULTS, SELECTED_CLASS
 from crawley.crawlers.fast import FastCrawler
+from crawley.extractors import PyQueryExtractor
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -97,7 +98,7 @@ class BrowserTab(BaseBrowserTab):
         
         with open(os.path.join(PATH, "template.py"), "r") as f:
             template = f.read()
-            html = template % html
+            html = template % {'content': html, 'css_class': SELECTED_CLASS }
                 
         self.html.setHtml(html)
         self.html.show()
@@ -123,6 +124,26 @@ class BrowserTab(BaseBrowserTab):
         """" Reload page """
         if self.is_current():
             self.html.reload()
+            
+    def generate(self):
+        """" generate template """
+        if self.is_current():
+            main_frame = self.html.page().mainFrame()
+            content = unicode(main_frame.toHtml())
+            
+            f = open("new.html", "w")
+            f.write(content.encode('utf-8'))
+            
+            obj = PyQueryExtractor().get_object(content)
+            elements = obj(".%s" % SELECTED_CLASS)
+            print [(e.text, e.get("id")) for e in elements]
+            
+            elements_xpath = [e.get("id") for e in elements]
+            
+            with open("template.dsl", "w") as f:
+                for i, e in enumerate(elements_xpath):
+                    sentence = "%s -> %s \r\n"
+                    f.write(sentence % ("my_field_%s" % i, e))
 
     def is_current(self):
         """" Return true if this is the current active tab """

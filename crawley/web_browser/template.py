@@ -17,7 +17,7 @@ function get_XPath(elt)
 }
 </script>
 <style>
-.crawley-framework-selected {
+.%(css_class)s {
     background-color : #FFA500;
 }
 </style>
@@ -26,22 +26,24 @@ function get_XPath(elt)
 <body>
 
 <div>
-%s
+%(content)s
 </div>
 
 </body>
 
 <script type="text/javascript">
-$('body').click(function(event) {
-    
-    var name = get_XPath(event.target)    
-    className = "crawley-framework-selected"
+$('body').click(function(event) 
+{    
+    xpath = get_XPath(event.target)    
+    className = "%(css_class)s"
     element = $(event.target)    
     
     if (element.hasClass(className))
         element.removeClass(className)
     else
-        element.addClass(className)        
+        element.addClass(className)
+    
+    element[0].id = xpath    
 });
 </script>
 
