@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'base.ui'
 #
-# Created: Mon Oct 10 13:49:58 2011
+# Created: Mon Oct 10 14:34:22 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -49,6 +49,9 @@ class Ui_MainWindow(object):
         self.bt_reload.setText("")
         self.bt_reload.setObjectName("bt_reload")
         self.horizontalLayout_5.addWidget(self.bt_reload)
+        self.bt_generate = QtGui.QPushButton(self.frame)
+        self.bt_generate.setObjectName("bt_generate")
+        self.horizontalLayout_5.addWidget(self.bt_generate)
         self.tb_url = QtGui.QLineEdit(self.frame)
         sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
@@ -73,4 +76,5 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "SimpleWebBrowser", None, QtGui.QApplication.UnicodeUTF8))
+        self.bt_generate.setText(QtGui.QApplication.translate("MainWindow", "Generate Template", None, QtGui.QApplication.UnicodeUTF8))
 

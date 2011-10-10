@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>937</width>
+    <width>859</width>
     <height>623</height>
    </rect>
   </property>
@@ -85,6 +85,13 @@
            </property>
            <property name="shortcut">
             <string>F5</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="bt_generate">
+           <property name="text">
+            <string>Generate Template</string>
            </property>
           </widget>
          </item>
