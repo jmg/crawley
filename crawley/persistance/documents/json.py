@@ -1,5 +1,5 @@
 import simplejson
-from document import DocumentMeta
+from meta import DocumentMeta
 
 json_objects = []
 file_name = "data.json"

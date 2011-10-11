@@ -26,10 +26,10 @@ class SyncDbCommand(ProjectCommand):
                 
         models = import_user_module("models")
                 
-        if search_class(JSONDocument, documents_entities):
+        if search_class(JSONDocument, documents_entities) is not None:
             self.sessions.append(json_session)
             
-        if search_class(XMLDocument, documents_entities):
+        if search_class(XMLDocument, documents_entities) is not None:
             self.sessions.append(xml_session)
         
         if not hasattr(self.settings, "DATABASE_ENGINE") or not self.settings.DATABASE_ENGINE:                    
