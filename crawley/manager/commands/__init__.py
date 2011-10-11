@@ -2,7 +2,7 @@
     All Crawley's commands must be here
 """
 
-from utils import exit_with_error
+from crawley.manager.utils import exit_with_error
 
 from run import RunCommand
 from shell import ShellCommand

@@ -2,7 +2,7 @@ import sys
 import os
 from optparse import OptionParser
 
-from utils import exit_with_error, import_user_module
+from crawley.manager.utils import exit_with_error, import_user_module
 
 
 class BaseCommand(object):

@@ -1,15 +1,6 @@
-import elixir
-from crawley.persistance import Entity, UrlEntity, setup
-from crawley.persistance.connectors import connectors
-
-from crawley.persistance.databases import session as database_session
-from crawley.persistance.documents import json_session, JSONDocument
-from crawley.persistance.documents import xml_session, XMLDocument
-from crawley.persistance.documents import documents_entities
-
+from crawley.manager.projects import CodeProject, TemplateProject
+from crawley.manager.utils import import_user_module
 from command import ProjectCommand
-from utils import import_user_module, search_class
-
 
 class SyncDbCommand(ProjectCommand):
     """
@@ -22,23 +13,13 @@ class SyncDbCommand(ProjectCommand):
         
     def execute(self):
         
-        self.sessions = []
-                
-        models = import_user_module("models")
-                
-        if search_class(JSONDocument, documents_entities) is not None:
-            self.sessions.append(json_session)
+        if import_user_module("template", exit=False) is not None:
             
-        if search_class(XMLDocument, documents_entities) is not None:
-            self.sessions.append(xml_session)
+            project = TemplateProject()
+            
+        elif import_user_module("models", exit=False) is not None:
+            
+            project = CodeProject()
         
-        if not hasattr(self.settings, "DATABASE_ENGINE") or not self.settings.DATABASE_ENGINE:                    
-            return
+        project.syncdb(self)
         
-        self.sessions.append(database_session)
-        connector = connectors[self.settings.DATABASE_ENGINE](self.settings)
-        
-        elixir.metadata.bind = connector.get_connection_string()
-        elixir.metadata.bind.echo = self.settings.SHOW_DEBUG_INFO
-                
-        setup(elixir.entities)

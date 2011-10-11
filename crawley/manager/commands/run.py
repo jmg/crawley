@@ -6,7 +6,7 @@ from crawley.persistance import UrlEntity
 
 from command import ProjectCommand
 from syncdb import SyncDbCommand
-from utils import import_user_module, search_class
+from crawley.manager.utils import import_user_module, search_class
 
 
 class RunCommand(ProjectCommand):
