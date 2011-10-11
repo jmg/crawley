@@ -1,11 +1,12 @@
+from elixir import entities
 from eventlet import GreenPool
 
-from crawley.crawlers import BaseCrawler
+from crawley.crawlers import user_crawlers, BaseCrawler, FastCrawler
 from crawley.persistance import Entity, UrlEntity, setup
 
 from command import ProjectCommand
 from syncdb import SyncDbCommand
-from utils import inspect_module, import_user_module
+from utils import import_user_module
 
 
 class RunCommand(ProjectCommand):
@@ -26,14 +27,20 @@ class RunCommand(ProjectCommand):
 
         crawler = import_user_module("crawlers")
         models = import_user_module("models")
-
-        Spiders = inspect_module(crawler, BaseCrawler)
-        UrlStorage = inspect_module(models, UrlEntity, identity=True, get_first=True)
-
+        
+        url_storage = None
+                
+        for entity in entities:
+            if isinstance(entity, UrlEntity):
+                url_storage = entity
+        
         pool = GreenPool()
-        for Spider in Spiders:
+        
+        crawlers = [c for c in user_crawlers if not c is BaseCrawler and c is not FastCrawler]
+                
+        for crawler_class in crawlers:
 
-            spider = Spider(storage=UrlStorage, sessions=sessions, debug=self.settings.SHOW_DEBUG_INFO)
+            spider = crawler_class(storage=url_storage, sessions=sessions, debug=self.settings.SHOW_DEBUG_INFO)
             pool.spawn_n(spider.start)
 
         pool.waitall()

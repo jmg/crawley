@@ -6,7 +6,7 @@ session = elixir.session
 
 class Entity(elixir.EntityBase):
     """
-        Base Entity
+        Base Entity.
         
         Every Crawley's Entity must Inherit from this class
     """
@@ -14,7 +14,7 @@ class Entity(elixir.EntityBase):
     __metaclass__ = elixir.EntityMeta
 
 
-class UrlEntity(Entity):
+class UrlEntity(elixir.EntityBase):
     """
         Entity intended to save urls
     """

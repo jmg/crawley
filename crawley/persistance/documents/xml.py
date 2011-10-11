@@ -1,4 +1,5 @@
 from lxml import etree
+from document import DocumentMeta
 
 root = etree.Element('root')
 file_name = "data.xml"
@@ -7,6 +8,8 @@ class XMLDocument(object):
     """
         XML Document base class
     """
+    
+    __metaclass__ = DocumentMeta
     
     def __init__(self, **kwargs):
         
