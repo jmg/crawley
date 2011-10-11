@@ -1,7 +1,7 @@
 import sys
 
 from commands import commands
-from commands.utils import exit_with_error
+from utils import exit_with_error
 
 def run_cmd(args):
     """

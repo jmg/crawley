@@ -131,19 +131,18 @@ class BrowserTab(BaseBrowserTab):
             main_frame = self.html.page().mainFrame()
             content = unicode(main_frame.toHtml())
             
-            f = open("new.html", "w")
-            f.write(content.encode('utf-8'))
-            
             obj = PyQueryExtractor().get_object(content)
-            elements = obj(".%s" % SELECTED_CLASS)
-            print [(e.text, e.get("id")) for e in elements]
+            elements = obj(".%s" % SELECTED_CLASS)        
             
             elements_xpath = [e.get("id") for e in elements]
             
-            with open("template.dsl", "w") as f:
-                for i, e in enumerate(elements_xpath):
-                    sentence = "%s -> %s \r\n"
-                    f.write(sentence % ("my_field_%s" % i, e))
+            stream = ""                        
+            for i, e in enumerate(elements_xpath):                
+                stream += "%s -> %s <br/>" % ("my_field_%s" % i, e)                            
+            
+            self.html.setHtml(stream)
+            self.html.show()
+            
 
     def is_current(self):
         """" Return true if this is the current active tab """
