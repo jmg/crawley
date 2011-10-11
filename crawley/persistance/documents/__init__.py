@@ -1,5 +1,5 @@
 from json import JSONDocument, session as json_session
 from xml import XMLDocument, session as xml_session
-from document import documents_entities
+from meta import documents_entities
 
         

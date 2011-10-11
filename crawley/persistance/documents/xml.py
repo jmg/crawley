@@ -1,5 +1,5 @@
 from lxml import etree
-from document import DocumentMeta
+from meta import DocumentMeta
 
 root = etree.Element('root')
 file_name = "data.xml"
