@@ -1,4 +1,5 @@
 import simplejson
+from document import DocumentMeta
 
 json_objects = []
 file_name = "data.json"
@@ -7,6 +8,8 @@ class JSONDocument(object):
     """
         JSON Document base class
     """
+    
+    __metaclass__ = DocumentMeta
     
     def __init__(self, **kwargs):
                 

@@ -23,25 +23,15 @@ def import_user_module(module):
     except ImportError:
         print "%s.py file not found!" % module
         sys.exit(1)  
-
-
-def inspect_module(module, klass, identity=False, get_first=False):    
-    """
-        Inspect a user module looking for [klass] type objects
-    """
+   
         
-    objects = []
-    for k,v in module.__dict__.iteritems():
-        try:
-            if issubclass(v, klass) and (identity or v is not klass):
-                if get_first:
-                    return v
-                objects.append(v)
-        except:
-            pass
-    if get_first:
-        return None
-    return objects
+def search_class(klass, entities_list):
+    
+    for doc in entities_list:
+        if issubclass(doc, klass) and not doc is klass:
+            return True
+    
+    return False        
 
 
 def generate_template(tm_name, project_name, output_dir):
