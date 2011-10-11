@@ -2,6 +2,7 @@ from eventlet import GreenPool
 
 from re import compile as re_compile
 
+from crawley.config import CRAWLEY_ROOT_DIR
 from crawley.http.managers import RequestManager
 from crawley.http.cookies import CookieHandler
 from crawley.extractors import XPathExtractor
@@ -11,11 +12,17 @@ from crawley.utils import url_matcher
 user_crawlers = []
 
 class CrawlerMeta(type):
+    """
+        This metaclass adds the user's crawlers to a list
+        used by the CLI commands.
+        Abstract base crawlers won't be added.
+    """    
     
     def __init__(cls, name, bases, dct):
         
-        user_crawlers.append(cls)
-        super(CrawlerMeta, cls).__init__(name, bases, dct)
+        if not hasattr(cls, '__module__' ) or not cls.__module__.startswith(CRAWLEY_ROOT_DIR):
+            user_crawlers.append(cls)
+        super(CrawlerMeta, cls).__init__(name, bases, dct)    
         
 
 class BaseCrawler(object):

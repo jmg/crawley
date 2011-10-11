@@ -3,8 +3,11 @@
 *.egg-info
 *.project
 *.pydevproject
+*.json
+*.xml
 build
 dist
 docs/build
 env
 url.html
+

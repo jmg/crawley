@@ -25,13 +25,11 @@ def import_user_module(module):
         sys.exit(1)  
    
         
-def search_class(klass, entities_list):
+def search_class(base_klass, entities_list, return_class=False):
     
-    for doc in entities_list:
-        if issubclass(doc, klass) and not doc is klass:
-            return True
-    
-    return False        
+    for klass in entities_list:
+        if issubclass(klass, base_klass) and not klass is base_klass:            
+            return klass        
 
 
 def generate_template(tm_name, project_name, output_dir):
