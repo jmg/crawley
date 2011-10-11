@@ -38,7 +38,7 @@ class SyncDbCommand(ProjectCommand):
         connector = connectors[self.settings.DATABASE_ENGINE](self.settings)
         
         elixir.metadata.bind = connector.get_connection_string()
-        elixir.metadata.bind.echo = self.settings.SHOW_DEBUG_INFO        
+        elixir.metadata.bind.echo = self.settings.SHOW_DEBUG_INFO
         
         Entities = inspect_module(models, Entity)
         setup(Entities)

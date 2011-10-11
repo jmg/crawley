@@ -9,16 +9,11 @@ class DSLAnalizer(object):
         
         self.dsl = dsl
     
-    def _get_lines(self):
-        
-        lines = enumerate(self.dsl.split("\n"))        
-        return lines
-        
     def parse_sentences(self):
         
         sentences = []
         
-        for n, line in self._get_lines():
+        for n, line in enumerate(self.dsl.split("\n")):
             line = DSLLine(line, n)
             sentences.append(line.parse())
             
@@ -35,7 +30,7 @@ class DSLLine(object):
     def __init__(self, content, number):
                 
         self.number = number
-        self.content = content        
+        self.content = content
         
     def parse(self):
         
