@@ -1,7 +1,7 @@
 """
     Database connectors for elixir
 """
-from crawley.manager.commands.utils import exit_with_error
+from crawley.manager.utils import exit_with_error
 
 class Connector(object):
     """

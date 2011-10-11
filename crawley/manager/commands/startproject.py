@@ -1,8 +1,7 @@
-import shutil
-import os.path
+from optparse import OptionParser
 
 from command import BaseCommand
-from utils import generate_template
+from crawley.manager.projects import project_types, CodeProject
 
 
 class StartProjectCommand(BaseCommand):
@@ -19,22 +18,18 @@ class StartProjectCommand(BaseCommand):
                 
         return [(len(self.args) >= 1, "No given project name")]
 
-    def execute(self):
-                        
-        project_name = self.args[0]
+    def execute(self):                                
         
-        self._create_module(project_name)                    
-        generate_template("settings", project_name, project_name)
+        self.parser = OptionParser()
+        self.parser.add_option("-t", "--type", help="Type can be 'code' or 'template'")
         
-        crawler_dir = os.path.join(project_name, project_name)
-        self._create_module(crawler_dir)
-                
-        generate_template("models", project_name, crawler_dir)
-        generate_template("crawlers", project_name, crawler_dir)
-
-    def _create_module(self, name):
+        (options, args) = self.parser.parse_args(self.args)
         
-        if not os.path.exists(name):            
-            shutil.os.mkdir(name)
-            f = open(os.path.join(name, "__init__.py"), "w")            
-            f.close()
+        if options.type is None:
+            options.type = CodeProject.name
+            project_name = self.args[0]
+        else:
+            project_name = self.args[2]
+        
+        project = project_types[options.type]()
+        project.set_up(project_name)
