@@ -8,6 +8,15 @@ from crawley.extractors import XPathExtractor
 from crawley.exceptions import AuthenticationError
 from crawley.utils import url_matcher
 
+user_crawlers = []
+
+class CrawlerMeta(type):
+    
+    def __init__(cls, name, bases, dct):
+        
+        user_crawlers.append(cls)
+        super(CrawlerMeta, cls).__init__(name, bases, dct)
+        
 
 class BaseCrawler(object):
     """
@@ -15,6 +24,8 @@ class BaseCrawler(object):
         override some methods and define the start_urls list,
         the scrapers and the max crawling depth.
     """
+    
+    __metaclass__ = CrawlerMeta
     
     start_urls = []    
     """ A list containing the start urls for the crawler"""
