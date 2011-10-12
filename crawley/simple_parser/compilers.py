@@ -88,7 +88,7 @@ class Interpreter(object):
             for child in childs:
                 return _get_text_recursive(child)            
                                         
-        return { "scrape" : scrape }
+        return { "scrape" : scrape, "matching_urls" : "%" }
 
 
 
@@ -104,11 +104,11 @@ class CrawlerCompiler(object):
         attrs_dict = {}
         attrs_dict["scrapers"] = []
         
-        for scraper in scrapers:
+        for scraper in self.scrapers:
             attrs_dict["scrapers"].append(scraper)
             
-        attrs_dict["max_depth"] = config.max_depth
-        attrs_dict["start_urls"] = config.start_urls
+        attrs_dict["max_depth"] = self.config.max_depth
+        attrs_dict["start_urls"] = self.config.start_urls
         
         return type("GeneratedCrawler", (BaseCrawler, ), attrs_dict)
         
