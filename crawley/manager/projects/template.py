@@ -2,7 +2,8 @@ import os.path
 
 from crawley.manager.utils import generate_template
 from crawley.simple_parser import interprete
-from crawley.simple_parser.compilers import CrawlerCompiler 
+from crawley.simple_parser.compilers import CrawlerCompiler
+from crawley.persistance import session
 
 from base import BaseProject
 from crawley.manager.utils import generate_template, import_user_module
@@ -22,13 +23,16 @@ class TemplateProject(BaseProject):
     def syncdb(self, syncb_command):
         
         with open(os.path.join(syncb_command.settings.PROJECT_ROOT, "template.crw"), "r") as f:
-            template = f.read()
-                    
-        config = import_user_module("config")
+            template = f.read()                        
+                            
         syncb_command.scraper_class = interprete(template, "name", syncb_command.settings)                
         
     def run(self, run_command):
         
+        config = import_user_module("config")                
+        
         crawler_class = CrawlerCompiler(config, [run_command.syncdb.scraper_class]).compile()
-        crawler_class().start()
+        
+        crawler = crawler_class(sessions=[session], debug=run_command.settings.SHOW_DEBUG_INFO)
+        crawler.start()
         
