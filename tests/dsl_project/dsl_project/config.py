@@ -2,4 +2,4 @@
 
 start_urls = ["http://www.python.org/"]
 
-max_depth = 1
+max_depth = 0
