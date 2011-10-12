@@ -124,10 +124,10 @@ class ProjectCommand(BaseCommand):
             or dsl templates based project]
         """
         
-        if import_user_module("template", exit=False) is not None:            
+        if import_user_module("config", exit=False) is not None:            
             self.project_type = TemplateProject()
             
-        elif import_user_module("crawlers", exit=False) is not None:            
+        elif import_user_module("models", exit=False) is not None:            
             self.project_type = CodeProject()
             
         else:

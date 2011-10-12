@@ -14,8 +14,11 @@ class DSLAnalizer(object):
         sentences = []
         
         for n, line in enumerate(self.dsl.split("\n")):
-            line = DSLLine(line, n)
-            sentences.append(line.parse())
+            
+            if line:
+                            
+                line = DSLLine(line, n)
+                sentences.append(line.parse())
             
         return sentences
 
