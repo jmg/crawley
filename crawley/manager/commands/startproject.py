@@ -14,22 +14,35 @@ class StartProjectCommand(BaseCommand):
     
     name = "startproject"
     
+    def __init__(self, args=None, project_type=None, project_name=None):
+        
+        self.project_type = project_type
+        self.project_name = project_name
+        
+        BaseCommand.__init__(self, args)
+    
     def validations(self):
                 
         return [(len(self.args) >= 1, "No given project name")]
 
     def execute(self):                                
         
-        self.parser = OptionParser()
-        self.parser.add_option("-t", "--type", help="Type can be 'code' or 'template'")
+        if self.project_type is None:
+            
+            self.parser = OptionParser()
+            self.parser.add_option("-t", "--type", help="Type can be 'code' or 'template'")
+            
+            (options, args) = self.parser.parse_args(self.args)
+            
+            if options.type is None:
+                
+                options.type = CodeProject.name
+                self.project_name = self.args[0]
+                
+            else:
+                self.project_name = self.args[2]
+            
+            self.project_type = options.type
         
-        (options, args) = self.parser.parse_args(self.args)
-        
-        if options.type is None:
-            options.type = CodeProject.name
-            project_name = self.args[0]
-        else:
-            project_name = self.args[2]
-        
-        project = project_types[options.type]()
-        project.set_up(project_name)
+        project = project_types[self.project_type]()
+        project.set_up(self.project_name)

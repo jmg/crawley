@@ -6,6 +6,9 @@ from config import DEFAULTS, SELECTED_CLASS
 from crawley.crawlers.fast import FastCrawler
 from crawley.extractors import PyQueryExtractor
 
+from crawley.manager.commands.startproject import StartProjectCommand 
+from crawley.manager.projects.template import TemplateProject
+
 PATH = os.path.dirname(os.path.abspath(__file__))
 
 class Browser(BaseBrowser):
@@ -128,6 +131,11 @@ class BrowserTab(BaseBrowserTab):
     def generate(self):
         """" generate template """
         if self.is_current():
+            
+            project_name = "new_test"
+            cmd = StartProjectCommand(project_type=TemplateProject.name, project_name=project_name)
+            cmd.execute()
+            
             main_frame = self.html.page().mainFrame()
             content = unicode(main_frame.toHtml())
             
@@ -136,9 +144,12 @@ class BrowserTab(BaseBrowserTab):
             
             elements_xpath = [e.get("id") for e in elements]
             
-            stream = ""                        
+            stream = ""
             for i, e in enumerate(elements_xpath):                
                 stream += "%s -> %s <br/>" % ("my_field_%s" % i, e)                            
+            
+            with open(os.path.join(os.getcwd(), project_name, project_name, "template.crw"), "w") as f:
+                f.write(stream.replace("<br/>", "\r\n"))
             
             self.html.setHtml(stream)
             self.html.show()

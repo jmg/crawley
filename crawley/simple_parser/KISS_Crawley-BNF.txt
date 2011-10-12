@@ -1,4 +1,0 @@
-Very simple BNF
-================
-
-Field -> XpathSelector | CssSelector
