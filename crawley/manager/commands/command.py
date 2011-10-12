@@ -3,6 +3,7 @@ import os
 from optparse import OptionParser
 
 from crawley.manager.utils import exit_with_error, import_user_module
+from crawley.manager.projects import CodeProject, TemplateProject
 
 
 class BaseCommand(object):
@@ -56,7 +57,8 @@ class ProjectCommand(BaseCommand):
     
     def __init__(self, args=None, settings=None):
         
-        self.settings = settings
+        self.settings = settings                
+        
         BaseCommand.__init__(self, args)
 
     def checked_execute(self):
@@ -70,6 +72,7 @@ class ProjectCommand(BaseCommand):
         else:
             sys.path.insert(0, self.settings.PROJECT_ROOT)
             
+        self._check_project_type()
         BaseCommand.checked_execute(self)
 
     def _add_options(self):
@@ -114,3 +117,18 @@ class ProjectCommand(BaseCommand):
                 settings.DATABASE_NAME = "%s.sqlite" % settings.DATABASE_NAME
 
         return settings
+        
+    def _check_project_type(self):
+        """
+            Check for the project's type [code based project 
+            or dsl templates based project]
+        """
+        
+        if import_user_module("template", exit=False) is not None:            
+            self.project_type = TemplateProject()
+            
+        elif import_user_module("crawlers", exit=False) is not None:            
+            self.project_type = CodeProject()
+            
+        else:
+            exit_with_error("Unrecognized crawley project")

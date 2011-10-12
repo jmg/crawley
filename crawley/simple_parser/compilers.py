@@ -1,5 +1,6 @@
 import types
 from crawley.scrapers import BaseScraper
+from crawley.crawlers import BaseCrawler
 from crawley.persistance.databases import Entity, Field, Unicode, setup, session, elixir
 from crawley.persistance.connectors import SqliteConnector
 
@@ -88,3 +89,27 @@ class Interpreter(object):
                 return _get_text_recursive(child)            
                                         
         return { "scrape" : scrape }
+
+
+
+class CrawlerCompiler(object):
+    
+    def __init__(self, config, scrapers):
+        
+        self.scrapers = scrapers
+        self.config = config
+        
+    def compile(self):
+        
+        attrs_dict = {}
+        attrs_dict["scrapers"] = []
+        
+        for scraper in scrapers:
+            attrs_dict["scrapers"].append(scraper)
+            
+        attrs_dict["max_depth"] = config.max_depth
+        attrs_dict["start_urls"] = config.start_urls
+        
+        return type("GeneratedCrawler", (BaseCrawler, ), attrs_dict)
+        
+        

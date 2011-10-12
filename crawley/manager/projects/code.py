@@ -1,18 +1,18 @@
-import elixir
 import os
-
-from crawley.manager.utils import generate_template
+import elixir
+from eventlet import GreenPool
 
 from crawley.persistance import Entity, UrlEntity, setup
 from crawley.persistance.connectors import connectors
 
 from crawley.persistance.databases import session as database_session
-from crawley.persistance.documents import json_session, JSONDocument
-from crawley.persistance.documents import xml_session, XMLDocument
-from crawley.persistance.documents import documents_entities
+from crawley.persistance.documents import json_session, JSONDocument, documents_entities, xml_session, XMLDocument
+from crawley.persistance import UrlEntity
+
+from crawley.manager.utils import import_user_module, search_class, generate_template
+from crawley.crawlers import user_crawlers
 
 from base import BaseProject
-from crawley.manager.utils import import_user_module, search_class
 
 
 class CodeProject(BaseProject):
@@ -21,13 +21,10 @@ class CodeProject(BaseProject):
     
     def set_up(self, project_name):
         
-        BaseProject.set_up(self, project_name)
-        
-        crawler_dir = os.path.join(project_name, project_name)
-        self._create_module(crawler_dir)
+        BaseProject.set_up(self, project_name)                
                 
-        generate_template("models", project_name, crawler_dir)
-        generate_template("crawlers", project_name, crawler_dir)
+        generate_template("models", project_name, self.project_dir)
+        generate_template("crawlers", project_name, self.project_dir)
     
     def syncdb(self, syncb_command):
         
@@ -51,3 +48,19 @@ class CodeProject(BaseProject):
         elixir.metadata.bind.echo = syncb_command.settings.SHOW_DEBUG_INFO
                 
         setup(elixir.entities)
+    
+    def run(self, run_command):
+        
+        crawler = import_user_module("crawlers")
+        models = import_user_module("models")
+                
+        url_storage = search_class(UrlEntity, elixir.entities)
+        
+        pool = GreenPool()                
+                
+        for crawler_class in user_crawlers:
+
+            spider = crawler_class(storage=url_storage, sessions=run_command.syncdb.sessions, debug=run_command.settings.SHOW_DEBUG_INFO)
+            pool.spawn_n(spider.start)
+
+        pool.waitall()
