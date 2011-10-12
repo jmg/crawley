@@ -110,6 +110,4 @@ class CrawlerCompiler(object):
         attrs_dict["max_depth"] = self.config.max_depth
         attrs_dict["start_urls"] = self.config.start_urls
         
-        return type("GeneratedCrawler", (BaseCrawler, ), attrs_dict)
-        
-        
+        return type("GeneratedCrawler", (BaseCrawler, ), attrs_dict)            
