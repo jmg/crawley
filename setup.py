@@ -12,7 +12,7 @@ setup(
     keywords = "Scraping Crawling Framework Python",
     packages=['crawley', 'crawley.crawlers', 'crawley.manager', 'crawley.persistance', 'crawley.persistance.documents', 
               'crawley.manager.commands', 'crawley.manager.projects', 'crawley.http',  'crawley.conf.project_template', 
-              'crawley.web_browser', 'crawley.web_browser.GUI'],
+              'crawley.web_browser', 'crawley.web_browser.GUI', 'crawley.simple_parser'],
     scripts=['crawley/bin/crawley'],
     install_requires=[
         'lxml',
