@@ -4,6 +4,7 @@ import os
 PATH = os.path.dirname(os.path.abspath(__file__))
 TEMPLATES_DIR = os.path.join(PATH, "..", "conf", "project_template")
 
+import pkgutil
 
 class CustomDict(dict):
     
@@ -56,12 +57,12 @@ def generate_template(tm_name, project_name, output_dir):
     
     tm_name, ext = os.path.splitext(tm_name)
     if not ext:
-        ext = ".py"
-
-    with open(os.path.join(TEMPLATES_DIR, "%s%s") % (tm_name, ext), 'r') as f:
+        ext = ".tm"
         
-        template = f.read()
-        data = template % { 'project_name' : project_name }
+    data = pkgutil.get_data('templates', "%s%s" % (tm_name, ext))    
+        
+    template = data
+    data = template % { 'project_name' : project_name }
         
     with open(os.path.join(output_dir, "%s%s" % (tm_name, ext)), 'w') as f:
         f.write(data)
