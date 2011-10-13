@@ -36,7 +36,7 @@ class Interpreter(object):
     def _gen_entities(self):
         """
             Generates an entity class
-        """
+        """                
         
         self.fields = [s[0] for s in self.sentences]
         attrs_dict = dict([(field, Field(Unicode(255))) for field in self.fields])

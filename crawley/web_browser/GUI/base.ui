@@ -81,6 +81,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="bt_run">
+           <property name="text">
+            <string>Run Crawler</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QLineEdit" name="tb_url">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">

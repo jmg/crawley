@@ -7,7 +7,9 @@ from crawley.crawlers.fast import FastCrawler
 from crawley.extractors import PyQueryExtractor
 
 from crawley.manager.commands.startproject import StartProjectCommand 
+from crawley.manager.commands.run import RunCommand 
 from crawley.manager.projects.template import TemplateProject
+
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -150,10 +152,17 @@ class BrowserTab(BaseBrowserTab):
             
             with open(os.path.join(os.getcwd(), project_name, project_name, "template.crw"), "w") as f:
                 f.write(stream.replace("<br/>", "\r\n"))
+                        
+            os.sys.path.insert(0, project_name)
             
             self.html.setHtml(stream)
             self.html.show()
-            
+    
+    def run(self):
+                        
+        import settings
+        cmd = RunCommand(settings=settings)
+        cmd.checked_execute()
 
     def is_current(self):
         """" Return true if this is the current active tab """
