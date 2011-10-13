@@ -20,5 +20,5 @@ setup(
         'elixir',
         'pyquery',
     ],
-    url='https://github.com/jmg/crawley',
+    url='http://crawley-project.com.ar/',
 )
