@@ -71,7 +71,8 @@ class ProjectCommand(BaseCommand):
             self.settings = self._check_for_settings()
         else:
             sys.path.insert(0, self.settings.PROJECT_ROOT)
-            
+        
+        self._check_setttings_errors()
         self._check_project_type()
         BaseCommand.checked_execute(self)
 
@@ -107,16 +108,14 @@ class ProjectCommand(BaseCommand):
         sys.path.append(settings.PROJECT_ROOT)
         return settings
 
-    def _check_setttings_errors(self, settings):
+    def _check_setttings_errors(self):
         """
             Fix errors in settings.py
         """
 
-        if settings.DATABASE_ENGINE == 'sqlite':
-            if not settings.DATABASE_NAME.endswith(".sqlite"):
-                settings.DATABASE_NAME = "%s.sqlite" % settings.DATABASE_NAME
-
-        return settings
+        if self.settings.DATABASE_ENGINE == 'sqlite':
+            if not self.settings.DATABASE_NAME.endswith(".sqlite"):
+                self.settings.DATABASE_NAME = "%s.sqlite" % self.settings.DATABASE_NAME        
         
     def _check_project_type(self):
         """
