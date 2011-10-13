@@ -150,7 +150,7 @@ class BrowserTab(BaseBrowserTab):
             for i, e in enumerate(elements_xpath):                
                 stream += "%s -> %s <br/>" % ("my_field_%s" % i, e)                            
             
-            with open(os.path.join(os.getcwd(), project_name, project_name, "template.crw"), "w") as f:
+            with open(os.path.join(os.getcwd(), project_name, project_name, "template", new_extension='tm'), "w") as f:
                 f.write(stream.replace("<br/>", "\r\n"))
                         
             os.sys.path.insert(0, project_name)

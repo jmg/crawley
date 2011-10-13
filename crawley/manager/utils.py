@@ -2,9 +2,7 @@ import sys
 import os
 
 PATH = os.path.dirname(os.path.abspath(__file__))
-TEMPLATES_DIR = os.path.join(PATH, "..", "conf", "project_template")
-
-import pkgutil
+TEMPLATES_DIR = os.path.join(PATH, "..", "conf", "templates")
 
 class CustomDict(dict):
     
@@ -50,7 +48,7 @@ def search_class(base_klass, entities_list, return_class=False):
             return klass        
 
 
-def generate_template(tm_name, project_name, output_dir):
+def generate_template(tm_name, project_name, output_dir, new_extension=None):
     """
         Generates a project's file from a template 
     """
@@ -59,12 +57,15 @@ def generate_template(tm_name, project_name, output_dir):
     if not ext:
         ext = ".tm"
         
-    data = pkgutil.get_data('templates', "%s%s" % (tm_name, ext))    
+    if new_extension is None:
+        new_extension = '.py'
         
-    template = data
+    with open(os.path.join(TEMPLATES_DIR, "%s%s" % (tm_name, ext)), 'r') as f:
+        template = f.read()
+    
     data = template % { 'project_name' : project_name }
         
-    with open(os.path.join(output_dir, "%s%s" % (tm_name, ext)), 'w') as f:
+    with open(os.path.join(output_dir, "%s%s" % (tm_name, new_extension)), 'w') as f:
         f.write(data)
 
 
