@@ -40,7 +40,7 @@ class BaseCrawler(object):
     allowed_urls = []
     """ A list of urls allowed for crawl"""
     
-    scrapers = []    
+    scrapers = []
     """ A list of scrapers classes"""
     
     max_depth = -1
