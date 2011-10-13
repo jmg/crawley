@@ -103,8 +103,7 @@ class ProjectCommand(BaseCommand):
             settings_file = "settings"
 
         settings = import_user_module(settings_file)
-
-        settings = self._check_setttings_errors(settings)
+        
         sys.path.append(settings.PROJECT_ROOT)
         return settings
 
