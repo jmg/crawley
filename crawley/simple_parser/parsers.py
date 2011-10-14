@@ -8,24 +8,6 @@ class DSLAnalizer(object):
     def __init__(self, dsl):
         
         self.dsl = dsl
-    
-    def parse(self):
-        
-        dsl_scrapers = []
-        
-        for block in self.dsl.split("\n\n"):
-            
-            dsl_scraper = DSLScraper(block)
-            dsl_scrapers.append(dsl_scraper)
-            
-        return dsl_scrapers
-        
-        
-class DSLScraper(object):
-    
-    def __init__(self, block):
-        
-        self.block = block
         
     def is_header(self, line):
         
@@ -33,21 +15,24 @@ class DSLScraper(object):
     
     def parse(self):
         
-        sentences = []
+        blocks = []
         
-        for n, line in enumerate(self.block.split("\n")):
-                
-            if not line:
-                continue
+        for line in self.dsl.split("\n"):
+            
+            lines = []
             
             if self.is_header(line):
-                line = DSLHeaderLine(line, n)                
+                
+                if lines:
+                    blocks.append(lines)
+                
+                lines = []
+                lines.append(DSLHeaderLine(line, n))
+                
             else:
-                line = DSLLine(line, n)
-                
-            sentences.append(line)
-                
-        return sentences
+                lines.append(DSLLine(line, n))
+                                        
+        return blocks
 
 
 class DSLLine(object):
