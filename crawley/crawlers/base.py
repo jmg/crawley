@@ -129,8 +129,9 @@ class BaseCrawler(object):
             
                 html = self.extractor.get_object(data)
                 
-                scraper = scraper_class()
+                scraper = scraper_class(url)
                 scraper.scrape(html)                
+                
                 self._commit()
                 
                 urls.extend(scraper.get_urls(html))

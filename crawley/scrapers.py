@@ -11,6 +11,10 @@ class BaseScraper(object):
         
     matching_urls = []
     
+    def __init__(self, url):
+        
+        self.url = url
+    
     def scrape(self, html):        
         """ Define the data you want to extract here """
         
