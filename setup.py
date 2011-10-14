@@ -14,9 +14,9 @@ setup(
     author_email = "jmg.utn@gmail.com",
     license = "GPL v3",
     keywords = "Scraping Crawling Framework Python",
-    packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),      
+    packages=find_packages(exclude=["tests"]),      
     data_files=[
-        ('crawley/conf/templates', templates_files)
+        (templates_dir, templates_files)
     ],
     include_package_data=True,    
     scripts=['crawley/bin/crawley'],    

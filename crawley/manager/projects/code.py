@@ -64,3 +64,6 @@ class CodeProject(BaseProject):
             pool.spawn_n(spider.start)
 
         pool.waitall()
+        for session in run_command.syncdb.sessions:
+            session.close()
+        

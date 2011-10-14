@@ -28,5 +28,8 @@ class Session(object):
         with open(file_name, 'w') as f:
             simplejson.dump(json_objects, f)
             
+    def close(self):
+        pass
+            
 
 session = Session()
