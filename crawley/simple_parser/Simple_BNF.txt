@@ -1,4 +1,16 @@
 Very simple BNF
 ================
 
-Field -> XpathSelector | CssSelector
+translation_unit : scraper_list
+
+scraper_list: scraper_list ( <NEWLINE> )+ scraper | scraper
+
+scraper : header ( <NEWLINE> )* sentence_list
+
+header : <TABLENAME> : <URL> 
+
+sentence_list : sentence_list sentence | sentence
+
+sentence : <FIELDNAME> -> selector
+
+selector : <XPATHSELECTOR> | <CSSSELECTOR>

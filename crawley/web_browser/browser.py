@@ -10,8 +10,8 @@ from crawley.manager.commands.startproject import StartProjectCommand
 from crawley.manager.commands.run import RunCommand 
 from crawley.manager.projects.template import TemplateProject
 
-
 PATH = os.path.dirname(os.path.abspath(__file__))
+
 
 class Browser(BaseBrowser):
     """

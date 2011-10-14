@@ -9,17 +9,44 @@ class DSLAnalizer(object):
         
         self.dsl = dsl
     
-    def parse_sentences(self):
+    def parse(self):
+        
+        dsl_scrapers = []
+        
+        for block in self.dsl.split("\n\n"):
+            
+            dsl_scraper = DSLScraper(block)
+            dsl_scrapers.append(dsl_scraper)
+            
+        return dsl_scrapers
+        
+        
+class DSLScraper(object):
+    
+    def __init__(self, block):
+        
+        self.block = block
+        
+    def is_header(self, line):
+        
+        return ":" in line
+    
+    def parse(self):
         
         sentences = []
         
-        for n, line in enumerate(self.dsl.split("\n")):
+        for n, line in enumerate(self.block.split("\n")):
+                
+            if not line:
+                continue
             
-            if line:
-                            
+            if self.is_header(line):
+                line = DSLHeaderLine(line, n)                
+            else:
                 line = DSLLine(line, n)
-                sentences.append(line.parse())
-            
+                
+            sentences.append(line)
+                
         return sentences
 
 
@@ -40,10 +67,21 @@ class DSLLine(object):
         sentence = self.content.split(self.SEPARATOR)        
         
         if len(sentence) > 2:
-            raise TemplateSyntaxError(self.number, "More than one '->' token found in the same line")
-        elif len(sentence) < 2:            
-            raise TemplateSyntaxError(self.number, "Missed separator token '->'")
+            raise TemplateSyntaxError(self.number, "More than one '%s' token found in the same line" % self.SEPARATOR)
+        elif len(sentence) < 2:
+            raise TemplateSyntaxError(self.number, "Missed separator token '%s'" % self.SEPARATOR)
+                       
+        return [s.strip() for s in sentence]
+    
+    def is_header(self):
         
-        field, selector = sentence        
-        return field.strip(), selector.strip()
+        return False
+            
+
+class DSLHeaderLine(DSLLine):
+    
+    SEPARATOR = ":"
+    
+    def is_header(self):
         
+        return True        
