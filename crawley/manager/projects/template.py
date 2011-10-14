@@ -33,6 +33,11 @@ class TemplateProject(BaseProject):
         
         crawler_class = CrawlerCompiler(config, [run_command.syncdb.scraper_class]).compile()
         
-        crawler = crawler_class(sessions=[session], debug=run_command.settings.SHOW_DEBUG_INFO)
+        global session
+        sessions = [session]
+        crawler = crawler_class(sessions=sessions, debug=run_command.settings.SHOW_DEBUG_INFO)
         crawler.start()
+        
+        for session in sessions:
+            session.close()
         

@@ -35,11 +35,9 @@ class Session(object):
             
         with open(file_name, "w") as f:
             f.writelines(etree.tostring(root, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
+            
+    def close(self):
+        pass
+        
 
 session = Session()
-
-
-
-
-
-
