@@ -27,12 +27,12 @@ class Interpreter(object):
         
         scrapers = []
         
-        for i, block in enumerate(self.code_blocks):
+        for block in self.code_blocks:
             
             header = block[0]
-            matching_url = header[1]
+            entity_name, matching_url = header
                         
-            attrs_dict = self._gen_scrape_method(self.entities[i], block[1:])
+            attrs_dict = self._gen_scrape_method(self.entities[entity_name], block[1:])
             attrs_dict["matching_urls"] = [matching_url, ]            
             
             scraper = self._gen_class("GeneratedScraper", (BaseScraper, ), attrs_dict)
@@ -52,7 +52,7 @@ class Interpreter(object):
             Generates the entities classes
         """
         
-        self.entities = []
+        self.entities = {}
         
         for block in self.code_blocks:
             
@@ -63,14 +63,14 @@ class Interpreter(object):
             attrs_dict = dict([(field, Field(Unicode(255))) for field in self.fields])
                 
             entity = self._gen_class(entity_name, (Entity, ), attrs_dict)
-            self.entities.append(entity)
+            self.entities[entity_name] = entity
                 
         connector = SqliteConnector(self.settings)
         
         elixir.metadata.bind = connector.get_connection_string()
         elixir.metadata.bind.echo = self.settings.SHOW_DEBUG_INFO
                 
-        setup(self.entities)
+        setup(self.entities.values())
     
     def _gen_scrape_method(self, entity, sentences):
         """
