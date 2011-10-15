@@ -136,7 +136,7 @@ class BaseCrawler(object):
 
                 self._commit()
 
-                urls.extend(scraper.get_urls(html))
+                urls.extend(scraper.get_urls(response))
 
         return urls
 
