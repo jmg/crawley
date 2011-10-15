@@ -11,10 +11,9 @@ class Interpreter(object):
         the crawley framework
     """
     
-    def __init__(self, sentences, table_name, settings):
+    def __init__(self, code_blocks, settings):
         
-        self.sentences = sentences
-        self.table_name = table_name
+        self.code_blocks = code_blocks
         self.settings = settings
                 
     def compile(self):
@@ -22,42 +21,63 @@ class Interpreter(object):
             Returns a runtime generated scraper class
         """
         self._gen_entities()                        
-        
-        attrs_dict = self._gen_scrape_method()
-        return self._gen_scraper_class(attrs_dict)
+        return self._gen_scrapers()
     
-    def _gen_scraper_class(self, attrs_dict):
+    def _gen_scrapers(self):
+        
+        scrapers = []
+        
+        for i, block in enumerate(self.code_blocks):
+            
+            header = block[0]
+            matching_url = header[1]
+                        
+            attrs_dict = self._gen_scrape_method(self.entities[i], block[1:])
+            attrs_dict["matching_urls"] = [matching_url, ]            
+            
+            scraper = self._gen_class("GeneratedScraper", (BaseScraper, ), attrs_dict)
+            scrapers.append(scraper)
+                
+        return scrapers
+    
+    def _gen_class(self, name, bases, attrs_dict):
         """
-            Generates a scraper class
+            Generates a class at runtime
         """
         
-        return type("GeneratedScraper", (BaseScraper, ), attrs_dict)
+        return type(name, bases, attrs_dict)
         
     def _gen_entities(self):
         """
-            Generates an entity class
-        """                
+            Generates the entities classes
+        """
         
-        self.fields = [s[0] for s in self.sentences]
-        attrs_dict = dict([(field, Field(Unicode(255))) for field in self.fields])
+        self.entities = []
         
-        self.entity = type(self.table_name, (Entity, ), attrs_dict)
+        for block in self.code_blocks:
+            
+            header = block[0]
+            entity_name = header[0]
+                                
+            self.fields = [s[0] for s in block[1:]]
+            attrs_dict = dict([(field, Field(Unicode(255))) for field in self.fields])
+                
+            entity = self._gen_class(entity_name, (Entity, ), attrs_dict)
+            self.entities.append(entity)
                 
         connector = SqliteConnector(self.settings)
         
         elixir.metadata.bind = connector.get_connection_string()
         elixir.metadata.bind.echo = self.settings.SHOW_DEBUG_INFO
                 
-        setup([self.entity])
+        setup(self.entities)
     
-    def _gen_scrape_method(self):
+    def _gen_scrape_method(self, entity, sentences):
         """
             Generates scrapers methods.
             Returns a dictionary containing methods and attributes for the
             scraper class.
-        """
-        sentences = self.sentences
-        entity = self.entity
+        """        
         
         def scrape(self, html):
             """
@@ -66,7 +86,7 @@ class Interpreter(object):
             
             fields = {}
             
-            for field, selector in sentences:
+            for field, selector in sentences:                
                 
                 nodes = html.xpath(selector)
                 if nodes:
@@ -88,7 +108,7 @@ class Interpreter(object):
             for child in childs:
                 return _get_text_recursive(child)            
                                         
-        return { "scrape" : scrape, "matching_urls" : "%" }
+        return { "scrape" : scrape }
 
 
 
@@ -102,11 +122,7 @@ class CrawlerCompiler(object):
     def compile(self):
         
         attrs_dict = {}
-        attrs_dict["scrapers"] = []
-        
-        for scraper in self.scrapers:
-            attrs_dict["scrapers"].append(scraper)
-            
+        attrs_dict["scrapers"] = self.scrapers            
         attrs_dict["max_depth"] = self.config.max_depth
         attrs_dict["start_urls"] = self.config.start_urls
         

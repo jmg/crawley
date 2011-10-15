@@ -7,7 +7,7 @@ scraper_list: scraper_list ( <NEWLINE> )+ scraper | scraper
 
 scraper : header ( <NEWLINE> )* sentence_list
 
-header : <TABLENAME> : <URL> 
+header : <TABLENAME> = <URL> 
 
 sentence_list : sentence_list sentence | sentence
 
