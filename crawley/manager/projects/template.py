@@ -25,7 +25,7 @@ class TemplateProject(BaseProject):
         with open(os.path.join(syncb_command.settings.PROJECT_ROOT, "template.crw"), "r") as f:
             template = f.read()                        
                                     
-        syncb_command.scraper_class = interprete(template, "name", syncb_command.settings)
+        syncb_command.scraper_class = interprete(template, syncb_command.settings)
         
     def run(self, run_command):
         

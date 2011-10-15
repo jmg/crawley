@@ -146,7 +146,8 @@ class BrowserTab(BaseBrowserTab):
             
             elements_xpath = [e.get("id") for e in elements]
             
-            stream = ""
+            url = self.parent.tb_url.text()
+            stream = "my_table => %s \r\n" % url
             for i, e in enumerate(elements_xpath):                
                 stream += "%s -> %s <br/>" % ("my_field_%s" % i, e)                            
             
@@ -155,7 +156,7 @@ class BrowserTab(BaseBrowserTab):
                         
             os.sys.path.insert(0, project_name)
             
-            self.html.setHtml(stream)
+            #self.html.setHtml(stream)
             self.html.show()
     
     def run(self):
