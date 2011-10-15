@@ -5,11 +5,11 @@
 from parsers import DSLAnalizer
 from compilers import Interpreter
 
-def interprete(dsl, table_name, settings):
+def interprete(dsl, settings):
     
     analzier = DSLAnalizer(dsl)
-    sentenses = analzier.parse_sentences()
+    code_blocks = analzier.parse()
     
-    inerpreter = Interpreter(sentenses, table_name, settings)
-    scraper = inerpreter.compile()
-    return scraper
+    interpreter = Interpreter(code_blocks, settings)    
+    scrapers = interpreter.compile()
+    return scrapers

@@ -16,22 +16,22 @@ class DSLAnalizer(object):
     def parse(self):
         
         blocks = []
-        
-        for line in self.dsl.split("\n"):
-            
-            lines = []
-            
+        lines = []
+                
+        for n, line in enumerate(self.dsl.split("\n")):
+                                
             if self.is_header(line):
                 
                 if lines:
                     blocks.append(lines)
                 
                 lines = []
-                lines.append(DSLHeaderLine(line, n))
+                lines.append(DSLHeaderLine(line, n).parse())
                 
             else:
-                lines.append(DSLLine(line, n))
-                                        
+                lines.append(DSLLine(line, n).parse())
+                    
+        blocks.append(lines)
         return blocks
 
 
@@ -65,8 +65,8 @@ class DSLLine(object):
 
 class DSLHeaderLine(DSLLine):
     
-    SEPARATOR = ":"
+    SEPARATOR = "="
     
     def is_header(self):
         
-        return True        
+        return True
