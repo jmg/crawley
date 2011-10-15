@@ -6,9 +6,10 @@ from config import DEFAULTS, SELECTED_CLASS
 from crawley.crawlers.fast import FastCrawler
 from crawley.extractors import PyQueryExtractor
 
-from crawley.manager.commands.startproject import StartProjectCommand 
-from crawley.manager.commands.run import RunCommand 
+from crawley.manager.commands.startproject import StartProjectCommand
+from crawley.manager.commands.run import RunCommand
 from crawley.manager.projects.template import TemplateProject
+from crawley.manager.utils import get_full_template_path
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -22,10 +23,10 @@ class Browser(BaseBrowser):
     """
 
     def __init__(self, default_url=None):
-        
-        if default_url is None: 
+
+        if default_url is None:
             default_url = DEFAULTS['url']
-            
+
         self.default_url = default_url
         BaseBrowser.__init__(self)
         self.add_tab()
@@ -96,15 +97,15 @@ class BrowserTab(BaseBrowserTab):
         self.pg_load.show()
 
     def load_url(self, url):
-        """ Load the requested url in the webwiew """        
-        
+        """ Load the requested url in the webwiew """
+
         self.url = str(url)
         html = self.crawler._get_data(self.url)
-        
-        with open(os.path.join(PATH, "template.py"), "r") as f:
+
+        with open(get_full_template_path("html_template"), "r") as f:
             template = f.read()
             html = template % {'content': html, 'css_class': SELECTED_CLASS }
-                
+
         self.html.setHtml(html)
         self.html.show()
 
@@ -129,38 +130,38 @@ class BrowserTab(BaseBrowserTab):
         """" Reload page """
         if self.is_current():
             self.html.reload()
-            
+
     def generate(self):
         """" generate template """
         if self.is_current():
-            
+
             project_name = "new_test"
             cmd = StartProjectCommand(project_type=TemplateProject.name, project_name=project_name)
             cmd.execute()
-            
+
             main_frame = self.html.page().mainFrame()
             content = unicode(main_frame.toHtml())
-            
+
             obj = PyQueryExtractor().get_object(content)
-            elements = obj(".%s" % SELECTED_CLASS)        
-            
+            elements = obj(".%s" % SELECTED_CLASS)
+
             elements_xpath = [e.get("id") for e in elements]
-            
+
             url = self.parent.tb_url.text()
             stream = "my_table => %s \r\n" % url
-            for i, e in enumerate(elements_xpath):                
-                stream += "%s -> %s <br/>" % ("my_field_%s" % i, e)                            
-            
+            for i, e in enumerate(elements_xpath):
+                stream += "%s -> %s <br/>" % ("my_field_%s" % i, e)
+
             with open(os.path.join(os.getcwd(), project_name, project_name, "template.crw"), "w") as f:
-                f.write(stream.replace("<br/>", "\r\n"))                
-                        
+                f.write(stream.replace("<br/>", "\r\n"))
+
             os.sys.path.insert(0, project_name)
-            
+
             #self.html.setHtml(stream)
             self.html.show()
-    
+
     def run(self):
-                        
+
         import settings
         cmd = RunCommand(settings=settings)
         cmd.checked_execute()

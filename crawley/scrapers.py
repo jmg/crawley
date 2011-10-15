@@ -4,24 +4,20 @@
 
 class BaseScraper(object):
     """
-       User's Scrappers must Inherit from this class, 
-       implement the scrape method and define 
+       User's Scrappers must Inherit from this class,
+       implement the scrape method and define
        the urls that may be procesed by it.
     """
-        
+
     matching_urls = []
-    
-    def __init__(self, url):
-        
-        self.url = url
-    
-    def scrape(self, html):        
+
+    def scrape(self, response):
         """ Define the data you want to extract here """
-        
+
         pass
-        
-    def get_urls(self, html):
+
+    def get_urls(self, response):
         """ Return a list of urls in the current html """
-        
+
         return []
-        
+
