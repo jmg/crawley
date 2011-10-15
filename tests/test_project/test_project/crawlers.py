@@ -21,9 +21,9 @@ class UrlsScraper(BaseScraper):
     #This scraper only works on the main page
     matching_urls = ["http://pypi.python.org/pypi"]
 
-    def get_urls(self, html):
+    def get_urls(self, response):
 
-        table = html.xpath("/html/body/div[5]/div/div/div[3]/table")[0]
+        table = response.html.xpath("/html/body/div[5]/div/div/div[3]/table")[0]
 
         urls = []
 
