@@ -19,7 +19,12 @@ class DSLAnalizer(object):
         lines = []
                 
         for n, line in enumerate(self.dsl.split("\n")):
-                                
+            
+            line = line.strip()
+            
+            if not line:
+                continue
+            
             if self.is_header(line):
                 
                 if lines:
@@ -40,7 +45,7 @@ class DSLLine(object):
         A DSL line abstraction
     """
         
-    SEPARATOR = "->"
+    SEPARATOR = "->"    
         
     def __init__(self, content, number):
                 
@@ -56,17 +61,9 @@ class DSLLine(object):
         elif len(sentence) < 2:
             raise TemplateSyntaxError(self.number, "Missed separator token '%s'" % self.SEPARATOR)
                        
-        return [s.strip() for s in sentence]
-    
-    def is_header(self):
-        
-        return False
+        return [s.strip() for s in sentence]        
             
 
 class DSLHeaderLine(DSLLine):
     
-    SEPARATOR = "="
-    
-    def is_header(self):
-        
-        return True
+    SEPARATOR = "=>"    
