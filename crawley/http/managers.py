@@ -1,6 +1,8 @@
 from eventlet.green import urllib2
 from request import DelayedRequest, Request
 
+import urllib
+
 class HostCounterDict(dict):
     """
         A counter dictionary for requested hosts 
@@ -46,6 +48,9 @@ class RequestManager(object):
             then make a Delayed Request
         """                                
         request = self._get_request(url, cookie_handler)
+        
+        if data is not None:
+            data = urllib.urlencode(data)
         
         return self.get_response(request, data)
                 
