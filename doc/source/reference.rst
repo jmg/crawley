@@ -6,8 +6,9 @@ A complete reference to crawley's source code
 Crawlers
 -----------
 
-.. automodule:: crawley.crawlers
+.. automodule:: crawley.crawlers.base
    :members: 
+
 
 Scrapers
 -----------
@@ -18,8 +19,18 @@ Scrapers
 Persistance
 -----------
    
-.. automodule:: crawley.persistance
+.. automodule:: crawley.persistance.databases
    :members: 
+
+Connector
+-----------
+   
+.. automodule:: crawley.persistance.connectors
+   :members: 
+   
+.. automodule:: crawley.persistance.documents
+   :members: 
+
 
 Extractors
 -----------
