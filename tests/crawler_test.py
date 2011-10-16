@@ -28,7 +28,7 @@ class CrawlerTest(unittest.TestCase):
             This test asserts if the login was successful and the second request retrieves 
             a facebook's page that requires to be logged in.
         """        
-        data = urllib.urlencode({'email' : 'your_user', 'pass': 'your_pass'})
+        data = {'email' : 'your_user', 'pass': 'your_pass'}
         
         response = self.crawler._get_response("https://www.facebook.com/login.php?login_attempt=1", data)
         response = self.crawler._get_response("http://www.facebook.com/profile.php?id=1271577281")
