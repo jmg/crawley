@@ -59,7 +59,7 @@ Crawlers
         def scrape(self, response):
                             
             #getting the html table
-            table = reponse.html.xpath("/html/body/div[5]/div/div/div[3]/table")[0]
+            table = response.html.xpath("/html/body/div[5]/div/div/div[3]/table")[0]
             
             #for rows 1 to n-1
             for tr in table[1:-1]:
