@@ -72,10 +72,12 @@ class pypiScraper(BaseScraper):
     #specify the urls that can be scraped by this class
     matching_urls = ["%"]
     
-    def scrape(self, html):
+    def scrape(self, reponse):
                         
-        #getting the html table
-        table = html.xpath("/html/body/div[5]/div/div/div[3]/table")[0]
+        #getting the current document's url.
+        current_url = reponse.url        
+        #getting the html table.
+        table = reponse.html.xpath("/html/body/div[5]/div/div/div[3]/table")[0]
         
         #for rows 1 to n-1
         for tr in table[1:-1]:
