@@ -100,7 +100,7 @@ class BrowserTab(BaseBrowserTab):
         """ Load the requested url in the webwiew """
 
         self.url = str(url)
-        html = self.crawler._get_data(self.url)        
+        html = self.crawler._get_data(self.url)
 
         with open(get_full_template_path("html_template"), "r") as f:
             template = f.read()
