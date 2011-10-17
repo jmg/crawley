@@ -101,7 +101,7 @@ class BaseCrawler(object):
                 data: if this param is present it makes a POST.
         """
         data = self.request_manager.make_request(url, self.cookie_hanlder, data)
-        response = Response( data, self.extractor.get_object(data) , url )
+        response = Response(data, self.extractor.get_object(data), url)
 
         return response;
 
@@ -125,7 +125,8 @@ class BaseCrawler(object):
             Override this method in order to provide more validations before the data extraction with the given scraper class
         """
         if self.debug:
-            print "Checking response of " + response.url + " is valid to matching urls of the scrapper class " + scraper_class.__name__ 
+            print "Checking response of %s is valid to matching urls of the scrapper class %s" % (response.url, scraper_class.__name__)
+            
         return [pattern for pattern in scraper_class.matching_urls if url_matcher(response.url, pattern)]
 
     def _manage_scrapers(self, response):
@@ -250,6 +251,9 @@ class BaseCrawler(object):
         
         for link_tag in tree.xpath("//a"):                
             
+            if not 'href' in link_tag.attrib:
+                continue
+                
             url = link_tag.attrib["href"]
             
             if not self._url_regex.match(url):

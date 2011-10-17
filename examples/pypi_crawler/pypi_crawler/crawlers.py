@@ -1,7 +1,7 @@
 from crawley.scrapers import BaseScraper
 from crawley.extractors import XPathExtractor
 from models import *
-from crawley.crawlers.smart_crawler import SmartCrawler
+from crawley.crawlers.smart import SmartCrawler
 
 class PackagesAuthorsScraper(BaseScraper):
 
@@ -14,6 +14,7 @@ class PackagesAuthorsScraper(BaseScraper):
         author = response.html.xpath("/html/body/div[5]/div/div/div[3]/ul/li/span")[0].text
 
         PackagesAuthors(project=project, author=author)
+
 
 class PackagesAuthorsCrawler(SmartCrawler):
 

@@ -34,7 +34,7 @@ class Request(object):
         request = urllib2.Request(self.url, data, self.headers)        
         opener = urllib2.build_opener(self.cookie_handler)
         
-        response = opener.open(request)
+        response = opener.open(request, timeout=10)
         self.cookie_handler.save_cookies()
         
         return response

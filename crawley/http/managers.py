@@ -73,15 +73,20 @@ class RequestManager(object):
             tries += 1
             
         if response is None or response.getcode() != 200:
+            return None                    
+        
+        return self._get_data(response)
+        
+    def _get_data(self, response):
+        
+        try:
+            return response.read()
+        except:
             return None
-            
-        return response.read()
     
     def _get_response(self, request, data):
     
-        response = request.get_response(data)        
-            
-        return response
+        return request.get_response(data)        
 
 
 class FastRequestManager(RequestManager):
