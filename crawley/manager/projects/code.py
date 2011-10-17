@@ -59,7 +59,7 @@ class CodeProject(BaseProject):
         pool = GreenPool()                
                 
         for crawler_class in user_crawlers:
-
+            print crawler_class.__name__
             spider = crawler_class(storage=url_storage, sessions=run_command.syncdb.sessions, debug=run_command.settings.SHOW_DEBUG_INFO)
             pool.spawn_n(spider.start)
 

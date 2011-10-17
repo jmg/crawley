@@ -10,4 +10,4 @@ dist
 docs/build
 env
 url.html
-
+pip-log.txt

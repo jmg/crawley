@@ -9,6 +9,8 @@ from crawley.http.response import Response
 from crawley.extractors import XPathExtractor
 from crawley.exceptions import AuthenticationError
 from crawley.utils import url_matcher
+import HTMLParser
+import urllib2
 
 user_crawlers = []
 
@@ -99,8 +101,10 @@ class BaseCrawler(object):
             params:
                 data: if this param is present it makes a POST.
         """
+        data = self.request_manager.make_request(url, self.cookie_hanlder, data)
+        response = Response( data, self.extractor.get_object(data) , url )
 
-        return self.request_manager.make_request(url, self.cookie_hanlder, data)
+        return response;
 
     def _get_data(self, url, data=None):
         """
@@ -116,7 +120,16 @@ class BaseCrawler(object):
 
         return self._get_response(url, data)
 
-    def _manage_scrapers(self, url, data):
+
+    def _validate_scraper(self, response, scraper_class):
+        """
+            Override this method in order to provide more validations before the data extraction with the given scraper class
+        """
+        if self.debug:
+            print "Checking response of " + response.url + " is valid to matching urls of the scrapper class " + scraper_class.__name__ 
+        return [pattern for pattern in scraper_class.matching_urls if url_matcher(response.url, pattern)]
+
+    def _manage_scrapers(self, response):
         """
             Checks if some scraper is suited for data extraction on the current url.
             If so, gets the extractor object and delegate the scraping task
@@ -126,11 +139,8 @@ class BaseCrawler(object):
 
         for scraper_class in self.scrapers:
 
-            if [pattern for pattern in scraper_class.matching_urls if url_matcher(url, pattern)]:
+            if self._validate_scraper(response, scraper_class):
 
-                html = self.extractor.get_object(data)
-
-                response = Response(html, url)
                 scraper = scraper_class()
                 scraper.scrape(response)
 
@@ -180,23 +190,23 @@ class BaseCrawler(object):
         if not self._validate_url(url):
             return
 
-        if self.debug:
-            print "crawling -> %s" % url
+        #if self.debug:
+        print "crawling -> %s" % url
 
-        data = self._get_data(url)
-        if data is None:
+        response = self._get_data(url)
+        if response.raw_html is None:
             return
 
-        urls = self._manage_scrapers(url, data)
+        urls = self._manage_scrapers( response )
         if not urls:
-            urls = self.get_urls(data)
+            urls = self.get_urls(response)
 
         for new_url in urls:
-
             self._save_urls(url, new_url)
 
             if depth_level >= self.max_depth:
                 return
+
             self.pool.spawn_n(self._fetch, new_url, depth_level + 1)
 
     def _login(self):
@@ -218,21 +228,47 @@ class BaseCrawler(object):
         """
             Crawler's run method
         """
-        self._login()
+        self._login()                
 
         for url in self.start_urls:
             self.pool.spawn_n(self._fetch, url, depth_level=0)
 
         self.pool.waitall()
 
-
     #overridables
 
-    def get_urls(self, html):
+    def get_urls(self, response):
         """
             Returns a list of urls found in the current html page
         """
         urls = []
-        for url_match in self._url_regex.finditer(html):
+        for url_match in self._url_regex.finditer(response.raw_html):
             urls.append(url_match.group(0))
+
+        try:
+            linkSearcher = LinkSearcher()
+            linkSearcher.feed(response.raw_html);
+
+            base_path = "http://" + urllib2.urlparse.urlparse(response.url).netloc
+
+            for link in linkSearcher.links :
+                if not self._url_regex.match(link) :                    
+                    urls.append( base_path + link )
+
+        except HTMLParser.HTMLParseError: 
+            pass
+
         return urls
+
+class LinkSearcher(HTMLParser.HTMLParser):
+
+    links = []
+
+    def __init__(self):
+        HTMLParser.HTMLParser.__init__(self)
+
+    def handle_starttag(self, tag, attrs):
+        if tag == 'a':
+            for attr in attrs:
+                if attr[0] == 'href':
+                    self.links.append(attr[1])

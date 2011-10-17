@@ -40,5 +40,5 @@ class ParserTest(unittest.TestCase):
         html = crawler._get_data("http://www.python.org/")
 
         for scraper_class in scrapers_classes:
-            response = Response(XPathExtractor().get_object(html), None)
+            response = Response(html, XPathExtractor().get_object(html), None)
             scraper_class().scrape(response)
