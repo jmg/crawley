@@ -14,10 +14,10 @@ class ParserTest(unittest.TestCase):
 
     def test_interprete(self):
 
-        test_dsl = """table1 => http://www.python.org/
-                      my_model -> /html/body/div[5]/div/div/h1
-                      my_model_2 -> /html/body/div
-                      my_model_3 -> /html/body/div/span"""
+        test_dsl = """PAGE => http://www.python.org/
+                      table1.model1 -> /html/body/div[5]/div/div/h1
+                      table1.model2 -> /html/body/div
+                      table2.model1 -> /html/body/div/span"""                      
 
         interprete(test_dsl, settings)
 
@@ -29,16 +29,15 @@ class ParserTest(unittest.TestCase):
 
     def test_generated_scrapers(self):
 
-        test_dsl = """table2 => http://www.python.org/
-                      my_model -> /html/body/div[5]/div/div/h1
-                      my_model_2 -> /html/body/div
-                      my_model_3 -> /html/body/div/span"""
+        test_dsl = """PAGE => http://www.python.org/
+                      table3.model1 -> /html/body/div[5]/div/div/h1
+                      table3.model2 -> /html/body/div
+                      table4.model1 -> /html/body/div/span"""
 
         scrapers_classes = interprete(test_dsl, settings)
 
         crawler = BaseCrawler()
-        html = crawler._get_data("http://www.python.org/")
+        response = crawler._get_data("http://www.python.org/")
 
-        for scraper_class in scrapers_classes:
-            response = Response(html, XPathExtractor().get_object(html), None)
+        for scraper_class in scrapers_classes:           
             scraper_class().scrape(response)

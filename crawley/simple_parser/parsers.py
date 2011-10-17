@@ -31,10 +31,10 @@ class DSLAnalizer(object):
                     blocks.append(lines)
                 
                 lines = []
-                lines.append(DSLHeaderLine(line, n).parse())
+                lines.append(DSLHeaderLine(line, n))
                 
             else:
-                lines.append(DSLLine(line, n).parse())
+                lines.append(DSLLine(line, n))
                     
         blocks.append(lines)
         return blocks
@@ -46,24 +46,37 @@ class DSLLine(object):
     """
         
     SEPARATOR = "->"    
+    is_header = False
         
     def __init__(self, content, number):
                 
         self.number = number
         self.content = content
+        self._parse()
         
-    def parse(self):
+    def _parse(self):
         
-        sentence = self.content.split(self.SEPARATOR)        
+        parts = self.content.split(self.SEPARATOR)        
         
-        if len(sentence) > 2:
+        if len(parts) > 2:
             raise TemplateSyntaxError(self.number, "More than one '%s' token found in the same line" % self.SEPARATOR)
-        elif len(sentence) < 2:
+        elif len(parts) < 2:
             raise TemplateSyntaxError(self.number, "Missed separator token '%s'" % self.SEPARATOR)
-                       
-        return [s.strip() for s in sentence]        
+        
+        self.field = self._parse_attribs(parts[0])
+        self.xpath = parts[1].strip()
+        
+    def _parse_attribs(self, parmas):
             
+        table, column = parmas.split(".")
+        return {"table" : table.strip(), "column" : column.strip()}
+
 
 class DSLHeaderLine(DSLLine):
     
-    SEPARATOR = "=>"    
+    SEPARATOR = "=>"
+    is_header = True
+    
+    def _parse_attribs(self, field):
+        
+        return field

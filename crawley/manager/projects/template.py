@@ -36,6 +36,7 @@ class TemplateProject(BaseProject):
         global session
         sessions = [session]
         crawler = crawler_class(sessions=sessions, debug=run_command.settings.SHOW_DEBUG_INFO)
+                
         crawler.start()
         
         for session in sessions:
