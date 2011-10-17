@@ -103,7 +103,7 @@ class BaseCrawler(object):
         data = self.request_manager.make_request(url, self.cookie_hanlder, data)
         response = Response(data, self.extractor.get_object(data), url)
 
-        return response;
+        return response
 
     def _get_data(self, url, data=None):
         """
@@ -190,14 +190,14 @@ class BaseCrawler(object):
         if not self._validate_url(url):
             return
 
-        #if self.debug:
-        print "crawling -> %s" % url
+        if self.debug:
+            print "crawling -> %s" % url
 
         response = self._get_data(url)
         if response.raw_html is None:
             return
 
-        urls = self._manage_scrapers( response )
+        urls = self._manage_scrapers(response)
         if not urls:
             urls = self.get_urls(response)
 
