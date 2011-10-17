@@ -1,6 +1,7 @@
 from eventlet import GreenPool
 
 from re import compile as re_compile
+from urllib2 import urlparse
 
 from crawley.config import CRAWLEY_ROOT_DIR
 from crawley.http.managers import RequestManager
@@ -9,8 +10,6 @@ from crawley.http.response import Response
 from crawley.extractors import XPathExtractor
 from crawley.exceptions import AuthenticationError
 from crawley.utils import url_matcher
-import HTMLParser
-import urllib2
 
 user_crawlers = []
 
@@ -242,33 +241,21 @@ class BaseCrawler(object):
             Returns a list of urls found in the current html page
         """
         urls = []
+        
         for url_match in self._url_regex.finditer(response.raw_html):
+            
             urls.append(url_match.group(0))
-
-        try:
-            linkSearcher = LinkSearcher()
-            linkSearcher.feed(response.raw_html);
-
-            base_path = "http://" + urllib2.urlparse.urlparse(response.url).netloc
-
-            for link in linkSearcher.links :
-                if not self._url_regex.match(link) :                    
-                    urls.append( base_path + link )
-
-        except HTMLParser.HTMLParseError: 
-            pass
-
+        
+        tree = XPathExtractor().get_object(response.raw_html)                
+        
+        for link_tag in tree.xpath("//a"):                
+            
+            url = link_tag.attrib["href"]
+            
+            if not self._url_regex.match(url):
+                
+                parsed_url = urlparse.urlparse(response.url)
+                new_url = "%s://%s%s" % (parsed_url.scheme, parsed_url.netloc, url)                
+                urls.append(new_url)
+                
         return urls
-
-class LinkSearcher(HTMLParser.HTMLParser):
-
-    links = []
-
-    def __init__(self):
-        HTMLParser.HTMLParser.__init__(self)
-
-    def handle_starttag(self, tag, attrs):
-        if tag == 'a':
-            for attr in attrs:
-                if attr[0] == 'href':
-                    self.links.append(attr[1])
