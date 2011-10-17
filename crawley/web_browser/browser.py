@@ -3,7 +3,7 @@ import os
 from PyQt4 import QtCore, QtWebKit
 from baseBrowser import BaseBrowser, BaseBrowserTab
 from config import DEFAULTS, SELECTED_CLASS
-from crawley.crawlers.fast import FastCrawler
+from crawley.crawlers.offline import OffLineCrawler
 from crawley.extractors import PyQueryExtractor
 
 from crawley.manager.commands.startproject import StartProjectCommand
@@ -79,7 +79,7 @@ class BrowserTab(BaseBrowserTab):
     def __init__(self, parent):
         BaseBrowserTab.__init__(self, parent)
         self.url = None
-        self.crawler = FastCrawler()
+        self.crawler = OffLineCrawler()
 
     def load_bar(self, value):
         """ Load the progress bar """
@@ -100,7 +100,7 @@ class BrowserTab(BaseBrowserTab):
         """ Load the requested url in the webwiew """
 
         self.url = str(url)
-        html = self.crawler._get_data(self.url)
+        html = self.crawler._get_data(self.url)        
 
         with open(get_full_template_path("html_template"), "r") as f:
             template = f.read()
@@ -156,8 +156,7 @@ class BrowserTab(BaseBrowserTab):
                 f.write(stream.replace("<br/>", "\r\n"))
 
             os.sys.path.insert(0, project_name)
-
-            #self.html.setHtml(stream)
+            
             self.html.show()
 
     def run(self):

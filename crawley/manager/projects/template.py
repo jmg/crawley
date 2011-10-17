@@ -17,7 +17,7 @@ class TemplateProject(BaseProject):
         
         BaseProject.set_up(self, project_name)
                 
-        generate_template("template", project_name, self.project_dir)
+        generate_template("template", project_name, self.project_dir, new_extension=".crw")
         generate_template("config", project_name, self.project_dir)
         
     def syncdb(self, syncb_command):
@@ -31,7 +31,7 @@ class TemplateProject(BaseProject):
         
         config = import_user_module("config")                
         
-        crawler_class = CrawlerCompiler(config, [run_command.syncdb.scraper_class]).compile()
+        crawler_class = CrawlerCompiler(config, run_command.syncdb.scraper_class).compile()
         
         global session
         sessions = [session]

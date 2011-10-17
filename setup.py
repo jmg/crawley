@@ -3,8 +3,10 @@
 from setuptools import setup, find_packages
 import os
 
+PATH = os.path.dirname(os.path.abspath(__file__))
 templates_dir = os.path.join("crawley", "conf", "templates")
-templates_files = [os.path.join(templates_dir, file) for file in os.listdir(templates_dir)]
+templates_local_dir = os.path.join(PATH, templates_dir)
+templates_files = [os.path.join(templates_dir, file) for file in os.listdir(templates_local_dir)]
 
 setup(
     name="crawley",
