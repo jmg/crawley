@@ -148,9 +148,9 @@ class BrowserTab(BaseBrowserTab):
             elements_xpath = [e.get("id") for e in elements]
 
             url = self.parent.tb_url.text()
-            stream = "my_table => %s \r\n" % url
+            stream = "PAGE => %s \r\n" % url
             for i, e in enumerate(elements_xpath):
-                stream += "%s -> %s <br/>" % ("my_field_%s" % i, e)
+                stream += "%s.%s -> %s <br/>" % ("my_table", "my_field_%s" % i, e)
 
             with open(os.path.join(os.getcwd(), project_name, project_name, "template.crw"), "w") as f:
                 f.write(stream.replace("<br/>", "\r\n"))

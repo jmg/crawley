@@ -119,7 +119,6 @@ class BaseCrawler(object):
 
         return self._get_response(url, data)
 
-
     def _validate_scraper(self, response, scraper_class):
         """
             Override this method in order to provide more validations before the data extraction with the given scraper class
@@ -127,7 +126,11 @@ class BaseCrawler(object):
         if self.debug:
             print "Checking response of %s is valid to matching urls of the scrapper class %s" % (response.url, scraper_class.__name__)
             
-        return [pattern for pattern in scraper_class.matching_urls if url_matcher(response.url, pattern)]
+        for pattern in scraper_class.matching_urls:
+            if url_matcher(response.url, pattern):
+                return True
+        
+        return False        
 
     def _manage_scrapers(self, response):
         """
