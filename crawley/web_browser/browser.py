@@ -127,12 +127,24 @@ class BrowserTab(BaseBrowserTab):
             Starts a new project
         """
         
-        dir_name = str(QtGui.QFileDialog.getSaveFileName(self, 'Project Name', '.'))
-        url = self.parent.tb_url.text()
+        self._start(is_new=True)        
         
+    def open(self):
+        
+        self._start()
+        
+    def _start(self, is_new=False):
+        
+        if not is_new:
+            dir_name = str(QtGui.QFileDialog.getExistingDirectory(self, 'Open Project'))
+        else:
+            dir_name = str(QtGui.QFileDialog.getSaveFileName(self, 'Project Name'))
+            
+        url = self.parent.tb_url.text()        
         self.current_project = GUIProject(dir_name, url)
-        self.current_project.set_up()
-    
+                
+        self.current_project.set_up(is_new)        
+            
     def generate(self):
         """
             Generates a DSL template 

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'base.ui'
 #
-# Created: Tue Oct 18 01:26:49 2011
+# Created: Tue Oct 18 20:07:30 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(641, 553)
+        MainWindow.resize(1096, 551)
         self.centralwidget = QtGui.QWidget(MainWindow)
         font = QtGui.QFont()
         font.setFamily("Ubuntu")
@@ -52,6 +52,9 @@ class Ui_MainWindow(object):
         self.bt_start = QtGui.QPushButton(self.frame)
         self.bt_start.setObjectName("bt_start")
         self.horizontalLayout_5.addWidget(self.bt_start)
+        self.bt_open = QtGui.QPushButton(self.frame)
+        self.bt_open.setObjectName("bt_open")
+        self.horizontalLayout_5.addWidget(self.bt_open)
         self.bt_generate = QtGui.QPushButton(self.frame)
         self.bt_generate.setObjectName("bt_generate")
         self.horizontalLayout_5.addWidget(self.bt_generate)
@@ -83,6 +86,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "SimpleWebBrowser", None, QtGui.QApplication.UnicodeUTF8))
         self.bt_start.setText(QtGui.QApplication.translate("MainWindow", "Start Project", None, QtGui.QApplication.UnicodeUTF8))
+        self.bt_open.setText(QtGui.QApplication.translate("MainWindow", "Open Project", None, QtGui.QApplication.UnicodeUTF8))
         self.bt_generate.setText(QtGui.QApplication.translate("MainWindow", "Generate Template", None, QtGui.QApplication.UnicodeUTF8))
         self.bt_run.setText(QtGui.QApplication.translate("MainWindow", "Run Crawler", None, QtGui.QApplication.UnicodeUTF8))
 

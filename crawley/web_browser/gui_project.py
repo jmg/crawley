@@ -17,13 +17,14 @@ class GUIProject(object):
         self.dir_name = dir_name
         self.url = url
     
-    def set_up(self):
-                
+    def set_up(self, is_new):
+                        
         dir_name, self.project_name = os.path.split(self.dir_name)
         os.chdir(dir_name)
         
-        cmd = StartProjectCommand(project_type=TemplateProject.name, project_name=self.project_name)
-        cmd.execute()
+        if is_new:        
+            cmd = StartProjectCommand(project_type=TemplateProject.name, project_name=self.project_name)
+            cmd.execute()
         
     def generate_teplate(self, html):
         
