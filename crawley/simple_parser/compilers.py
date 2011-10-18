@@ -1,7 +1,7 @@
 from crawley.scrapers import BaseScraper
 from crawley.crawlers import BaseCrawler
 from crawley.persistance.databases import Entity, Field, Unicode, setup, session, elixir
-from crawley.persistance.connectors import SqliteConnector
+from crawley.persistance.connectors import connectors
 
 
 class Interpreter(object):
@@ -73,7 +73,7 @@ class Interpreter(object):
             entity = self._gen_class(entity_name, (Entity, ), attrs_dict)
             self.entities[entity_name] = entity
 
-        connector = SqliteConnector(self.settings)
+        connector = connectors[self.settings.DATABASE_ENGINE](self.settings)
 
         elixir.metadata.bind = connector.get_connection_string()
         elixir.metadata.bind.echo = self.settings.SHOW_DEBUG_INFO
@@ -130,7 +130,6 @@ class Interpreter(object):
                 return _get_text_recursive(child)
 
         return { "scrape" : scrape }
-
 
 
 class CrawlerCompiler(object):

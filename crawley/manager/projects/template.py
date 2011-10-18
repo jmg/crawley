@@ -25,13 +25,13 @@ class TemplateProject(BaseProject):
         with open(os.path.join(syncb_command.settings.PROJECT_ROOT, "template.crw"), "r") as f:
             template = f.read()                        
                                     
-        syncb_command.scraper_class = interprete(template, syncb_command.settings)
+        syncb_command.scraper_classes = interprete(template, syncb_command.settings)
         
     def run(self, run_command):
         
         config = import_user_module("config")                
         
-        crawler_class = CrawlerCompiler(config, run_command.syncdb.scraper_class).compile()
+        crawler_class = CrawlerCompiler(config, run_command.syncdb.scraper_classes).compile()
         
         global session
         sessions = [session]

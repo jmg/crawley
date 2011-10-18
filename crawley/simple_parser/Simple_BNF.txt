@@ -3,7 +3,7 @@ Very simple BNF
 
 translation_unit : scraper_list
 
-scraper_list: scraper_list ( <NEWLINE> )+ scraper | scraper
+scraper_list: scraper_list ( <NEWLINE> )* scraper | scraper
 
 scraper : header ( <NEWLINE> )* sentence_list
 
