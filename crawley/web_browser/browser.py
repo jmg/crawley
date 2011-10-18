@@ -1,18 +1,10 @@
-import os
-
-from PyQt4 import QtCore, QtWebKit
+from PyQt4 import QtCore, QtWebKit, QtGui
 from baseBrowser import BaseBrowser, BaseBrowserTab
 from config import DEFAULTS, SELECTED_CLASS
+
 from crawley.crawlers.offline import OffLineCrawler
-from crawley.extractors import PyQueryExtractor
-
-from crawley.manager.commands.startproject import StartProjectCommand
-from crawley.manager.commands.run import RunCommand
-from crawley.manager.projects.template import TemplateProject
 from crawley.manager.utils import get_full_template_path
-
-PATH = os.path.dirname(os.path.abspath(__file__))
-
+from gui_project import GUIProject
 
 class Browser(BaseBrowser):
     """
@@ -113,8 +105,7 @@ class BrowserTab(BaseBrowserTab):
         """ Update the url text box """
         if self.is_current():
             self.parent.tb_url.setText(self.url)
-        self.url = url.toString()
-        #self.load_url(self.url)
+        self.url = url.toString()        
 
     def back(self):
         """" Back to previous page """
@@ -130,40 +121,35 @@ class BrowserTab(BaseBrowserTab):
         """" Reload page """
         if self.is_current():
             self.html.reload()
-
+        
+    def start(self):
+        """ 
+            Starts a new project
+        """
+        
+        dir_name = str(QtGui.QFileDialog.getSaveFileName(self, 'Project Name', '.'))
+        url = self.parent.tb_url.text()
+        
+        self.current_project = GUIProject(dir_name, url)
+        self.current_project.set_up()
+    
     def generate(self):
-        """" generate template """
+        """
+            Generates a DSL template 
+        """
+        
         if self.is_current():
-
-            project_name = "new_test"
-            cmd = StartProjectCommand(project_type=TemplateProject.name, project_name=project_name)
-            cmd.execute()
 
             main_frame = self.html.page().mainFrame()
             content = unicode(main_frame.toHtml())
-
-            obj = PyQueryExtractor().get_object(content)
-            elements = obj(".%s" % SELECTED_CLASS)
-
-            elements_xpath = [e.get("id") for e in elements]
-
-            url = self.parent.tb_url.text()
-            stream = "PAGE => %s \r\n" % url
-            for i, e in enumerate(elements_xpath):
-                stream += "%s.%s -> %s <br/>" % ("my_table", "my_field_%s" % i, e)
-
-            with open(os.path.join(os.getcwd(), project_name, project_name, "template.crw"), "w") as f:
-                f.write(stream.replace("<br/>", "\r\n"))
-
-            os.sys.path.insert(0, project_name)
-            
-            self.html.show()
+            self.current_project.generate_teplate(content)
 
     def run(self):
-
-        import settings
-        cmd = RunCommand(settings=settings)
-        cmd.checked_execute()
+        """
+            Runs the current project
+        """
+        
+        self.current_project.run()
 
     def is_current(self):
         """" Return true if this is the current active tab """

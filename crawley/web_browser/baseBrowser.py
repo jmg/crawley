@@ -51,6 +51,7 @@ class BaseBrowserTab(BrowserTabGUI):
         self.connect(self.parent.bt_reload, QtCore.SIGNAL("clicked()"), self.reload)
         self.connect(self.parent.bt_generate, QtCore.SIGNAL("clicked()"), self.generate)
         self.connect(self.parent.bt_run, QtCore.SIGNAL("clicked()"), self.run)
+        self.connect(self.parent.bt_start, QtCore.SIGNAL("clicked()"), self.start)
         
         self.connect(self.html, QtCore.SIGNAL("loadStarted()"), self.load_start)
         self.connect(self.html, QtCore.SIGNAL("loadFinished(bool)"), self.loaded_bar)
@@ -80,3 +81,4 @@ class BaseBrowserTab(BrowserTabGUI):
 
     def reload():
         pass
+

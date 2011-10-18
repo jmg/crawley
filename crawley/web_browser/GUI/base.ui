@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>773</width>
+    <width>641</width>
     <height>553</height>
    </rect>
   </property>
@@ -70,6 +70,13 @@
           <widget class="QPushButton" name="bt_reload">
            <property name="text">
             <string/>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="bt_start">
+           <property name="text">
+            <string>Start Project</string>
            </property>
           </widget>
          </item>
