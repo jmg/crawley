@@ -1,5 +1,4 @@
-""" Crawlers configuration file """
+[crawler]
 
-start_urls = [] # Examples: ["http://packages.python.org/crawley/"]
-
-max_depth = 1
+start_urls = http://www.crawley-project.com.ar
+max_depth = 0

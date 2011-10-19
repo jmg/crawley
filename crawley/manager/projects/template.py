@@ -23,11 +23,11 @@ class TemplateProject(BaseProject):
         """
             Setups a crawley's template project
         """
-        
+
         BaseProject.set_up(self, project_name)
                 
         generate_template("template", project_name, self.project_dir, new_extension=".crw")
-        generate_template("config", project_name, self.project_dir)
+        generate_template("config", project_name, self.project_dir, new_extension=".ini")
         
     def syncdb(self, syncb_command):
         """
@@ -35,8 +35,8 @@ class TemplateProject(BaseProject):
         """
         
         with open(os.path.join(syncb_command.settings.PROJECT_ROOT, "template.crw"), "r") as f:
-            template = f.read()                        
-                                    
+            template = f.read()
+
         syncb_command.scraper_classes = interprete(template, syncb_command.settings)
         
     def run(self, run_command):
@@ -47,9 +47,8 @@ class TemplateProject(BaseProject):
             classes at runtime firts.
         """
         
-        config = import_user_module("config")                
-        
-        crawler_class = CrawlerCompiler(config, run_command.syncdb.scraper_classes).compile()                
+        compiler = CrawlerCompiler(run_command.syncdb.scraper_classes, run_command.settings)
+        crawler_class = compiler.compile()                
         
         global session
         sessions = [session]

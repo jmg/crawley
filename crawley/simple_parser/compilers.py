@@ -3,6 +3,7 @@ from crawley.crawlers import BaseCrawler
 from crawley.persistance.databases import Entity, Field, Unicode, setup, session, elixir
 from crawley.persistance.connectors import connectors
 
+from config_parser import ConfigApp
 
 class Interpreter(object):
     """
@@ -93,7 +94,7 @@ class Interpreter(object):
                 Generated scrape method
             """
 
-            fields = {}                        
+            fields = {}
                         
             for sentence in sentences:
                                 
@@ -134,16 +135,16 @@ class Interpreter(object):
 
 class CrawlerCompiler(object):
 
-    def __init__(self, config, scrapers):
+    def __init__(self, scrapers, settings):
 
-        self.scrapers = scrapers
-        self.config = config
+        self.scrapers = scrapers        
+        self.config = ConfigApp(settings.PROJECT_ROOT)
 
     def compile(self):
 
         attrs_dict = {}
         attrs_dict["scrapers"] = self.scrapers
-        attrs_dict["max_depth"] = self.config.max_depth
-        attrs_dict["start_urls"] = self.config.start_urls
+        attrs_dict["start_urls"] = self.config[('crawler','start_urls')].split(',')
+        attrs_dict["max_depth"] = int(self.config[('crawler','max_depth')])
 
         return type("GeneratedCrawler", (BaseCrawler, ), attrs_dict)

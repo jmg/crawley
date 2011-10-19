@@ -2,7 +2,7 @@ import sys
 import os
 from optparse import OptionParser
 
-from crawley.manager.utils import exit_with_error, import_user_module
+from crawley.manager.utils import exit_with_error, import_user_module, check_for_file
 from crawley.manager.projects import CodeProject, TemplateProject
 
 
@@ -122,7 +122,7 @@ class ProjectCommand(BaseCommand):
             or dsl templates based project]
         """
         
-        if import_user_module("config", exit=False) is not None:            
+        if check_for_file(self.settings, "config.ini") and check_for_file(self.settings, "template.crw"):
             self.project_type = TemplateProject()
             
         elif import_user_module("models", exit=False) is not None:            

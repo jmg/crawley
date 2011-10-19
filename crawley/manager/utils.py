@@ -79,4 +79,6 @@ def get_full_template_path(tm_name, extension=None):
     return os.path.join(TEMPLATES_DIR, "%s.%s" % (tm_name, extension))
 
 
-
+def check_for_file(settings, file_name):
+    
+    return os.path.exists(os.path.join(settings.PROJECT_ROOT, file_name))
