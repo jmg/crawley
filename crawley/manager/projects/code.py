@@ -16,10 +16,20 @@ from base import BaseProject
 
 
 class CodeProject(BaseProject):
+    """
+        This class represents a code project.
+        It can be started with:
+        
+            ~$ crawley startproject -t code [name]
+    """
     
     name = "code"        
     
     def set_up(self, project_name):
+        """
+            Setups a code project.
+            Generates the crawlers and models files based on a template.
+        """
         
         BaseProject.set_up(self, project_name)                
                 
@@ -27,6 +37,10 @@ class CodeProject(BaseProject):
         generate_template("crawlers", project_name, self.project_dir)
     
     def syncdb(self, syncb_command):
+        """
+            Builds the database and find the documents storages.
+            Foreach storage it adds a session to commit the results.
+        """
         
         syncb_command.sessions = []
                 
@@ -50,6 +64,9 @@ class CodeProject(BaseProject):
         setup(elixir.entities)
     
     def run(self, run_command):
+        """
+            Run the crawler of a code project
+        """
         
         crawler = import_user_module("crawlers")
         models = import_user_module("models")
@@ -59,7 +76,7 @@ class CodeProject(BaseProject):
         pool = GreenPool()                
                 
         for crawler_class in user_crawlers:
-            print crawler_class.__name__
+
             spider = crawler_class(storage=url_storage, sessions=run_command.syncdb.sessions, debug=run_command.settings.SHOW_DEBUG_INFO)
             pool.spawn_n(spider.start)
 
