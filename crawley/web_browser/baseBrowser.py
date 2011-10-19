@@ -54,6 +54,9 @@ class BaseBrowserTab(BrowserTabGUI):
         self.connect(self.parent.bt_start, QtCore.SIGNAL("clicked()"), self.start)
         self.connect(self.parent.bt_open, QtCore.SIGNAL("clicked()"), self.open)
         
+        self.parent.bt_generate.setEnabled(False)
+        self.parent.bt_run.setEnabled(False)
+        
         self.connect(self.html, QtCore.SIGNAL("loadStarted()"), self.load_start)
         self.connect(self.html, QtCore.SIGNAL("loadFinished(bool)"), self.loaded_bar)
         self.connect(self.html, QtCore.SIGNAL("loadProgress(int)"), self.load_bar)

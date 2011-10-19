@@ -125,7 +125,7 @@ class BaseCrawler(object):
         """
         if self.debug:
             print "Checking response of %s is valid to matching urls of the scrapper class %s" % (response.url, scraper_class.__name__)
-            
+                
         for pattern in scraper_class.matching_urls:
             if url_matcher(response.url, pattern):
                 return True
@@ -144,11 +144,10 @@ class BaseCrawler(object):
 
             if self._validate_scraper(response, scraper_class):
 
-                scraper = scraper_class()
+                scraper = scraper_class()                
                 scraper.scrape(response)
-
+                
                 self._commit()
-
                 urls.extend(scraper.get_urls(response))
 
         return urls

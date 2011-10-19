@@ -1,3 +1,5 @@
+import threading
+
 from PyQt4 import QtCore, QtWebKit, QtGui
 from baseBrowser import BaseBrowser, BaseBrowserTab
 from config import DEFAULTS, SELECTED_CLASS
@@ -24,11 +26,17 @@ class Browser(BaseBrowser):
         self.add_tab()
 
     def current_tab(self):
-        """ Return the current tab """
+        """ 
+            Return the current tab 
+        """
+        
         return self.ui.tab_pages.currentWidget()
 
     def browse(self):
-        """ Make a browse and call the url loader method """
+        """ 
+            Make a browse and call the url loader method 
+        """
+        
         url = self.ui.tb_url.text() if self.ui.tb_url.text() else self.default_url
         if not DEFAULTS['protocol'] in url:
             url = "%s://%s" % (DEFAULTS['protocol'], url)
@@ -37,26 +45,38 @@ class Browser(BaseBrowser):
         tab.load_url(url)
 
     def add_tab(self):
-        """ Add a new tab to the browser """
+        """ 
+            Add a new tab to the browser 
+        """
+        
         index = self.ui.tab_pages.addTab(BrowserTab(self.ui), "New Tab")
         self.ui.tab_pages.setCurrentIndex(index)
         self.ui.tb_url.setFocus()
         self.browse()
 
     def tab_closed(self, index):
-        """ Triggered when the user close a tab """
+        """ 
+            Triggered when the user close a tab 
+        """
+        
         self.ui.tab_pages.widget(index).deleteLater()
         if self.ui.tab_pages.count() <= 1:
             self.close()
 
     def tab_changed(self, index):
-        """ Triggered when the current tab changes """
+        """ 
+            Triggered when the current tab changes 
+        """
+        
         tab = self.current_tab()
         if tab is not None and tab.url is not None:
             self.ui.tb_url.setText(tab.url)
 
     def show(self):
-        """ Show the main windows """
+        """ 
+            Show the main windows
+        """
+        
         BaseBrowser.show(self)
 
 
@@ -69,27 +89,39 @@ class BrowserTab(BaseBrowserTab):
     """
 
     def __init__(self, parent):
+        
         BaseBrowserTab.__init__(self, parent)
         self.url = None
         self.crawler = OffLineCrawler()
 
     def load_bar(self, value):
-        """ Load the progress bar """
+        """ 
+            Load the progress bar
+        """
+        
         self.pg_load.setValue(value)
 
     def loaded_bar(self, state):
-        """ Triggered when the bar finish the loading """
+        """ 
+            Triggered when the bar finish the loading 
+        """
+        
         self.pg_load.hide()
         index = self.parent.tab_pages.indexOf(self)
         self.parent.tab_pages.setTabText(index, self.html.title())
         self.parent.tab_pages.setTabIcon(index, QtWebKit.QWebSettings.iconForUrl(QtCore.QUrl(self.url)))
 
     def load_start(self):
-        """ Show the progress bar """
+        """ 
+            Show the progress bar
+        """
+        
         self.pg_load.show()
 
     def load_url(self, url):
-        """ Load the requested url in the webwiew """
+        """ 
+            Load the requested url in the webwiew
+        """
 
         self.url = str(url)
         html = self.crawler._get_data(self.url)
@@ -102,23 +134,35 @@ class BrowserTab(BaseBrowserTab):
         self.html.show()
 
     def url_changed(self, url):
-        """ Update the url text box """
+        """ 
+            Update the url text box 
+        """
+        
         if self.is_current():
             self.parent.tb_url.setText(self.url)
         self.url = url.toString()        
 
     def back(self):
-        """" Back to previous page """
+        """ 
+            Back to previous page 
+        """
+        
         if self.is_current():
             self.html.back()
 
     def ahead(self):
-        """" Go to next page """
+        """ 
+            Go to next page 
+        """
+        
         if self.is_current():
             self.html.forward()
 
     def reload(self):
-        """" Reload page """
+        """ 
+            Reload page 
+        """
+        
         if self.is_current():
             self.html.reload()
         
@@ -130,10 +174,17 @@ class BrowserTab(BaseBrowserTab):
         self._start(is_new=True)        
         
     def open(self):
+        """
+            Opens an existing project
+        """
         
         self._start()
         
     def _start(self, is_new=False):
+        """
+            starts or opens a project depending on 
+            [is_new] parameter
+        """
         
         if not is_new:
             dir_name = str(QtGui.QFileDialog.getExistingDirectory(self, 'Open Project'))
@@ -143,7 +194,10 @@ class BrowserTab(BaseBrowserTab):
         url = self.parent.tb_url.text()        
         self.current_project = GUIProject(dir_name, url)
                 
-        self.current_project.set_up(is_new)        
+        self.current_project.set_up(is_new)
+        
+        self.parent.bt_generate.setEnabled(True)
+        self.parent.bt_run.setEnabled(True)
             
     def generate(self):
         """
@@ -154,15 +208,40 @@ class BrowserTab(BaseBrowserTab):
 
             main_frame = self.html.page().mainFrame()
             content = unicode(main_frame.toHtml())
-            self.current_project.generate_teplate(content)
+            self.current_project.generate_template(content)
+            
+    def _run(self):
+        """
+            Run the crawler in other thread
+        """
+        
+        self.current_project.run()
+        self._disable_enable_buttons(True)
 
     def run(self):
         """
             Runs the current project
         """
+                
+        self._disable_enable_buttons(False)
         
-        self.current_project.run()
+        t = threading.Thread(target=self._run)
+        t.start()
 
     def is_current(self):
-        """" Return true if this is the current active tab """
+        """" 
+            Return true if this is the current active tab 
+        """
+        
         return self is self.parent.tab_pages.currentWidget()
+        
+    def _disable_enable_buttons(self, enable):
+        """
+            Disables crawley related buttons 
+            enable: boolean
+        """
+        
+        self.parent.bt_generate.setEnabled(enable)
+        self.parent.bt_run.setEnabled(enable)
+        self.parent.bt_start.setEnabled(enable)
+        self.parent.bt_open.setEnabled(enable)
