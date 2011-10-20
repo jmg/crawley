@@ -2,6 +2,7 @@ import os.path
 from PyQt4 import QtGui, QtWebKit
 from PyQt4.uic import loadUi
 from base import Ui_MainWindow
+from config import Ui_FrmConfig
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -13,8 +14,9 @@ class BrowserGUI(QtGui.QMainWindow):
     def __init__(self):
 
         QtGui.QMainWindow.__init__(self)
+        
         self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)
+        self.ui.setupUi(self)                  
 
         self.ui.bt_back.setIcon(QtGui.QIcon().fromTheme("go-previous"))
         self.ui.bt_ahead.setIcon(QtGui.QIcon().fromTheme("go-next"))
@@ -44,4 +46,11 @@ class BrowserTabGUI(QtGui.QTabWidget):
         self.setLayout(layout)
 
 
+class FrmConfigGUI(QtGui.QDialog):
 
+    def __init__(self, parent):
+        
+        QtGui.QDialog.__init__(self, parent)
+        
+        self.config_ui = Ui_FrmConfig()
+        self.config_ui.setupUi(self)

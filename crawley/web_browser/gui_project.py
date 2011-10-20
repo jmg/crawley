@@ -13,6 +13,7 @@ class GUIProject(object):
         A class that represents a crawley GUI project on the browser.
     """
     
+    CONFIG_FILE = "config.ini"
     HEADER_LINE = "PAGE => %s \r\n"
     SENTENCE_LINE = "%s.%s -> %s \r\n"
     
@@ -33,7 +34,30 @@ class GUIProject(object):
         if is_new:
             cmd = StartProjectCommand(project_type=TemplateProject.name, project_name=self.project_name)
             cmd.execute()
+    
+    def _get_config_path(self):
+        """
+            Returns the config.ini path
+        """
         
+        return os.path.join(self.dir_name, self.project_name, self.project_name, self.CONFIG_FILE)
+    
+    def get_configuration(self):
+        """
+            Returns the content of the config.ini
+        """
+        
+        with open(self._get_config_path(), "r") as f:
+            return f.read()                
+        
+    def save_config(self, config):
+        """
+            Saves the new config.ini
+        """
+        
+        with open(self._get_config_path(), "w") as f:
+            f.write(config)
+    
     def generate_template(self, html):
         """
             Generates a template based on what users selects

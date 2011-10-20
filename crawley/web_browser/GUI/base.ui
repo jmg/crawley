@@ -88,6 +88,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="bt_configure">
+           <property name="text">
+            <string>Configure</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="bt_generate">
            <property name="text">
             <string>Generate Template</string>

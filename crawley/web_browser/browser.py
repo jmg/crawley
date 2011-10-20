@@ -1,7 +1,7 @@
 import threading
 
 from PyQt4 import QtCore, QtWebKit, QtGui
-from baseBrowser import BaseBrowser, BaseBrowserTab
+from baseBrowser import BaseBrowser, BaseBrowserTab, FrmBaseConfig
 from config import DEFAULTS, SELECTED_CLASS
 
 from crawley.crawlers.offline import OffLineCrawler
@@ -195,10 +195,19 @@ class BrowserTab(BaseBrowserTab):
         self.current_project = GUIProject(dir_name, url)
                 
         self.current_project.set_up(is_new)
-        
-        self.parent.bt_generate.setEnabled(True)
+                
         self.parent.bt_run.setEnabled(True)
+        self.parent.bt_generate.setEnabled(True)
+        self.parent.bt_configure.setEnabled(True)
             
+    def configure(self):
+        """
+            Configure a project accesing the config.ini file
+        """
+        
+        frm_config = FrmConfig(self, self.current_project)
+        frm_config.show()                
+    
     def generate(self):
         """
             Generates a DSL template 
@@ -242,6 +251,30 @@ class BrowserTab(BaseBrowserTab):
         """
         
         self.parent.bt_generate.setEnabled(enable)
+        self.parent.bt_configure.setEnabled(enable)
         self.parent.bt_run.setEnabled(enable)
         self.parent.bt_start.setEnabled(enable)
         self.parent.bt_open.setEnabled(enable)
+
+
+class FrmConfig(FrmBaseConfig):
+    
+    def __init__(self, parent, current_project):
+        
+        FrmBaseConfig.__init__(self, parent)
+        self.current_project = current_project
+        self.config_ui.tb_config.setPlainText(current_project.get_configuration())
+    
+    def ok(self):
+        """
+            Gets the new config file
+        """
+        config = self.config_ui.tb_config.toPlainText()
+        self.current_project.save_config(config)
+        self.close()
+        
+    def cancel(self):
+        """
+            Closes the dialog
+        """
+        self.close()
