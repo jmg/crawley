@@ -1,7 +1,7 @@
 from crawley.scrapers import BaseScraper
 from crawley.extractors import XPathExtractor
 from models import *
-from crawley.crawlers.base import BaseCrawler
+from crawley.crawlers.smart import SmartCrawler
 
 class PackagesAuthorsScraper(BaseScraper):
 
@@ -16,7 +16,7 @@ class PackagesAuthorsScraper(BaseScraper):
         PackagesAuthors(project=project, author=author)
 
 
-class PackagesAuthorsCrawler(BaseCrawler):
+class PackagesAuthorsCrawler(SmartCrawler):
 
     #add your starting urls here
     start_urls = ["http://pypi.python.org/pypi"]
@@ -29,3 +29,6 @@ class PackagesAuthorsCrawler(BaseCrawler):
 
     #select your favourite HTML parsing tool
     extractor = XPathExtractor
+
+    #an example of a page that you want to scrap
+    template_url = "http://pypi.python.org/pypi/Shake/0.5.10"

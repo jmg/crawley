@@ -143,11 +143,18 @@ class BaseCrawler(object):
         for scraper_class in self.scrapers:
 
             if self._validate_scraper(response, scraper_class):
-
-                scraper = scraper_class()                
-                scraper.scrape(response)
                 
-                self._commit()
+                if self.debug:
+                    print "Extracting data from %s" % response.url
+                
+                scraper = scraper_class()
+                try:
+                    scraper.scrape(response)
+                    self._commit()
+                except Exception, e:
+                    if self.debug:
+                        print "Failed to extract data from %s : %s" % (response.url, e)                
+                                
                 urls.extend(scraper.get_urls(response))
 
         return urls
