@@ -77,4 +77,4 @@ class HtmlSchema(HTMLParser):
         self.tags.append(tag)
 
     def getSchema(self):
-        return "".join(self.tags, "/")
+        return "/".join(self.tags)

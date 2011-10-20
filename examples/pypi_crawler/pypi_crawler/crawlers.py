@@ -6,7 +6,7 @@ from crawley.crawlers.base import BaseCrawler
 class PackagesAuthorsScraper(BaseScraper):
 
     #The pages that have the precious data
-    matching_urls = ["%"]
+    matching_urls = ["%pypi.python.org/pypi/%"]
 
     def scrape(self, response):
 
