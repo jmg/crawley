@@ -1,3 +1,5 @@
+from re import search
+
 """Utilities module"""
 
 def url_matcher(url, pattern):
@@ -6,12 +8,30 @@ def url_matcher(url, pattern):
     """
     
     WILDCARD = "%"
-        
+    
     if pattern.startswith(WILDCARD) and pattern.endswith(WILDCARD):
-        return pattern[1:-1] in url
+        return matcher(pattern[1:-1], url, strict=False)
     elif pattern.endswith(WILDCARD):
-        return pattern[:-1] == url[:len(pattern)-1]
+        return matcher(pattern[:-1], url[:len(pattern)-1])        
     elif pattern.startswith(WILDCARD):        
-        return pattern[1:] == url[-len(pattern)+1:]
+        return matcher(pattern[1:], url[-len(pattern)+1:])
     else:
-        return pattern == url
+        return matcher(pattern, url)
+
+
+def matcher(pattern, url, strict=True):
+    """
+        Checks if the pattern matches the url
+    """
+        
+    match = search(pattern, url)
+    
+    if match is None:
+        return False
+        
+    group = match.group(0)    
+    
+    if strict:
+        return group == url
+    
+    return group in url
