@@ -82,5 +82,7 @@ class GUIProject(object):
         """
         
         import settings
+        os.chdir(os.path.join(self.dir_name, self.project_name))
+        
         cmd = RunCommand(settings=settings)        
         cmd.checked_execute()

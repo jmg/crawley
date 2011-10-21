@@ -31,7 +31,7 @@ class Interpreter(object):
         for block in self.code_blocks:
 
             header = block[0]
-            matching_url = header.xpath                            
+            matching_url = "%"
 
             attrs_dict = self._gen_scrape_method(block[1:])
             attrs_dict["matching_urls"] = [matching_url, ]
