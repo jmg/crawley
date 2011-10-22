@@ -1,5 +1,5 @@
 from crawley.scrapers import BaseScraper
-from crawley.crawlers import BaseCrawler
+from crawley.crawlers.smart import SmartCrawler
 from crawley.persistance.databases import Entity, Field, Unicode, setup, session, elixir
 from crawley.persistance.connectors import connectors
 
@@ -55,20 +55,20 @@ class Interpreter(object):
 
         descriptors = {}
         fields = [line.field for lines in self.code_blocks for line in lines if not line.is_header]
-        
+
         for field in fields:
-            
+
             table = field["table"]
             column = field["column"]
-            
+
             if table not in descriptors:
                 descriptors[table] = [column, ]
             else:
                 if column not in descriptors[table]:
                     descriptors[table].append(column)
-                
+
         for entity_name, fields in descriptors.iteritems():
-                        
+
             attrs_dict = dict([(field, Field(Unicode(255))) for field in fields])
 
             entity = self._gen_class(entity_name, (Entity, ), attrs_dict)
@@ -95,25 +95,25 @@ class Interpreter(object):
             """
 
             fields = {}
-                        
+
             for sentence in sentences:
-                                
+
                 nodes = response.html.xpath(sentence.xpath)
-                
+
                 column = sentence.field["column"]
                 table = sentence.field["table"]
-                                                
+
                 if nodes:
-                                        
+
                     value = _get_text_recursive(nodes[0])
-                    
+
                     if table not in fields:
                         fields[table] = {column : value}
                     else:
                         fields[table][column] = value
-            
-            for table, attrs_dict in fields.iteritems(): 
-                
+
+            for table, attrs_dict in fields.iteritems():
+
                 entities[table](**attrs_dict)
                 session.commit()
 
@@ -137,8 +137,9 @@ class CrawlerCompiler(object):
 
     def __init__(self, scrapers, settings):
 
-        self.scrapers = scrapers        
+        self.scrapers = scrapers
         self.config = ConfigApp(settings.PROJECT_ROOT)
+        self.template_url = settings.template_url
 
     def compile(self):
 
@@ -146,5 +147,6 @@ class CrawlerCompiler(object):
         attrs_dict["scrapers"] = self.scrapers
         attrs_dict["start_urls"] = self.config[('crawler','start_urls')].split(',')
         attrs_dict["max_depth"] = int(self.config[('crawler','max_depth')])
+        attrs_dict["template_url"] = self.template_url
 
-        return type("GeneratedCrawler", (BaseCrawler, ), attrs_dict)
+        return type("GeneratedCrawler", (SmartCrawler, ), attrs_dict)
