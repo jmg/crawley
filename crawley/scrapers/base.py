@@ -24,20 +24,18 @@ class BaseScraper(object):
                         
         try:
             self._validate(response)
-            self.scrape(response)            
+            self.scrape(response)
+            return True
             
         except ScraperCantParseError, e:
             if self.debug:
                 print "%s" % e
                 
-        except Exception, e:
+        except Exception, e:            
             raise e
             if self.debug:
-                print "Failed to extract data from %s : %s" % (response.url, e)            
-                
-        else:
-            return True
-            
+                print "Failed to extract data from %s" % (response.url)
+                            
         return False
                                                             
     def _validate(self, response):

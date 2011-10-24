@@ -14,7 +14,7 @@ class Request(object):
     def __init__(self, url, cookie_handler=None):
         
         if cookie_handler is None:
-           cookie_handler = CookieHanlder() 
+           cookie_handler = CookieHandler() 
         
         self.url = url
         self.headers = {}

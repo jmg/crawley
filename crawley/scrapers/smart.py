@@ -25,17 +25,17 @@ class SmartScraper(BaseScraper):
 
     def __init__(self, *args, **kwargs):
         
-        BaseCrawler.__init__(self, *args, **kwargs)
+        BaseScraper.__init__(self, *args, **kwargs)
         
         if self.template_url is None:
-            raise ValueError("%s must have a template_url attribute" % self.__name__)
+            raise ValueError("%s must have a template_url attribute" % self.__class__.__name__)
         
         self.request_manager = FastRequestManager()
         self.template_html_schema = self._get_html_schema(self.request_manager.make_request(self.template_url))
 
     def _validate(self, response):
         
-        return BaseCrawler._validate(self, response) and self._compare_with_template(response)
+        return BaseScraper._validate(self, response) and self._compare_with_template(response)
 
     def _compare_with_template(self, response):
         
@@ -47,7 +47,7 @@ class SmartScraper(BaseScraper):
         evaluated_ratio = difflib.SequenceMatcher(None, html_schema, self.template_html_schema).ratio()
         
         if evaluated_ratio <= self.ratio:
-            raise ScraperCantParseError("The Scraper %s can't parse the html from %s" % (self.__name__, response.url))
+            raise ScraperCantParseError("The Scraper %s can't parse the html from %s" % (self.__class__.__name__, response.url))
 
     def _get_html_schema(self, html):
         
