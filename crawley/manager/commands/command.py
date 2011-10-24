@@ -2,7 +2,7 @@ import sys
 import os
 from optparse import OptionParser
 
-from crawley.manager.utils import exit_with_error, import_user_module, check_for_file
+from crawley.manager.utils import exit_with_error, import_user_module, check_for_file, fix_file_extension
 from crawley.manager.projects import CodeProject, TemplateProject
 
 
@@ -112,9 +112,15 @@ class ProjectCommand(BaseCommand):
             Fix errors in settings.py
         """
 
-        if self.settings.DATABASE_ENGINE == 'sqlite':
-            if not self.settings.DATABASE_NAME.endswith(".sqlite"):
-                self.settings.DATABASE_NAME = "%s.sqlite" % self.settings.DATABASE_NAME        
+        if hasattr(self.settings, 'DATABASE_ENGINE'):
+            if self.settings.DATABASE_ENGINE == 'sqlite':
+                self.settings.DATABASE_NAME = fix_file_extension(self.settings.DATABASE_NAME, 'sqlite')
+         
+        if hasattr(self.settings, 'JSON_DOCUMENT'):
+            self.settings.JSON_DOCUMENT = fix_file_extension(self.settings.JSON_DOCUMENT, 'json')
+        
+        if hasattr(self.settings, 'XML_DOCUMENT'):
+            self.settings.XML_DOCUMENT = fix_file_extension(self.settings.XML_DOCUMENT, 'xml')
         
     def _check_project_type(self):
         """

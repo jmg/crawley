@@ -5,7 +5,7 @@ from crawley.persistance.connectors import connectors
 
 from config_parser import ConfigApp
 
-class Interpreter(object):
+class DSLInterpreter(object):
     """
         This class "compiles" the DSL into scraper classes for
         the crawley framework
@@ -17,24 +17,22 @@ class Interpreter(object):
         self.settings = settings
         self.entities = {}
 
-    def compile(self):
+    def gen_scrapers(self):
         """
             Returns a runtime generated scraper class
         """
-        self._gen_entities()
-        return self._gen_scrapers()
-
-    def _gen_scrapers(self):
 
         scrapers = []
 
         for block in self.code_blocks:
 
             header = block[0]
-            matching_url = header.xpath                            
+            matching_url = "%"
+            template_url = header.xpath
 
             attrs_dict = self._gen_scrape_method(block[1:])
             attrs_dict["matching_urls"] = [matching_url, ]
+            attrs_dict["template_url"] = template_url
 
             scraper = self._gen_class("GeneratedScraper", (BaseScraper, ), attrs_dict)
             scrapers.append(scraper)
@@ -48,7 +46,7 @@ class Interpreter(object):
 
         return type(name, bases, attrs_dict)
 
-    def _gen_entities(self):
+    def gen_entities(self):
         """
             Generates the entities classes
         """
@@ -74,12 +72,7 @@ class Interpreter(object):
             entity = self._gen_class(entity_name, (Entity, ), attrs_dict)
             self.entities[entity_name] = entity
 
-        connector = connectors[self.settings.DATABASE_ENGINE](self.settings)
-
-        elixir.metadata.bind = connector.get_connection_string()
-        elixir.metadata.bind.echo = self.settings.SHOW_DEBUG_INFO
-
-        setup(self.entities.values())
+        return self.entities.values()
 
     def _gen_scrape_method(self, sentences):
         """
@@ -87,6 +80,7 @@ class Interpreter(object):
             Returns a dictionary containing methods and attributes for the
             scraper class.
         """
+        
         entities = self.entities
 
         def scrape(self, response):
@@ -138,8 +132,8 @@ class CrawlerCompiler(object):
     def __init__(self, scrapers, settings):
 
         self.scrapers = scrapers        
-        self.config = ConfigApp(settings.PROJECT_ROOT)
-
+        self.config = ConfigApp(settings.PROJECT_ROOT)    
+    
     def compile(self):
 
         attrs_dict = {}

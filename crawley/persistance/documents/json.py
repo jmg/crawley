@@ -2,7 +2,6 @@ import simplejson
 from meta import DocumentMeta
 
 json_objects = []
-file_name = "data.json"
 
 class JSONDocument(object):
     """
@@ -20,12 +19,14 @@ class Session(object):
     """
         A class featuring a database session
     """
+    
+    file_name = None
 
     def commit(self):
         """
             Dumps the scraped data to the filesystem
         """
-        with open(file_name, 'w') as f:
+        with open(self.file_name, 'w') as f:
             simplejson.dump(json_objects, f)
             
     def close(self):

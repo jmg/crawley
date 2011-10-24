@@ -1,5 +1,5 @@
 from PyQt4 import QtCore, QtWebKit, QtGui
-from GUI import BrowserGUI, BrowserTabGUI
+from GUI import BrowserGUI, BrowserTabGUI, FrmConfigGUI
 
 actions = {"Alt+Left" : QtWebKit.QWebPage.Back, "Alt+Right" : QtWebKit.QWebPage.Forward, "F5" : QtWebKit.QWebPage.Reload }
 
@@ -48,19 +48,19 @@ class BaseBrowserTab(BrowserTabGUI):
 
         self.connect(self.parent.bt_back, QtCore.SIGNAL("clicked()"), self.back)
         self.connect(self.parent.bt_ahead, QtCore.SIGNAL("clicked()"), self.ahead)
-        self.connect(self.parent.bt_reload, QtCore.SIGNAL("clicked()"), self.reload)
-        self.connect(self.parent.bt_generate, QtCore.SIGNAL("clicked()"), self.generate)
+        self.connect(self.parent.bt_reload, QtCore.SIGNAL("clicked()"), self.reload)        
+        self.connect(self.parent.bt_save, QtCore.SIGNAL("clicked()"), self.save)
         self.connect(self.parent.bt_run, QtCore.SIGNAL("clicked()"), self.run)
         self.connect(self.parent.bt_start, QtCore.SIGNAL("clicked()"), self.start)
         self.connect(self.parent.bt_open, QtCore.SIGNAL("clicked()"), self.open)
-        
-        self.parent.bt_generate.setEnabled(False)
-        self.parent.bt_run.setEnabled(False)
-        
+        self.connect(self.parent.bt_configure, QtCore.SIGNAL("clicked()"), self.configure)
+                
         self.connect(self.html, QtCore.SIGNAL("loadStarted()"), self.load_start)
         self.connect(self.html, QtCore.SIGNAL("loadFinished(bool)"), self.loaded_bar)
         self.connect(self.html, QtCore.SIGNAL("loadProgress(int)"), self.load_bar)
         self.connect(self.html, QtCore.SIGNAL("urlChanged(const QUrl)"), self.url_changed)
+        
+        self._disable_enable_project_buttons(False)
 
 
     # overridable methods section
@@ -86,3 +86,11 @@ class BaseBrowserTab(BrowserTabGUI):
     def reload():
         pass
 
+
+class FrmBaseConfig(FrmConfigGUI):
+    
+    def __init__(self, parent):
+
+        FrmConfigGUI.__init__(self, parent)
+        self.connect(self.config_ui.bt_ok, QtCore.SIGNAL("clicked()"), self.ok)
+        self.connect(self.config_ui.bt_cancel, QtCore.SIGNAL("clicked()"), self.cancel)

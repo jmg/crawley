@@ -92,6 +92,15 @@ class BaseCrawler(object):
 
         self.pool = GreenPool()
         self.request_manager = RequestManager()
+        
+        self._initialize_scrapers()
+        
+    def _initialize_scrapers(self):
+        """
+            Instanciates all the scraper classes
+        """
+        
+        self.scrapers = [scraper_class(debug=self.debug) for scraper_class in self.scrapers]            
 
     def _get_response(self, url, data=None):
         """
@@ -117,20 +126,7 @@ class BaseCrawler(object):
             if url_matcher(url, pattern):
                 data = post_data
 
-        return self._get_response(url, data)
-
-    def _validate_scraper(self, response, scraper_class):
-        """
-            Override this method in order to provide more validations before the data extraction with the given scraper class
-        """
-        if self.debug:
-            print "Checking response of %s is valid to matching urls of the scrapper class %s" % (response.url, scraper_class.__name__)                
-                
-        for pattern in scraper_class.matching_urls:
-            if url_matcher(response.url, pattern):
-                return True
-        
-        return False        
+        return self._get_response(url, data)    
 
     def _manage_scrapers(self, response):
         """
@@ -140,25 +136,14 @@ class BaseCrawler(object):
         """
         urls = []
 
-        for scraper_class in self.scrapers:
+        for scraper in self.scrapers:
 
-            if self._validate_scraper(response, scraper_class):
-
-                scraper = scraper_class()                
-                scraper.scrape(response)
-                
+            if scraper.try_scrape(response):
                 self._commit()
-                urls.extend(scraper.get_urls(response))
+                
+            urls.extend(scraper.get_urls(response))
 
-        return urls
-
-    def _commit(self):
-        """
-            Makes a Commit in all sessions
-        """
-
-        for session in self.sessions:
-            session.commit()
+        return urls    
 
     def _save_urls(self, url, new_url):
         """
@@ -170,6 +155,14 @@ class BaseCrawler(object):
             self.storage(parent=url, href=new_url)
             self._commit()
 
+    def _commit(self):
+        """
+            Makes a Commit in all sessions
+        """
+
+        for session in self.sessions:
+            session.commit()
+
     def _validate_url(self, url):
         """
             Validates if the url is in the crawler's [allowed_urls] list.
@@ -177,8 +170,12 @@ class BaseCrawler(object):
 
         if not self.allowed_urls:
             return True
-
-        return bool([True for pattern in self.allowed_urls if url_matcher(url, pattern)])
+        
+        for pattern in self.allowed_urls:
+            if url_matcher(url, pattern):
+                return True
+                
+        return False
 
     def _fetch(self, url, depth_level=0):
         """
@@ -206,7 +203,7 @@ class BaseCrawler(object):
         for new_url in urls:
             self._save_urls(url, new_url)
 
-            if depth_level >= self.max_depth:
+            if depth_level >= self.max_depth and self.max_depth != -1:
                 return
 
             self.pool.spawn_n(self._fetch, new_url, depth_level + 1)

@@ -1,5 +1,6 @@
 from eventlet.green import urllib2
 from request import DelayedRequest, Request
+from crawley.config import REQUEST_DELAY, REQUEST_DEVIATION
 
 import urllib
 
@@ -40,7 +41,7 @@ class RequestManager(object):
         host = urllib2.urlparse.urlparse(url).netloc
         count = self.host_counter.count(host)
                 
-        return DelayedRequest(url, cookie_handler, delay=300, desviation=100)
+        return DelayedRequest(url, cookie_handler, delay=REQUEST_DELAY, deviation=REQUEST_DEVIATION)
     
     def make_request(self, url, cookie_handler=None, data=None):
         """

@@ -1,8 +1,6 @@
 import os.path
 from ConfigParser import ConfigParser
 
-CONFIG_FILE = 'config.ini'
-
 class ConfigObj(object):
     """
         Implements a dictionary object of (section, item)
@@ -45,12 +43,21 @@ class ConfigApp(ConfigObj):
         config = ConfigApp()
         value = config[('section', 'item')]
     """
+    
+    CONFIG_FILE = 'config.ini'
 
     def __init__(self, ini_dir):
         
         ConfigObj.__init__(self)
-        self._config_parser.readfp(open(os.path.join(ini_dir, CONFIG_FILE), 'rb'))
+        
+        self.ini_dir = ini_dir
+        config = open(self._get_path(), 'rb')        
+        
+        self._config_parser.readfp(config)
         self._update_dictionary()
-
+    
+    def _get_path(self):
+        return os.path.join(self.ini_dir, self.CONFIG_FILE)
+    
     def save(self):
-        ConfigObj.save(self, CONFIG_FILE)
+        ConfigObj.save(self, self._get_path())

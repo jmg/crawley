@@ -2,7 +2,6 @@ from lxml import etree
 from meta import DocumentMeta
 
 root = etree.Element('root')
-file_name = "data.xml"
 
 class XMLDocument(object):
     """
@@ -27,13 +26,15 @@ class Session(object):
     """
         A class featuring a database session
     """
+    
+    file_name = None
 
     def commit(self):
         """
             Dumps the scraped data to the filesystem
         """
             
-        with open(file_name, "w") as f:
+        with open(self.file_name, "w") as f:
             f.writelines(etree.tostring(root, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
             
     def close(self):

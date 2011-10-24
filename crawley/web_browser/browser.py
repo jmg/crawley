@@ -1,12 +1,16 @@
-import threading
+import multiprocessing
 
+from lxml import etree
 from PyQt4 import QtCore, QtWebKit, QtGui
-from baseBrowser import BaseBrowser, BaseBrowserTab
+from baseBrowser import BaseBrowser, BaseBrowserTab, FrmBaseConfig
 from config import DEFAULTS, SELECTED_CLASS
 
 from crawley.crawlers.offline import OffLineCrawler
 from crawley.manager.utils import get_full_template_path
+from crawley.exceptions import InvalidProjectError        
+from crawley.extractors import XPathExtractor
 from gui_project import GUIProject
+
 
 class Browser(BaseBrowser):
     """
@@ -118,7 +122,7 @@ class BrowserTab(BaseBrowserTab):
         
         self.pg_load.show()
 
-    def load_url(self, url):
+    def load_url(self, url, selected_nodes=None):
         """ 
             Load the requested url in the webwiew
         """
@@ -129,9 +133,34 @@ class BrowserTab(BaseBrowserTab):
         with open(get_full_template_path("html_template"), "r") as f:
             template = f.read()
             html = template % {'content': html, 'css_class': SELECTED_CLASS }
+            
+        if selected_nodes is not None:
+            html = self._highlight_nodes(html, selected_nodes)
 
         self.html.setHtml(html)
         self.html.show()
+        
+    def _highlight_nodes(self, html, nodes):
+        """
+            Highlights the nodes selected by the user in the current page
+        """
+        
+        html_tree = XPathExtractor().get_object(html)
+        
+        for xpath in nodes:
+            
+            tags = html_tree.xpath(xpath)
+            
+            if tags:
+            
+                tag = tags[0]
+                
+                classes = tag.attrib.get("class", "")
+                classes = "%s %s" % (classes, SELECTED_CLASS)
+                tag.attrib["class"] = classes.strip()
+                tag.attrib["id"] = xpath
+        
+        return etree.tostring(html_tree.getroot(), pretty_print=True, method="html")
 
     def url_changed(self, url):
         """ 
@@ -189,31 +218,59 @@ class BrowserTab(BaseBrowserTab):
         if not is_new:
             dir_name = str(QtGui.QFileDialog.getExistingDirectory(self, 'Open Project'))
         else:
-            dir_name = str(QtGui.QFileDialog.getSaveFileName(self, 'Project Name'))
+            dir_name = str(QtGui.QFileDialog.getSaveFileName(self, 'Start Project'))
             
-        url = self.parent.tb_url.text()        
-        self.current_project = GUIProject(dir_name, url)
-                
-        self.current_project.set_up(is_new)
+        if not dir_name:
+            return
+            
+        try:        
+            self.current_project = GUIProject(dir_name)
+            self.current_project.set_up(self, is_new)
+                    
+            self._disable_enable_project_buttons(True)
+            
+            if is_new:
+                self.configure()
         
-        self.parent.bt_generate.setEnabled(True)
-        self.parent.bt_run.setEnabled(True)
+        except InvalidProjectError, e:
             
+            print "%s" % e
+            
+            self._disable_enable_project_buttons(False)
+            
+    def configure(self):
+        """
+            Configure a project accesing the config.ini file
+        """
+        
+        frm_config = FrmConfig(self, self.current_project)
+        frm_config.show()                
+    
+    def save(self):
+        """
+            Saves a crawley project
+        """
+        
+        self.generate()
+    
     def generate(self):
         """
             Generates a DSL template 
         """
         
         if self.is_current():
+            
+            url = self.parent.tb_url.text()
 
             main_frame = self.html.page().mainFrame()
             content = unicode(main_frame.toHtml())
-            self.current_project.generate_template(content)
+            self.current_project.generate_template(url, content)
             
     def _run(self):
         """
-            Run the crawler in other thread
+            Run the crawler in other process
         """
+        self.generate()
         
         self.current_project.run()
         self._disable_enable_buttons(True)
@@ -223,10 +280,30 @@ class BrowserTab(BaseBrowserTab):
             Runs the current project
         """
                 
-        self._disable_enable_buttons(False)
+        self._disable_enable_buttons(False, also_run=False)
+        self._change_run_handler(self.run, self.stop, "Stop Crawler")
         
-        t = threading.Thread(target=self._run)
-        t.start()
+        self.process = multiprocessing.Process(target=self._run)
+        self.process.start()
+    
+    def _change_run_handler(self, curr_handler, new_handler, label):
+        """
+            Connects the run signal to another handler
+        """
+        
+        self.disconnect(self.parent.bt_run, QtCore.SIGNAL("clicked()"), curr_handler)
+        self.connect(self.parent.bt_run, QtCore.SIGNAL("clicked()"), new_handler)
+        
+        self.parent.bt_run.setText(label)
+    
+    def stop(self):
+        """
+            Kills the running crawler process
+        """
+        
+        self.process.terminate()
+        self._change_run_handler(self.stop, self.run, "Run Crawler")
+        self._disable_enable_buttons(True)
 
     def is_current(self):
         """" 
@@ -235,13 +312,88 @@ class BrowserTab(BaseBrowserTab):
         
         return self is self.parent.tab_pages.currentWidget()
         
-    def _disable_enable_buttons(self, enable):
+    def _disable_enable_buttons(self, enable, also_run=True):
         """
             Disables crawley related buttons 
             enable: boolean
         """
-        
-        self.parent.bt_generate.setEnabled(enable)
-        self.parent.bt_run.setEnabled(enable)
+                
+        self.parent.bt_configure.setEnabled(enable)        
         self.parent.bt_start.setEnabled(enable)
         self.parent.bt_open.setEnabled(enable)
+        self.parent.bt_save.setEnabled(enable)
+        
+        if also_run:
+            self.parent.bt_run.setEnabled(enable)
+        
+    def _disable_enable_project_buttons(self, enable):
+        """
+            Disables crawley project related buttons 
+            enable: boolean
+        """
+                
+        self.parent.bt_configure.setEnabled(enable)
+        self.parent.bt_run.setEnabled(enable) 
+        self.parent.bt_save.setEnabled(enable)
+
+
+class FrmConfig(FrmBaseConfig):
+    """
+        A GUI on the top of the config.ini files of crawley projects.
+    """
+    
+    INFINITE = "Infinite"
+    MAX_DEPTH_OPTIONS = 100
+    
+    def __init__(self, parent, current_project):
+        """
+            Setups the frm config window
+        """
+        
+        FrmBaseConfig.__init__(self, parent)
+        self.current_project = current_project
+        
+        self.config = current_project.get_configuration()
+        self.config_ui.tb_start_url.setText(self.config[("crawler", "start_urls")])        
+        
+        items = ["%s" % i for i in range(self.MAX_DEPTH_OPTIONS)]
+        items.append(self.INFINITE)
+        
+        self.config_ui.cb_max_depth.addItems(items)
+        
+        max_depth = int(self.config[("crawler", "max_depth")])
+        max_depth = self._check_infinite(max_depth, infinite_value=-1, get_index=True)
+        
+        self.config_ui.cb_max_depth.setCurrentIndex(max_depth)
+        
+    def _check_infinite(self, max_depth, infinite_value=INFINITE, get_index=False):
+        """
+            Check if max_depth is infinite or not
+        """
+        
+        if max_depth == infinite_value:
+            if get_index:
+                return self.MAX_DEPTH_OPTIONS
+            return -1
+        return max_depth
+    
+    def ok(self):
+        """
+            Gets the new config file
+        """
+        
+        max_depth = self.config_ui.cb_max_depth.currentText()
+        max_depth = self._check_infinite(max_depth)
+        self.config[("crawler", "max_depth")] = max_depth
+        
+        start_url = self.config_ui.tb_start_url.text()                
+        self.config[("crawler", "start_urls")] = start_url
+        
+        self.config.save()
+        self.close()
+        
+    def cancel(self):
+        """
+            Closes the dialog
+        """
+        self.close()

@@ -18,6 +18,7 @@ class PersistanceTest(unittest.TestCase):
         
         doc = TestXMLDoc(attribute="test_value")
         doc = TestXMLDoc(attribute="test_value2")
+        xml_session.file_name = "data.xml"
         xml_session.commit()
         
         self.assertTrue(os.path.exists("data.xml"))
@@ -27,6 +28,7 @@ class PersistanceTest(unittest.TestCase):
     
         doc = TestJSONDoc(attribute="test_value")
         doc = TestJSONDoc(attribute="test_value2")
+        json_session.file_name = "data.json"
         json_session.commit()
         
         self.assertTrue(os.path.exists("data.json"))

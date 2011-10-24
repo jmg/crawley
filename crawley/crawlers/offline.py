@@ -2,7 +2,6 @@ from base import BaseCrawler
 from lxml import etree
 from crawley.extractors import XPathExtractor
 from StringIO import StringIO
-from lxml import etree
 
 class OffLineCrawler(BaseCrawler):
     

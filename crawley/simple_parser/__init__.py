@@ -3,13 +3,21 @@
 """
 
 from parsers import DSLAnalizer
-from compilers import Interpreter
+from compilers import DSLInterpreter
 
-def interprete(dsl, settings):
+
+class Generator(object):
     
-    analzier = DSLAnalizer(dsl)
-    code_blocks = analzier.parse()
+    def __init__(self, dsl_template, settings):
+        
+        analzier = DSLAnalizer(dsl_template)
+        code_blocks = analzier.parse()
+        self.interpreter = DSLInterpreter(code_blocks, settings)
     
-    interpreter = Interpreter(code_blocks, settings)    
-    scrapers = interpreter.compile()
-    return scrapers
+    def gen_entities(self):
+    
+        return self.interpreter.gen_entities()
+
+    def gen_scrapers(self):
+    
+        return self.interpreter.gen_scrapers()
