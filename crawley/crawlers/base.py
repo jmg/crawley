@@ -138,10 +138,12 @@ class BaseCrawler(object):
 
         for scraper in self.scrapers:
 
-            if scraper.try_scrape(response):
-                self._commit()
+            urls = scraper.try_scrape(response)
                 
-            urls.extend(scraper.get_urls(response))
+            if urls is not None:
+                
+                self._commit()                
+                urls.extend(urls)
 
         return urls    
 

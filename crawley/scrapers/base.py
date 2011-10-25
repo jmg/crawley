@@ -25,18 +25,15 @@ class BaseScraper(object):
         try:
             self._validate(response)
             self.scrape(response)
-            return True
+            return self.get_urls()
             
         except ScraperCantParseError, e:
             if self.debug:
                 print "%s" % e
                 
-        except Exception, e:            
-            raise e
+        except Exception, e:
             if self.debug:
-                print "Failed to extract data from %s" % (response.url)
-                            
-        return False
+                print "Failed to extract data from %s" % (response.url)                                    
                                                             
     def _validate(self, response):
         """
