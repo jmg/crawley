@@ -40,6 +40,8 @@ class GUIProject(object):
         else:
             self._validate_project()
             self._load_data(browser_tab)
+        
+        self.settings = import_user_module("settings")
             
     def _validate_project(self):
         """
@@ -113,9 +115,8 @@ class GUIProject(object):
         """
             Runs the crawler of the generated project 
         """
-        
-        import settings
+                
         os.chdir(os.path.join(self.dir_name, self.project_name))
         
-        cmd = RunCommand(settings=settings)        
+        cmd = RunCommand(settings=self.settings)        
         cmd.checked_execute()

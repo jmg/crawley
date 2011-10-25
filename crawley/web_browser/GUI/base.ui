@@ -102,6 +102,13 @@
           </widget>
          </item>
          <item>
+          <widget class="QPushButton" name="bt_settings">
+           <property name="text">
+            <string>Settings</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="bt_run">
            <property name="text">
             <string>Run Crawler</string>

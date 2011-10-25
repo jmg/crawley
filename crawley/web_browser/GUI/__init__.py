@@ -3,6 +3,7 @@ from PyQt4 import QtGui, QtWebKit
 from PyQt4.uic import loadUi
 from base import Ui_MainWindow
 from config import Ui_FrmConfig
+from settings import Ui_Settings
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
@@ -54,3 +55,14 @@ class FrmConfigGUI(QtGui.QDialog):
         
         self.config_ui = Ui_FrmConfig()
         self.config_ui.setupUi(self)
+        
+        
+class FrmSettingsGUI(QtGui.QDialog):
+
+    def __init__(self, parent):
+        
+        QtGui.QDialog.__init__(self, parent)
+        
+        self.settings_ui = Ui_Settings()
+        self.settings_ui.setupUi(self)
+

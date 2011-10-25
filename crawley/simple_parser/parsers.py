@@ -11,8 +11,8 @@ class DSLAnalizer(object):
         
     def is_header(self, line):
         
-        return ":" in line
-    
+        return DSLHeaderLine.SEPARATOR in line
+        
     def parse(self):
         
         blocks = []

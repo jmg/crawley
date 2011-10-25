@@ -8,18 +8,22 @@ class ConfigObj(object):
     """
 
     def __init__(self):
+        
         self._config_parser = ConfigParser()
         self.config = {}
 
     def _update_dictionary(self):
+        
         for sect in self._config_parser.sections():
             for item_name, value in self._config_parser.items(sect):
                 self.config[(sect, item_name)] = value
 
     def __getitem__(self, key):
+        
         return self.config.get(key, None)
 
     def __setitem__(self, key, value):
+        
         if value is None:
             value = ''
         self.config[key] = value
@@ -29,9 +33,11 @@ class ConfigObj(object):
         self._config_parser.set(section, item, value)
 
     def __str__(self):
+        
         return str(self.config)
 
     def save(self, filename):
+        
         self._config_parser.write(open(filename,'wb'))
 
 
@@ -57,7 +63,9 @@ class ConfigApp(ConfigObj):
         self._update_dictionary()
     
     def _get_path(self):
+        
         return os.path.join(self.ini_dir, self.CONFIG_FILE)
     
     def save(self):
+        
         ConfigObj.save(self, self._get_path())

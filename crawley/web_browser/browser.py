@@ -2,13 +2,14 @@ import multiprocessing
 
 from lxml import etree
 from PyQt4 import QtCore, QtWebKit, QtGui
-from baseBrowser import BaseBrowser, BaseBrowserTab, FrmBaseConfig
+from baseBrowser import BaseBrowser, BaseBrowserTab, FrmBaseConfig, FrmBaseSettings
 from config import DEFAULTS, SELECTED_CLASS
 
 from crawley.crawlers.offline import OffLineCrawler
 from crawley.manager.utils import get_full_template_path
 from crawley.exceptions import InvalidProjectError        
 from crawley.extractors import XPathExtractor
+from crawley.persistance.connectors import connectors
 from gui_project import GUIProject
 
 
@@ -244,7 +245,15 @@ class BrowserTab(BaseBrowserTab):
         """
         
         frm_config = FrmConfig(self, self.current_project)
-        frm_config.show()                
+        frm_config.show()  
+        
+    def settings(self):
+        """
+            Shows the settings dialog
+        """
+        
+        frm_settings = FrmSettings(self, self.current_project.settings)
+        frm_settings.show()  
     
     def save(self):
         """
@@ -322,6 +331,7 @@ class BrowserTab(BaseBrowserTab):
         self.parent.bt_start.setEnabled(enable)
         self.parent.bt_open.setEnabled(enable)
         self.parent.bt_save.setEnabled(enable)
+        self.parent.bt_settings.setEnabled(enable) 
         
         if also_run:
             self.parent.bt_run.setEnabled(enable)
@@ -334,6 +344,7 @@ class BrowserTab(BaseBrowserTab):
                 
         self.parent.bt_configure.setEnabled(enable)
         self.parent.bt_run.setEnabled(enable) 
+        self.parent.bt_settings.setEnabled(enable) 
         self.parent.bt_save.setEnabled(enable)
 
 
@@ -391,6 +402,128 @@ class FrmConfig(FrmBaseConfig):
         
         self.config.save()
         self.close()
+        
+    def cancel(self):
+        """
+            Closes the dialog
+        """
+        self.close()
+
+
+class FrmSettings(FrmBaseSettings):
+    """
+        A GUI on the top of the settings.py files of crawley projects.
+    """
+                
+    attrs_controls = { 'tb_name' : "DATABASE_NAME",
+                       'tb_user' : "DATABASE_USER",
+                       'tb_password' : "DATABASE_PASSWORD",
+                       'tb_host' : "DATABASE_HOST",
+                       'tb_port' : "DATABASE_PORT",
+                       'tb_json' : "JSON_DOCUMENT",
+                       'tb_xml' : "XML_DOCUMENT",
+                       'ck_show_debug' : "SHOW_DEBUG_INFO",
+                     }
+    
+    def __init__(self, parent, settings):
+        """
+            Setups the frm settings window
+        """
+        
+        FrmBaseSettings.__init__(self, parent)
+        self.settings = settings
+        
+        for control_name, attribute_name in self.attrs_controls.iteritems():
+            
+            control = getattr(self.settings_ui, control_name)
+            
+            if control_name.startswith("tb_"):
+                control.setText(self._check_for_attribute(attribute_name))
+                
+            elif control_name.startswith("ck_"):
+                control.setChecked(self._check_for_attribute(attribute_name))
+                
+                
+        engine = self._check_for_attribute("DATABASE_ENGINE")
+        
+        connectors_names = []
+        
+        for i, connector in enumerate(connectors.keys()):
+            
+            connectors_names.append(connector)
+            
+            if connector == engine:
+                index = i                
+            
+        self.settings_ui.cb_engine.addItems(connectors_names)
+        self.settings_ui.cb_engine.setCurrentIndex(index)
+    
+    def _check_for_attribute(self, attr_name):
+        
+        return getattr(self.settings, attr_name, '')
+    
+    def ok(self):
+        """
+            Saves the settings.py file
+        """
+        
+        settings_dict = {}
+        
+        for control_name, attribute_name in self.attrs_controls.iteritems():
+            
+            control = getattr(self.settings_ui, control_name)
+        
+            if control_name.startswith("tb_"):
+                settings_dict[attribute_name] = str(control.text())
+        
+            if control_name.startswith("ck_"):
+                settings_dict[attribute_name] = control.isChecked()
+                
+        settings_dict["DATABASE_ENGINE"] = str(self.settings_ui.cb_engine.currentText())
+                
+        self.settings.__dict__.update(settings_dict)
+        self._dump_file(settings_dict)
+        self.close()
+        
+    def _dump_file(self, settings_dict):
+        """
+            Writes the settings_dict to a settings.py file
+        """
+        SEPARATOR = " = "
+        
+        with open(self.settings.__file__, 'r') as f:
+            
+            lines = [line.split(SEPARATOR) for line in f.readlines()]
+        
+        new_lines = []
+        
+        for line in lines:
+            
+            try:
+                key, value = [val.strip() for val in line]
+                new_value = settings_dict.get(key, None)                                
+                
+                if isinstance(new_value, basestring) and new_value.count("'") != 2 and new_value.count('"') != 2:
+                    new_value = "'%s'" % new_value
+                    
+                if new_value is None:
+                    new_value = value
+                
+                new_line = "%s%s%s" % (key, SEPARATOR, new_value)
+                new_lines.append(new_line)
+                
+            except ValueError:
+                new_lines.append(line[0])
+                    
+        stream = ""
+        
+        for line in new_lines:            
+            if not "\n" in line:
+                line = "%s \n" % line
+            stream += line
+                
+        with open(self.settings.__file__, 'w') as f:            
+            f.write(stream)            
         
     def cancel(self):
         """
