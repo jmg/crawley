@@ -52,13 +52,21 @@ class BaseCrawler(object):
     """ The extractor class. Default is XPathExtractor"""
 
     post_urls = []
-    """ The Post data for the urls. A List of tuples containing (url, data_dict)
+    """ 
+        The Post data for the urls. A List of tuples containing (url, data_dict)
         Example: ("http://www.mypage.com/post_url", {'page' : '1', 'color' : 'blue'})
     """
 
     login = None
-    """ The login data. A tuple of (url, login_dict).
+    """ 
+        The login data. A tuple of (url, login_dict).
         Example: ("http://www.mypage.com/login", {'user' : 'myuser', 'pass', 'mypassword'})
+    """
+    
+    search_all_urls = True
+    """
+        If user doesn't define the get_urls method in scrapers then the crawler will search for urls
+        in the current page itself depending on the [search_all_urls] attribute.
     """
 
     _url_regex = re_compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
@@ -199,8 +207,13 @@ class BaseCrawler(object):
             return
                 
         urls = self._manage_scrapers(response)
+        
         if not urls:
-            urls = self.get_urls(response)
+            
+            if self.search_all_urls:
+                urls = self.get_urls(response)
+            else:
+                return 
         
         for new_url in urls:
             self._save_urls(url, new_url)

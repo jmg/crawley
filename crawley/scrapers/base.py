@@ -28,12 +28,11 @@ class BaseScraper(object):
             return self.get_urls(response)
             
         except ScraperCantParseError, e:
-            if self.debug:
-                print "%s" % e
+            pass            
                 
         except Exception, e:            
             if self.debug:
-                print "Failed to extract data from %s: %s" % (response.url, str(e))
+                print "%s failed to extract data from %s: %s" % (self.__class__.__name__, response.url, str(e))
                                                             
     def _validate(self, response):
         """

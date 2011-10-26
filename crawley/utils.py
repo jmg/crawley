@@ -23,9 +23,17 @@ def matcher(pattern, url, strict=True):
     """
         Checks if the pattern matches the url
     """
-        
-    match = search(pattern, url)
     
+    if strict:
+        return pattern == url
+    return pattern in url
+
+
+def complex_matcher(pattern, url, strict=True):
+        
+    #FIXME
+    match = search(pattern, url)
+            
     if match is None:
         
         return url in pattern
