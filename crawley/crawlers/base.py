@@ -134,7 +134,7 @@ class BaseCrawler(object):
             If so, gets the extractor object and delegate the scraping task
             to the scraper Object
         """
-        urls = []
+        scraped_urls = []
 
         for scraper in self.scrapers:
 
@@ -142,10 +142,10 @@ class BaseCrawler(object):
                 
             if urls is not None:
                 
-                self._commit()                
-                urls.extend(urls)
+                self._commit()
+                scraped_urls.extend(urls)
 
-        return urls    
+        return scraped_urls
 
     def _save_urls(self, url, new_url):
         """
@@ -197,11 +197,11 @@ class BaseCrawler(object):
         response = self._get_data(url)
         if response.raw_html is None:
             return
-
+                
         urls = self._manage_scrapers(response)
         if not urls:
             urls = self.get_urls(response)
-
+        
         for new_url in urls:
             self._save_urls(url, new_url)
 

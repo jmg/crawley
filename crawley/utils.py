@@ -27,7 +27,8 @@ def matcher(pattern, url, strict=True):
     match = search(pattern, url)
     
     if match is None:
-        return False
+        
+        return url in pattern
         
     group = match.group(0)    
     

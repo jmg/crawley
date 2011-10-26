@@ -39,10 +39,7 @@ class BaseScraper(object):
         """
             Override this method in order to provide more validations before the data extraction with the given scraper class
         """
-        
-        if self.debug:
-            print "Checking response of %s is valid to matching urls of the scrapper class %s" % (response.url, self.__class__.__name__)                
-                
+                        
         for pattern in self.matching_urls:
             if url_matcher(response.url, pattern):
                 return
