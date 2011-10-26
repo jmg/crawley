@@ -2,7 +2,6 @@ from base import BaseCrawler
 from lxml import etree
 from crawley.extractors import XPathExtractor
 from StringIO import StringIO
-from lxml import etree
 
 class OffLineCrawler(BaseCrawler):
     
@@ -12,11 +11,11 @@ class OffLineCrawler(BaseCrawler):
         
     def _get_data(self, url, data=None):
         
-        data = BaseCrawler._get_data(self, url, data)
+        response = BaseCrawler._get_data(self, url, data)
                
-        fixer = HTMLFixer(self._url_regex, url, data)
-        
+        fixer = HTMLFixer(self._url_regex, url, response.raw_html)        
         html = fixer.get_fixed_html()
+        
         return html 
                 
 

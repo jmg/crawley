@@ -1,5 +1,6 @@
 from eventlet.green import urllib2
 from request import DelayedRequest, Request
+from crawley.config import REQUEST_DELAY, REQUEST_DEVIATION
 
 import urllib
 
@@ -40,7 +41,7 @@ class RequestManager(object):
         host = urllib2.urlparse.urlparse(url).netloc
         count = self.host_counter.count(host)
                 
-        return DelayedRequest(url, cookie_handler, delay=300, desviation=100)
+        return DelayedRequest(url, cookie_handler, delay=REQUEST_DELAY, deviation=REQUEST_DEVIATION)
     
     def make_request(self, url, cookie_handler=None, data=None):
         """
@@ -73,15 +74,20 @@ class RequestManager(object):
             tries += 1
             
         if response is None or response.getcode() != 200:
+            return None                    
+        
+        return self._get_data(response)
+        
+    def _get_data(self, response):
+        
+        try:
+            return response.read()
+        except:
             return None
-            
-        return response.read()
     
     def _get_response(self, request, data):
     
-        response = request.get_response(data)        
-            
-        return response
+        return request.get_response(data)        
 
 
 class FastRequestManager(RequestManager):

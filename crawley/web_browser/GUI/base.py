@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'base.ui'
 #
-# Created: Thu Oct 13 00:11:38 2011
+# Created: Mon Oct 24 23:46:32 2011
 #      by: PyQt4 UI code generator 4.7.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -12,7 +12,7 @@ from PyQt4 import QtCore, QtGui
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(773, 553)
+        MainWindow.resize(1132, 671)
         self.centralwidget = QtGui.QWidget(MainWindow)
         font = QtGui.QFont()
         font.setFamily("Ubuntu")
@@ -49,9 +49,21 @@ class Ui_MainWindow(object):
         self.bt_reload.setText("")
         self.bt_reload.setObjectName("bt_reload")
         self.horizontalLayout_5.addWidget(self.bt_reload)
-        self.bt_generate = QtGui.QPushButton(self.frame)
-        self.bt_generate.setObjectName("bt_generate")
-        self.horizontalLayout_5.addWidget(self.bt_generate)
+        self.bt_start = QtGui.QPushButton(self.frame)
+        self.bt_start.setObjectName("bt_start")
+        self.horizontalLayout_5.addWidget(self.bt_start)
+        self.bt_open = QtGui.QPushButton(self.frame)
+        self.bt_open.setObjectName("bt_open")
+        self.horizontalLayout_5.addWidget(self.bt_open)
+        self.bt_save = QtGui.QPushButton(self.frame)
+        self.bt_save.setObjectName("bt_save")
+        self.horizontalLayout_5.addWidget(self.bt_save)
+        self.bt_configure = QtGui.QPushButton(self.frame)
+        self.bt_configure.setObjectName("bt_configure")
+        self.horizontalLayout_5.addWidget(self.bt_configure)
+        self.bt_settings = QtGui.QPushButton(self.frame)
+        self.bt_settings.setObjectName("bt_settings")
+        self.horizontalLayout_5.addWidget(self.bt_settings)
         self.bt_run = QtGui.QPushButton(self.frame)
         self.bt_run.setObjectName("bt_run")
         self.horizontalLayout_5.addWidget(self.bt_run)
@@ -78,7 +90,11 @@ class Ui_MainWindow(object):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "SimpleWebBrowser", None, QtGui.QApplication.UnicodeUTF8))
-        self.bt_generate.setText(QtGui.QApplication.translate("MainWindow", "Generate Template", None, QtGui.QApplication.UnicodeUTF8))
+        MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "Crawley Browser", None, QtGui.QApplication.UnicodeUTF8))
+        self.bt_start.setText(QtGui.QApplication.translate("MainWindow", "Start Project", None, QtGui.QApplication.UnicodeUTF8))
+        self.bt_open.setText(QtGui.QApplication.translate("MainWindow", "Open Project", None, QtGui.QApplication.UnicodeUTF8))
+        self.bt_save.setText(QtGui.QApplication.translate("MainWindow", "Save", None, QtGui.QApplication.UnicodeUTF8))
+        self.bt_configure.setText(QtGui.QApplication.translate("MainWindow", "Configure", None, QtGui.QApplication.UnicodeUTF8))
+        self.bt_settings.setText(QtGui.QApplication.translate("MainWindow", "Settings", None, QtGui.QApplication.UnicodeUTF8))
         self.bt_run.setText(QtGui.QApplication.translate("MainWindow", "Run Crawler", None, QtGui.QApplication.UnicodeUTF8))
 

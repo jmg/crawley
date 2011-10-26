@@ -24,11 +24,7 @@ function get_XPath(elt)
 </head>
 
 <body>
-
-<div>
 %(content)s
-</div>
-
 </body>
 
 <script type="text/javascript">

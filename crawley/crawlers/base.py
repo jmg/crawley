@@ -1,6 +1,7 @@
 from eventlet import GreenPool
 
 from re import compile as re_compile
+from urllib2 import urlparse
 
 from crawley.config import CRAWLEY_ROOT_DIR
 from crawley.http.managers import RequestManager
@@ -91,6 +92,15 @@ class BaseCrawler(object):
 
         self.pool = GreenPool()
         self.request_manager = RequestManager()
+        
+        self._initialize_scrapers()
+        
+    def _initialize_scrapers(self):
+        """
+            Instanciates all the scraper classes
+        """
+        
+        self.scrapers = [scraper_class(debug=self.debug) for scraper_class in self.scrapers]            
 
     def _get_response(self, url, data=None):
         """
@@ -99,8 +109,10 @@ class BaseCrawler(object):
             params:
                 data: if this param is present it makes a POST.
         """
+        data = self.request_manager.make_request(url, self.cookie_hanlder, data)
+        response = Response(data, self.extractor.get_object(data), url)
 
-        return self.request_manager.make_request(url, self.cookie_hanlder, data)
+        return response
 
     def _get_data(self, url, data=None):
         """
@@ -116,7 +128,7 @@ class BaseCrawler(object):
 
         return self._get_response(url, data)
 
-    def _manage_scrapers(self, url, data):
+    def _manage_scrapers(self, response):
         """
             Checks if some scraper is suited for data extraction on the current url.
             If so, gets the extractor object and delegate the scraping task
@@ -124,29 +136,16 @@ class BaseCrawler(object):
         """
         urls = []
 
-        for scraper_class in self.scrapers:
+        for scraper in self.scrapers:
 
-            if [pattern for pattern in scraper_class.matching_urls if url_matcher(url, pattern)]:
+            urls = scraper.try_scrape(response)
+                
+            if urls is not None:
+                
+                self._commit()                
+                urls.extend(urls)
 
-                html = self.extractor.get_object(data)
-
-                response = Response(html, url)
-                scraper = scraper_class()
-                scraper.scrape(response)
-
-                self._commit()
-
-                urls.extend(scraper.get_urls(response))
-
-        return urls
-
-    def _commit(self):
-        """
-            Makes a Commit in all sessions
-        """
-
-        for session in self.sessions:
-            session.commit()
+        return urls    
 
     def _save_urls(self, url, new_url):
         """
@@ -158,6 +157,14 @@ class BaseCrawler(object):
             self.storage(parent=url, href=new_url)
             self._commit()
 
+    def _commit(self):
+        """
+            Makes a Commit in all sessions
+        """
+
+        for session in self.sessions:
+            session.commit()
+
     def _validate_url(self, url):
         """
             Validates if the url is in the crawler's [allowed_urls] list.
@@ -165,8 +172,12 @@ class BaseCrawler(object):
 
         if not self.allowed_urls:
             return True
-
-        return bool([True for pattern in self.allowed_urls if url_matcher(url, pattern)])
+        
+        for pattern in self.allowed_urls:
+            if url_matcher(url, pattern):
+                return True
+                
+        return False
 
     def _fetch(self, url, depth_level=0):
         """
@@ -183,20 +194,20 @@ class BaseCrawler(object):
         if self.debug:
             print "crawling -> %s" % url
 
-        data = self._get_data(url)
-        if data is None:
+        response = self._get_data(url)
+        if response.raw_html is None:
             return
 
-        urls = self._manage_scrapers(url, data)
+        urls = self._manage_scrapers(response)
         if not urls:
-            urls = self.get_urls(data)
+            urls = self.get_urls(response)
 
         for new_url in urls:
-
             self._save_urls(url, new_url)
 
-            if depth_level >= self.max_depth:
+            if depth_level >= self.max_depth and self.max_depth != -1:
                 return
+
             self.pool.spawn_n(self._fetch, new_url, depth_level + 1)
 
     def _login(self):
@@ -218,21 +229,38 @@ class BaseCrawler(object):
         """
             Crawler's run method
         """
-        self._login()
+        self._login()                
 
         for url in self.start_urls:
             self.pool.spawn_n(self._fetch, url, depth_level=0)
 
         self.pool.waitall()
 
-
     #overridables
 
-    def get_urls(self, html):
+    def get_urls(self, response):
         """
             Returns a list of urls found in the current html page
         """
         urls = []
-        for url_match in self._url_regex.finditer(html):
+        
+        for url_match in self._url_regex.finditer(response.raw_html):
+            
             urls.append(url_match.group(0))
+        
+        tree = XPathExtractor().get_object(response.raw_html)                
+        
+        for link_tag in tree.xpath("//a"):                
+            
+            if not 'href' in link_tag.attrib:
+                continue
+                
+            url = link_tag.attrib["href"]
+            
+            if not self._url_regex.match(url):
+                
+                parsed_url = urlparse.urlparse(response.url)
+                new_url = "%s://%s%s" % (parsed_url.scheme, parsed_url.netloc, url)                
+                urls.append(new_url)
+                
         return urls

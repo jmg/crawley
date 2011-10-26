@@ -3,14 +3,14 @@ Very simple BNF
 
 translation_unit : scraper_list
 
-scraper_list: scraper_list ( <NEWLINE> )+ scraper | scraper
+scraper_list: scraper_list ( <NEWLINE> )* scraper | scraper
 
 scraper : header ( <NEWLINE> )* sentence_list
 
-header : <TABLENAME> = <URL> 
+header : "PAGE" => <URL> 
 
 sentence_list : sentence_list sentence | sentence
 
-sentence : <FIELDNAME> -> selector
+sentence : <TABLENAME> . <FIELDNAME> -> selector
 
 selector : <XPATHSELECTOR> | <CSSSELECTOR>

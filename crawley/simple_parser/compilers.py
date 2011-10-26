@@ -1,11 +1,11 @@
-import types
 from crawley.scrapers import BaseScraper
 from crawley.crawlers import BaseCrawler
 from crawley.persistance.databases import Entity, Field, Unicode, setup, session, elixir
-from crawley.persistance.connectors import SqliteConnector
+from crawley.persistance.connectors import connectors
 
+from config_parser import ConfigApp
 
-class Interpreter(object):
+class DSLInterpreter(object):
     """
         This class "compiles" the DSL into scraper classes for
         the crawley framework
@@ -15,25 +15,24 @@ class Interpreter(object):
 
         self.code_blocks = code_blocks
         self.settings = settings
+        self.entities = {}
 
-    def compile(self):
+    def gen_scrapers(self):
         """
             Returns a runtime generated scraper class
         """
-        self._gen_entities()
-        return self._gen_scrapers()
-
-    def _gen_scrapers(self):
 
         scrapers = []
 
         for block in self.code_blocks:
 
             header = block[0]
-            entity_name, matching_url = header
+            matching_url = "%"
+            template_url = header.xpath
 
-            attrs_dict = self._gen_scrape_method(self.entities[entity_name], block[1:])
+            attrs_dict = self._gen_scrape_method(block[1:])
             attrs_dict["matching_urls"] = [matching_url, ]
+            attrs_dict["template_url"] = template_url
 
             scraper = self._gen_class("GeneratedScraper", (BaseScraper, ), attrs_dict)
             scrapers.append(scraper)
@@ -47,37 +46,42 @@ class Interpreter(object):
 
         return type(name, bases, attrs_dict)
 
-    def _gen_entities(self):
+    def gen_entities(self):
         """
             Generates the entities classes
         """
 
-        self.entities = {}
-
-        for block in self.code_blocks:
-
-            header = block[0]
-            entity_name = header[0]
-
-            self.fields = [s[0] for s in block[1:]]
-            attrs_dict = dict([(field, Field(Unicode(255))) for field in self.fields])
+        descriptors = {}
+        fields = [line.field for lines in self.code_blocks for line in lines if not line.is_header]
+        
+        for field in fields:
+            
+            table = field["table"]
+            column = field["column"]
+            
+            if table not in descriptors:
+                descriptors[table] = [column, ]
+            else:
+                if column not in descriptors[table]:
+                    descriptors[table].append(column)
+                
+        for entity_name, fields in descriptors.iteritems():
+                        
+            attrs_dict = dict([(field, Field(Unicode(255))) for field in fields])
 
             entity = self._gen_class(entity_name, (Entity, ), attrs_dict)
             self.entities[entity_name] = entity
 
-        connector = SqliteConnector(self.settings)
+        return self.entities.values()
 
-        elixir.metadata.bind = connector.get_connection_string()
-        elixir.metadata.bind.echo = self.settings.SHOW_DEBUG_INFO
-
-        setup(self.entities.values())
-
-    def _gen_scrape_method(self, entity, sentences):
+    def _gen_scrape_method(self, sentences):
         """
             Generates scrapers methods.
             Returns a dictionary containing methods and attributes for the
             scraper class.
         """
+        
+        entities = self.entities
 
         def scrape(self, response):
             """
@@ -85,15 +89,27 @@ class Interpreter(object):
             """
 
             fields = {}
-
-            for field, selector in sentences:
-
-                nodes = response.html.xpath(selector)
+                        
+            for sentence in sentences:
+                                
+                nodes = response.html.xpath(sentence.xpath)
+                
+                column = sentence.field["column"]
+                table = sentence.field["table"]
+                                                
                 if nodes:
-                    fields[field] = _get_text_recursive(nodes[0])
-
-            entity(**fields)
-            session.commit()
+                                        
+                    value = _get_text_recursive(nodes[0])
+                    
+                    if table not in fields:
+                        fields[table] = {column : value}
+                    else:
+                        fields[table][column] = value
+            
+            for table, attrs_dict in fields.iteritems(): 
+                
+                entities[table](**attrs_dict)
+                session.commit()
 
 
         def _get_text_recursive(node):
@@ -111,19 +127,18 @@ class Interpreter(object):
         return { "scrape" : scrape }
 
 
-
 class CrawlerCompiler(object):
 
-    def __init__(self, config, scrapers):
+    def __init__(self, scrapers, settings):
 
-        self.scrapers = scrapers
-        self.config = config
-
+        self.scrapers = scrapers        
+        self.config = ConfigApp(settings.PROJECT_ROOT)    
+    
     def compile(self):
 
         attrs_dict = {}
         attrs_dict["scrapers"] = self.scrapers
-        attrs_dict["max_depth"] = self.config.max_depth
-        attrs_dict["start_urls"] = self.config.start_urls
+        attrs_dict["start_urls"] = self.config[('crawler','start_urls')].split(',')
+        attrs_dict["max_depth"] = int(self.config[('crawler','max_depth')])
 
-        return type("GeneratedCrawler", (BaseCrawler, ), attrs_dict)
+        return type("GeneratedCrawler", (SmartCrawler, ), attrs_dict)

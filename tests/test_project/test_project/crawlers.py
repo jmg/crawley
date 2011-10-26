@@ -1,12 +1,15 @@
 from crawley.crawlers import BaseCrawler
-from crawley.scrapers import BaseScraper
+from crawley.scrapers.smart import SmartScraper
 from crawley.extractors import XPathExtractor
 from models import *
 
-class PackagesAuthorsScraper(BaseScraper):
+class PackagesAuthorsScraper(SmartScraper):
 
     #The pages that have the precious data
     matching_urls = ["%pypi.python.org/pypi/%"]
+    
+    #an example of a page that you want to scrap
+    template_url = "http://pypi.python.org/pypi/Shake/0.5.10"
 
     def scrape(self, response):
 
@@ -16,39 +19,16 @@ class PackagesAuthorsScraper(BaseScraper):
         PackagesAuthors(project=project, author=author)
 
 
-class UrlsScraper(BaseScraper):
-
-    #This scraper only works on the main page
-    matching_urls = ["http://pypi.python.org/pypi"]
-
-    def get_urls(self, response):
-
-        table = response.html.xpath("/html/body/div[5]/div/div/div[3]/table")[0]
-
-        urls = []
-
-        for tr in table[1:-1]:
-
-            td_package = tr[1]
-            package_link = td_package[0]
-
-            url = "http://pypi.python.org%s" % (package_link.attrib['href'])
-            urls.append(url)
-
-        return urls
-
-
 class PackagesAuthorsCrawler(BaseCrawler):
 
     #add your starting urls here
     start_urls = ["http://pypi.python.org/pypi"]
 
     #add your scraper classes here
-    scrapers = [UrlsScraper, PackagesAuthorsScraper]
+    scrapers = [PackagesAuthorsScraper]
 
     #specify you maximum crawling depth level
     max_depth = 1
 
     #select your favourite HTML parsing tool
     extractor = XPathExtractor
-

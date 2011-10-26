@@ -1,8 +1,8 @@
-authors => http://pypi.python.org/pypi/crawley
+PAGE => http://pypi.python.org/pypi/crawley
 
-name -> /html/body/div[5]/div/div/div[3]/h1
-description -> /html/body/div[5]/div/div/div[3]/p
-author -> /html/body/div[5]/div/div/div[3]/ul/li/span
-home_page -> /html/body/div[5]/div/div/div[3]/ul/li[3]/a
-license -> /html/body/div[5]/div/div/div[3]/ul/li[5]/span
+authors.name -> /html/body/div[5]/div/div/div[3]/h1
+authors.description -> /html/body/div[5]/div/div/div[3]/p
+authors.author -> /html/body/div[5]/div/div/div[3]/ul/li/span
+authors.home_page -> /html/body/div[5]/div/div/div[3]/ul/li[3]/a
+authors.license -> /html/body/div[5]/div/div/div[3]/ul/li[5]/span
 
