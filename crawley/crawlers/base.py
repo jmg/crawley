@@ -126,7 +126,7 @@ class BaseCrawler(object):
             if url_matcher(url, pattern):
                 data = post_data
 
-        return self._get_response(url, data)    
+        return self._get_response(url, data)
 
     def _manage_scrapers(self, response):
         """
