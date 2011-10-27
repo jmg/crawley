@@ -3,6 +3,7 @@ from request import DelayedRequest, Request
 from crawley.config import REQUEST_DELAY, REQUEST_DEVIATION
 
 import urllib
+from crawley.http.response import Response
 
 class HostCounterDict(dict):
     """
@@ -53,7 +54,15 @@ class RequestManager(object):
         if data is not None:
             data = urllib.urlencode(data)
         
-        return self.get_response(request, data)
+        response = self.get_response(request, data)
+        
+        if (response is None) :
+            return None
+        
+        raw_html = self._get_data(response)
+        responseWrapper = Response(raw_html, None, url, response.headers)
+
+        return responseWrapper
                 
     def get_response(self, request, data):
         """
@@ -76,7 +85,7 @@ class RequestManager(object):
         if response is None or response.getcode() != 200:
             return None                    
         
-        return self._get_data(response)
+        return response
         
     def _get_data(self, response):
         

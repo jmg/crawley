@@ -7,7 +7,6 @@ Created on Oct 12, 2011
 import difflib
 
 from HTMLParser import HTMLParser
-from htmllib import HTMLParseError
 
 from base import BaseScraper
 from crawley.http.managers import FastRequestManager
@@ -31,7 +30,8 @@ class SmartScraper(BaseScraper):
             raise ValueError("%s must have a template_url attribute" % self.__class__.__name__)
         
         self.request_manager = FastRequestManager()
-        self.template_html_schema = self._get_html_schema(self.request_manager.make_request(self.template_url))
+        response = self.request_manager.make_request(self.template_url);
+        self.template_html_schema = self._get_html_schema(response.raw_html)
 
     def _validate(self, response):
         
@@ -41,7 +41,8 @@ class SmartScraper(BaseScraper):
         
         if self.debug :
             print "Evaluating similar html structure of %s" % response.url
-        
+
+        print response.raw_html
         html_schema = self._get_html_schema(response.raw_html)
         
         evaluated_ratio = difflib.SequenceMatcher(None, html_schema, self.template_html_schema).ratio()

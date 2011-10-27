@@ -6,7 +6,6 @@ from urllib2 import urlparse
 from crawley.config import CRAWLEY_ROOT_DIR
 from crawley.http.managers import RequestManager
 from crawley.http.cookies import CookieHandler
-from crawley.http.response import Response
 from crawley.extractors import XPathExtractor
 from crawley.exceptions import AuthenticationError
 from crawley.utils import url_matcher
@@ -109,8 +108,11 @@ class BaseCrawler(object):
             params:
                 data: if this param is present it makes a POST.
         """
-        data = self.request_manager.make_request(url, self.cookie_hanlder, data)
-        response = Response(data, self.extractor.get_object(data), url)
+        response = self.request_manager.make_request(url, self.cookie_hanlder, data)
+        if (response is None):
+            return None
+
+        response.html = self.extractor.get_object(response.raw_html)
 
         return response
 
@@ -195,7 +197,7 @@ class BaseCrawler(object):
             print "crawling -> %s" % url
 
         response = self._get_data(url)
-        if response.raw_html is None:
+        if response is None:
             return
 
         urls = self._manage_scrapers(response)
