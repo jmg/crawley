@@ -71,20 +71,16 @@ class BaseCrawler(object):
 
     _url_regex = re_compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
 
-    def __init__(self, storage=None, sessions=None, debug=False):
+    def __init__(self, sessions=None, debug=False):
         """
             Initializes the crawler
 
             params:
 
-                storages: A list of entities
-
                 sessions: Database or Documents persistant sessions
 
                 debug: indicates if the crawler logs to stdout debug info
-        """
-
-        self.storage = storage
+        """        
 
         if sessions is None:
             sessions = []
@@ -155,16 +151,6 @@ class BaseCrawler(object):
 
         return scraped_urls
 
-    def _save_urls(self, url, new_url):
-        """
-            Stores the url in an [UrlEntity] Object
-        """
-
-        if self.storage is not None:
-
-            self.storage(parent=url, href=new_url)
-            self._commit()
-
     def _commit(self):
         """
             Makes a Commit in all sessions
@@ -215,8 +201,7 @@ class BaseCrawler(object):
             else:
                 return 
         
-        for new_url in urls:
-            self._save_urls(url, new_url)
+        for new_url in urls:            
 
             if depth_level >= self.max_depth and self.max_depth != -1:
                 return
