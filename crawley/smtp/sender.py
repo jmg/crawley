@@ -1,4 +1,16 @@
-import smtplib
+from eventlet import patcher
+from eventlet.green import socket
+from eventlet.green import ssl
+from eventlet.green import time
+
+smtplib = patcher.inject('smtplib',
+    globals(),    
+    ('socket', socket),
+    ('ssl', ssl),
+    ('time', time))
+
+del patcher
+
 
 class MailSender(object):
     """
