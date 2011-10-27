@@ -1,4 +1,5 @@
 from re import search
+from UserDict import DictMixin
 
 """Utilities module"""
 
@@ -44,3 +45,29 @@ def complex_matcher(pattern, url, strict=True):
         return group == url
     
     return group in url
+    
+    
+class OrderedDict(DictMixin):
+    """
+        Ordered dict. Deprecated when we migrate to python 3
+    """
+
+    def __init__(self):
+        self._keys = []
+        self._data = {}
+
+    def __setitem__(self, key, value):
+        if key not in self._data:
+            self._keys.append(key)
+        self._data[key] = value
+
+    def __getitem__(self, key):
+        return self._data[key]
+
+    def __delitem__(self, key):
+        del self._data[key]
+        self._keys.remove(key)
+
+    def keys(self):
+        return list(self._keys)
+
