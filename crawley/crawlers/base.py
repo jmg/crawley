@@ -52,31 +52,35 @@ class BaseCrawler(object):
     """ The extractor class. Default is XPathExtractor"""
 
     post_urls = []
-    """ The Post data for the urls. A List of tuples containing (url, data_dict)
+    """ 
+        The Post data for the urls. A List of tuples containing (url, data_dict)
         Example: ("http://www.mypage.com/post_url", {'page' : '1', 'color' : 'blue'})
     """
 
     login = None
-    """ The login data. A tuple of (url, login_dict).
+    """ 
+        The login data. A tuple of (url, login_dict).
         Example: ("http://www.mypage.com/login", {'user' : 'myuser', 'pass', 'mypassword'})
+    """
+    
+    search_all_urls = True
+    """
+        If user doesn't define the get_urls method in scrapers then the crawler will search for urls
+        in the current page itself depending on the [search_all_urls] attribute.
     """
 
     _url_regex = re_compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
 
-    def __init__(self, storage=None, sessions=None, debug=False):
+    def __init__(self, sessions=None, debug=False):
         """
             Initializes the crawler
 
             params:
 
-                storages: A list of entities
-
                 sessions: Database or Documents persistant sessions
 
                 debug: indicates if the crawler logs to stdout debug info
-        """
-
-        self.storage = storage
+        """        
 
         if sessions is None:
             sessions = []
@@ -134,7 +138,7 @@ class BaseCrawler(object):
             If so, gets the extractor object and delegate the scraping task
             to the scraper Object
         """
-        urls = []
+        scraped_urls = []
 
         for scraper in self.scrapers:
 
@@ -142,20 +146,10 @@ class BaseCrawler(object):
                 
             if urls is not None:
                 
-                self._commit()                
-                urls.extend(urls)
+                self._commit()
+                scraped_urls.extend(urls)
 
-        return urls    
-
-    def _save_urls(self, url, new_url):
-        """
-            Stores the url in an [UrlEntity] Object
-        """
-
-        if self.storage is not None:
-
-            self.storage(parent=url, href=new_url)
-            self._commit()
+        return scraped_urls
 
     def _commit(self):
         """
@@ -197,13 +191,17 @@ class BaseCrawler(object):
         response = self._get_data(url)
         if response.raw_html is None:
             return
-
+                
         urls = self._manage_scrapers(response)
+        
         if not urls:
-            urls = self.get_urls(response)
-
-        for new_url in urls:
-            self._save_urls(url, new_url)
+            
+            if self.search_all_urls:
+                urls = self.get_urls(response)
+            else:
+                return 
+        
+        for new_url in urls:            
 
             if depth_level >= self.max_depth and self.max_depth != -1:
                 return

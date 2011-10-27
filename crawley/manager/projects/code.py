@@ -51,18 +51,17 @@ class CodeProject(BaseProject):
         """
         
         crawler = import_user_module("crawlers")
-        models = import_user_module("models")
-                
-        url_storage = search_class(UrlEntity, elixir.entities)
+        models = import_user_module("models")                
         
         pool = GreenPool()                
                 
         for crawler_class in user_crawlers:
 
-            spider = crawler_class(storage=url_storage, sessions=run_command.syncdb.sessions, debug=run_command.settings.SHOW_DEBUG_INFO)
+            spider = crawler_class(sessions=run_command.syncdb.sessions, debug=run_command.settings.SHOW_DEBUG_INFO)
             pool.spawn_n(spider.start)
 
         pool.waitall()
+        
         for session in run_command.syncdb.sessions:
             session.close()
         
