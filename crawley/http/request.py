@@ -6,6 +6,7 @@ from cookies import CookieHandler
 
 from crawley.config import REQUEST_TIMEOUT, MOZILLA_USER_AGENT
 
+
 class Request(object):
     """
         Custom request object 
@@ -30,6 +31,8 @@ class Request(object):
             Cookies are supported via a CookieHandler object
         """
         
+        self._normalize_url()
+        
         request = urllib2.Request(self.url, data, self.headers)        
         opener = urllib2.build_opener(self.cookie_handler)
         
@@ -37,6 +40,13 @@ class Request(object):
         self.cookie_handler.save_cookies()
         
         return response
+        
+    def _normalize_url(self):
+        """
+            Normalize the request url
+        """
+                
+        self.url = urllib2.quote(self.url.encode('utf-8'), safe="%/:=&?~#+!$,;'@()*[]")
 
 
 class DelayedRequest(Request):
