@@ -28,7 +28,7 @@ class BaseScraper(object):
             return self.get_urls(response)
             
         except ScraperCantParseError, e:
-            pass            
+            pass
                 
         except Exception, e:            
             if self.debug:
@@ -40,7 +40,12 @@ class BaseScraper(object):
         """
                         
         for pattern in self.matching_urls:
+            
             if url_matcher(response.url, pattern):
+                
+                if self.debug:
+                    print "%s matches the url %s" % (self.__class__.__name__, response.url)
+                
                 return
         
         raise ScraperCantParseError("The Scraper %s can't parse the html from %s" % (self.__class__.__name__, response.url))        

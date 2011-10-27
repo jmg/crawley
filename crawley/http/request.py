@@ -36,7 +36,11 @@ class Request(object):
         request = urllib2.Request(self.url, data, self.headers)        
         opener = urllib2.build_opener(self.cookie_handler)
         
-        response = opener.open(request, timeout=REQUEST_TIMEOUT)
+        if REQUEST_TIMEOUT is not None:
+            response = opener.open(request, timeout=REQUEST_TIMEOUT)
+        else:
+            response = opener.open(request)
+            
         self.cookie_handler.save_cookies()
         
         return response

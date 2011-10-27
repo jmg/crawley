@@ -6,7 +6,7 @@ CRAWLEY_ROOT_DIR = "crawley"
 
 # Requests
 
-REQUEST_TIMEOUT = 10    #in seconds
+REQUEST_TIMEOUT = None    #in seconds
 REQUEST_DELAY = 300     #in miliseconds
 REQUEST_DEVIATION = 300 #in miliseconds
 

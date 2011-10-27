@@ -180,15 +180,22 @@ class BaseCrawler(object):
             return
 
         if self.debug:
-            print "crawling -> %s" % url
-
-        response = self._get_response(url)
-        if response is None:
+            print "-" * 80
+            print "crawling -> %s" % url        
+        
+        try:
+            response = self._get_response(url)
+        except Exception, e:
+            if self.debug:
+                print "Request to %s returned error: %s" % (url, e)
             return
+        
+        if self.debug:
+            print "-" * 80
                 
         urls = self._manage_scrapers(response)
         
-        if not urls:
+        if not urls:                        
             
             if self.search_all_urls:
                 urls = self.get_urls(response)
@@ -227,6 +234,7 @@ class BaseCrawler(object):
             self.pool.spawn_n(self._fetch, url, depth_level=0)
 
         self.pool.waitall()
+        self.on_finish()
 
     #overridables
 
@@ -256,3 +264,10 @@ class BaseCrawler(object):
                 urls.append(new_url)
                 
         return urls
+    
+    def on_finish(self):
+        """
+            Override this method to do some work when the crawler finishes.
+        """
+        
+        pass

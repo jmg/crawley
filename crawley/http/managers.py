@@ -60,9 +60,6 @@ class RequestManager(object):
         response = self.get_response(request, data)                
         raw_html = self._get_data(response)
         
-        if raw_html is None:
-            return None
-        
         extracted_html = None
         
         if extractor is not None:
@@ -79,12 +76,14 @@ class RequestManager(object):
         response = None
         tries = 0
         
-        while tries < self.MAX_TRIES and response is None:
+        while response is None:
             
             try:
                 response = request.get_response(data)
-            except:
-                pass
+            except Exception, e:
+                
+                if tries >= self.MAX_TRIES:
+                    raise e
                 
             tries += 1
             
@@ -92,10 +91,7 @@ class RequestManager(object):
         
     def _get_data(self, response):
         
-        try:
-            return response.read()
-        except:
-            return None
+        return response.read()
 
 
 class FastRequestManager(RequestManager):
