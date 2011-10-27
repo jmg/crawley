@@ -129,7 +129,7 @@ class BrowserTab(BaseBrowserTab):
         """
 
         self.url = str(url)
-        html = self.crawler._get_data(self.url)
+        html = self.crawler._get_response(self.url)
 
         with open(get_full_template_path("html_template"), "r") as f:
             template = f.read()

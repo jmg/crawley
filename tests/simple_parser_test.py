@@ -38,7 +38,7 @@ class ParserTest(unittest.TestCase):
         scrapers_classes = generator.gen_scrapers()
 
         crawler = BaseCrawler()
-        response = crawler._get_data("http://www.python.org/")
+        response = crawler._get_response("http://www.python.org/")
 
         for scraper_class in scrapers_classes:           
             scraper_class().scrape(response)

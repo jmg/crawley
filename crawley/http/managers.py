@@ -1,9 +1,11 @@
+import urllib
+
 from eventlet.green import urllib2
 from request import DelayedRequest, Request
+from crawley.http.cookies import CookieHandler
+from crawley.http.response import Response
 from crawley.config import REQUEST_DELAY, REQUEST_DEVIATION
 
-import urllib
-from crawley.http.response import Response
 
 class HostCounterDict(dict):
     """
@@ -35,34 +37,38 @@ class RequestManager(object):
     def __init__(self, delayed=True):
         
         self.host_counter = HostCounterDict()
+        self.cookie_handler = CookieHandler()
         self.delayed = delayed
     
-    def _get_request(self, url, cookie_handler=None):
+    def _get_request(self, url):
         
         host = urllib2.urlparse.urlparse(url).netloc
         count = self.host_counter.count(host)
                 
-        return DelayedRequest(url, cookie_handler, delay=REQUEST_DELAY, deviation=REQUEST_DEVIATION)
+        return DelayedRequest(url, self.cookie_handler, delay=REQUEST_DELAY, deviation=REQUEST_DEVIATION)
     
-    def make_request(self, url, cookie_handler=None, data=None):
+    def make_request(self, url, data=None, extractor=None):
         """
             Acumulates a counter with the requests per host and 
             then make a Delayed Request
         """                                
-        request = self._get_request(url, cookie_handler)
+        request = self._get_request(url)
         
         if data is not None:
             data = urllib.urlencode(data)
         
-        response = self.get_response(request, data)
+        response = self.get_response(request, data)                
+        raw_html = self._get_data(response)
         
-        if (response is None) :
+        if raw_html is None:
             return None
         
-        raw_html = self._get_data(response)
-        responseWrapper = Response(raw_html, None, url, response.headers)
-
-        return responseWrapper
+        extracted_html = None
+        
+        if extractor is not None:
+            extracted_html = extractor.get_object(raw_html)
+        
+        return Response(raw_html=raw_html, extracted_html=extracted_html, url=url, response=response)
                 
     def get_response(self, request, data):
         """
@@ -76,15 +82,12 @@ class RequestManager(object):
         while tries < self.MAX_TRIES and response is None:
             
             try:
-                response = self._get_response(request, data)
+                response = request.get_response(data)
             except:
                 pass
                 
             tries += 1
             
-        if response is None or response.getcode() != 200:
-            return None                    
-        
         return response
         
     def _get_data(self, response):
@@ -93,10 +96,6 @@ class RequestManager(object):
             return response.read()
         except:
             return None
-    
-    def _get_response(self, request, data):
-    
-        return request.get_response(data)        
 
 
 class FastRequestManager(RequestManager):

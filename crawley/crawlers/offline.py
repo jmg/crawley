@@ -9,14 +9,14 @@ class OffLineCrawler(BaseCrawler):
         
         BaseCrawler.__init__(self, *args, **kwargs)
         
-    def _get_data(self, url, data=None):
+    def _get_response(self, url, data=None):
         
-        response = BaseCrawler._get_data(self, url, data)
+        response = BaseCrawler._get_response(self, url, data)
                
         fixer = HTMLFixer(self._url_regex, url, response.raw_html)        
         html = fixer.get_fixed_html()
         
-        return html 
+        return html
                 
 
 class HTMLFixer(object):

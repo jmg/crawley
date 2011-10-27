@@ -5,7 +5,6 @@ from urllib2 import urlparse
 
 from crawley.config import CRAWLEY_ROOT_DIR
 from crawley.http.managers import RequestManager
-from crawley.http.cookies import CookieHandler
 from crawley.extractors import XPathExtractor
 from crawley.exceptions import AuthenticationError
 from crawley.utils import url_matcher
@@ -90,8 +89,7 @@ class BaseCrawler(object):
         if self.extractor is None:
             self.extractor = XPathExtractor
 
-        self.extractor = self.extractor()
-        self.cookie_hanlder = CookieHandler()
+        self.extractor = self.extractor()        
 
         self.pool = GreenPool()
         self.request_manager = RequestManager()
@@ -105,22 +103,16 @@ class BaseCrawler(object):
         
         self.scrapers = [scraper_class(debug=self.debug) for scraper_class in self.scrapers]            
 
-    def _get_response(self, url, data=None):
+    def _make_request(self, url, data=None):
         """
             Returns the response object from a request
 
             params:
                 data: if this param is present it makes a POST.
         """
-        response = self.request_manager.make_request(url, self.cookie_hanlder, data)
-        if (response is None):
-            return None
+        return self.request_manager.make_request(url, data, self.extractor)
 
-        response.html = self.extractor.get_object(response.raw_html)
-
-        return response
-
-    def _get_data(self, url, data=None):
+    def _get_response(self, url, data=None):
         """
             Returns the response data from a request
 
@@ -132,7 +124,7 @@ class BaseCrawler(object):
             if url_matcher(url, pattern):
                 data = post_data
 
-        return self._get_response(url, data)
+        return self._make_request(url, data)
 
     def _manage_scrapers(self, response):
         """
@@ -190,7 +182,7 @@ class BaseCrawler(object):
         if self.debug:
             print "crawling -> %s" % url
 
-        response = self._get_data(url)
+        response = self._get_response(url)
         if response is None:
             return
                 
