@@ -3,7 +3,7 @@ from eventlet import GreenPool
 from re import compile as re_compile
 from urllib2 import urlparse
 
-from crawley.config import CRAWLEY_ROOT_DIR
+from crawley import config
 from crawley.http.managers import RequestManager
 from crawley.extractors import XPathExtractor
 from crawley.exceptions import AuthenticationError
@@ -20,7 +20,7 @@ class CrawlerMeta(type):
 
     def __init__(cls, name, bases, dct):
 
-        if not hasattr(cls, '__module__' ) or not cls.__module__.startswith(CRAWLEY_ROOT_DIR):
+        if not hasattr(cls, '__module__' ) or not cls.__module__.startswith(config.CRAWLEY_ROOT_DIR):
             user_crawlers.append(cls)
         super(CrawlerMeta, cls).__init__(name, bases, dct)
 
@@ -44,13 +44,22 @@ class BaseCrawler(object):
     """ A list of blocked urls which never be crawled """
 
     scrapers = []
-    """ A list of scrapers classes """
+    """ A list of scrapers classes """    
 
     max_depth = -1
     """ The maximun crawling recursive level """
+    
+    max_concurrency_level = config.MAX_GREEN_POOL_SIZE
+    """ The maximun coroutines concurrecy level """
+    
+    requests_delay = config.REQUEST_DELAY
+    """ The average delay time between requests """
+    
+    requests_deviation = config.REQUEST_DEVIATION
+    """ The requests deviation time """
 
     extractor = None
-    """ The extractor class. Default is XPathExtractor """
+    """ The extractor class. Default is XPathExtractor """    
 
     post_urls = []
     """ 
@@ -94,8 +103,8 @@ class BaseCrawler(object):
 
         self.extractor = self.extractor()        
 
-        self.pool = GreenPool()
-        self.request_manager = RequestManager()
+        self.pool = GreenPool(self.max_concurrency_level)
+        self.request_manager = RequestManager(delay=self.requests_delay, deviation=self.requests_deviation)
         
         self._initialize_scrapers()
         

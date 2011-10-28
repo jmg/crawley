@@ -4,7 +4,7 @@ from eventlet.green import urllib2
 from request import DelayedRequest, Request
 from crawley.http.cookies import CookieHandler
 from crawley.http.response import Response
-from crawley.config import REQUEST_DELAY, REQUEST_DEVIATION
+from crawley import config
 
 
 class HostCounterDict(dict):
@@ -34,18 +34,19 @@ class RequestManager(object):
     
     MAX_TRIES = 3
     
-    def __init__(self, delayed=True):
+    def __init__(self, delay=None, deviation=None):
         
         self.host_counter = HostCounterDict()
         self.cookie_handler = CookieHandler()
-        self.delayed = delayed
+        self.delay = delay
+        self.deviation = deviation
     
     def _get_request(self, url):
         
         host = urllib2.urlparse.urlparse(url).netloc
         count = self.host_counter.count(host)
                 
-        return DelayedRequest(url, self.cookie_handler, delay=REQUEST_DELAY, deviation=REQUEST_DEVIATION)
+        return DelayedRequest(url, self.cookie_handler, delay=self.delay, deviation=self.deviation)
     
     def make_request(self, url, data=None, extractor=None):
         """
