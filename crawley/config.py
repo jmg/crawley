@@ -3,6 +3,7 @@
 # Paths
 
 CRAWLEY_ROOT_DIR = "crawley"
+GREEN_POOL_MAX_SIZE = 1000
 
 # Requests
 

@@ -3,7 +3,7 @@ from eventlet import GreenPool
 from re import compile as re_compile
 from urllib2 import urlparse
 
-from crawley.config import CRAWLEY_ROOT_DIR
+from crawley.config import CRAWLEY_ROOT_DIR, GREEN_POOL_MAX_SIZE
 from crawley.http.managers import RequestManager
 from crawley.extractors import XPathExtractor
 from crawley.exceptions import AuthenticationError
@@ -48,6 +48,9 @@ class BaseCrawler(object):
 
     max_depth = -1
     """ The maximun crawling recursive level """
+    
+    max_concurrency_level = GREEN_POOL_MAX_SIZE
+    """ The maximun number of concurrent greenlets """
 
     extractor = None
     """ The extractor class. Default is XPathExtractor """
@@ -94,7 +97,7 @@ class BaseCrawler(object):
 
         self.extractor = self.extractor()        
 
-        self.pool = GreenPool()
+        self.pool = GreenPool(size=self.max_concurrency_level)
         self.request_manager = RequestManager()
         
         self._initialize_scrapers()
