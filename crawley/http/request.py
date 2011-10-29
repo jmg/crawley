@@ -4,7 +4,7 @@ import random
 from eventlet.green import urllib2
 from cookies import CookieHandler
 
-from crawley.config import REQUEST_TIMEOUT, MOZILLA_USER_AGENT
+from crawley import config
 
 
 class Request(object):
@@ -19,7 +19,7 @@ class Request(object):
         
         self.url = url
         self.headers = {}
-        self.headers["User-Agent"] = MOZILLA_USER_AGENT
+        self.headers["User-Agent"] = config.MOZILLA_USER_AGENT
         self.headers["Accept-Charset"] = "ISO-8859-1,utf-8;q=0.7,*;q=0.3"
         self.headers["Accept-Language"] = "es-419,es;q=0.8"
         
@@ -36,8 +36,8 @@ class Request(object):
         request = urllib2.Request(self.url, data, self.headers)        
         opener = urllib2.build_opener(self.cookie_handler)
         
-        if REQUEST_TIMEOUT is not None:
-            response = opener.open(request, timeout=REQUEST_TIMEOUT)
+        if config.REQUEST_TIMEOUT is not None:
+            response = opener.open(request, timeout=config.REQUEST_TIMEOUT)
         else:
             response = opener.open(request)
             
@@ -57,10 +57,15 @@ class DelayedRequest(Request):
     """
         A delayed custom Request 
     """
-    
+            
     def __init__(self, url, cookie_handler=None, delay=0, deviation=0):
         
-        self.delay = delay + random.randint(-deviation, deviation)
+        FACTOR = 1000.0
+        
+        deviation = deviation * FACTOR
+        randomize = random.randint(-deviation, deviation) / FACTOR
+        
+        self.delay = delay + randomize        
         Request.__init__(self, url, cookie_handler)
     
     def get_response(self, data=None):
@@ -68,7 +73,7 @@ class DelayedRequest(Request):
             Waits [delay] miliseconds and then make the request
         """
         
-        mili_seconds = self.delay / 1000
+        mili_seconds = self.delay
         time.sleep(mili_seconds)
         
         return Request.get_response(self, data)
