@@ -4,13 +4,12 @@ from setuptools import setup, find_packages
 import os
 
 PATH = os.path.dirname(os.path.abspath(__file__))
-templates_dir = os.path.join("crawley", "conf", "templates")
-templates_local_dir = os.path.join(PATH, templates_dir)
-templates_files = [os.path.join(templates_dir, file) for file in os.listdir(templates_local_dir)]
+templates_dir = os.path.join(PATH, "crawley", "conf", "templates")
+templates_files = [os.path.join(templates_dir, file) for file in os.listdir(templates_dir)]
 
 setup(
     name="crawley",
-    version="0.1.0",
+    version="0.1.1",
     description="Pythonic Scraping / Crawling FrameWork built On Eventlet",
     author="Crawley Developers",
     author_email = "jmg.utn@gmail.com",

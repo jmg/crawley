@@ -3,7 +3,11 @@ from eventlet import GreenPool
 from re import compile as re_compile
 from urllib2 import urlparse
 
+<<<<<<< HEAD
+from crawley.config import CRAWLEY_ROOT_DIR, GREEN_POOL_MAX_SIZE, REQUEST_DELAY
+=======
 from crawley import config
+>>>>>>> 069dac021fe74ecb365978a01933dee5005c68fe
 from crawley.http.managers import RequestManager
 from crawley.extractors import XPathExtractor
 from crawley.exceptions import AuthenticationError
@@ -49,6 +53,13 @@ class BaseCrawler(object):
     max_depth = -1
     """ The maximun crawling recursive level """
     
+<<<<<<< HEAD
+    max_concurrency_level = GREEN_POOL_MAX_SIZE
+    """ The maximun number of concurrent greenlets """
+    
+    requests_delay = REQUEST_DELAY
+    """ The average delay time between requests """
+=======
     max_concurrency_level = config.MAX_GREEN_POOL_SIZE
     """ The maximun coroutines concurrecy level """
     
@@ -57,6 +68,7 @@ class BaseCrawler(object):
     
     requests_deviation = config.REQUEST_DEVIATION
     """ The requests deviation time """
+>>>>>>> 069dac021fe74ecb365978a01933dee5005c68fe
 
     extractor = None
     """ The extractor class. Default is XPathExtractor """    
@@ -103,8 +115,13 @@ class BaseCrawler(object):
 
         self.extractor = self.extractor()        
 
+<<<<<<< HEAD
+        self.pool = GreenPool(size=self.max_concurrency_level)
+        self.request_manager = RequestManager(delay=self.requests_delay)
+=======
         self.pool = GreenPool(self.max_concurrency_level)
         self.request_manager = RequestManager(delay=self.requests_delay, deviation=self.requests_deviation)
+>>>>>>> 069dac021fe74ecb365978a01933dee5005c68fe
         
         self._initialize_scrapers()
         

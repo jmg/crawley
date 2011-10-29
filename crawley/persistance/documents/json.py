@@ -1,4 +1,8 @@
-import simplejson
+try:
+    import simplejson
+except ImportError:
+    import json as simplejson
+    
 from meta import DocumentMeta
 
 json_objects = []
