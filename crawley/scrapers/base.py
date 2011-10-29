@@ -46,7 +46,7 @@ class BaseScraper(object):
                     print "%s matches the url %s" % (self.__class__.__name__, response.url)
                 return
 
-        self.on_cannot_scrape(self, response)
+        self.on_cannot_scrape(response)
 
     #Overridables
 
