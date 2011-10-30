@@ -3,7 +3,6 @@ import random
 
 from eventlet.green import urllib2
 from cookies import CookieHandler
-from crawley.manager.utils import has_valid_attr
 
 from crawley import config
 
@@ -13,7 +12,7 @@ class Request(object):
         Custom request object
     """
 
-    def __init__(self, url, cookie_handler=None, settings=None):
+    def __init__(self, url=None, cookie_handler=None, opener=None):
 
         if cookie_handler is None:
            cookie_handler = CookieHandler()
@@ -25,7 +24,7 @@ class Request(object):
         self.headers["Accept-Language"] = "es-419,es;q=0.8"
 
         self.cookie_handler = cookie_handler
-        self.settings = settings
+        self.opener = opener
 
     def get_response(self, data=None, delay_factor=1):
         """
@@ -34,42 +33,16 @@ class Request(object):
         """
    
         """The proxy settings is used as the following dictionary"""
-        
-        
-        if has_valid_attr(self.settings,'PROXY_HOST') and has_valid_attr(self.settings,'PROXY_PORT'):
-            
-            proxy_info = {        #proxy information
-            'user' : getattr(self.settings,'PROXY_USER',''),
-            'pass' : getattr(self.settings,'PROXY_PASS',''),
-            'host' : getattr(self.settings,'PROXY_HOST',''), #localhost
-            'port' : getattr(self.settings,'PROXY_PORT',80)
-            }    
-            
-            # build a new opener that uses a proxy requiring authorization
-            proxy= urllib2.ProxyHandler({"http" :"http://%(user)s:%(pass)s@%(host)s:%(port)d" % proxy_info})
-                    
-            """Note: if the other method fails try this snipplet"""
-            """proxy = urllib2.ProxyHandler()
-            proxy.add_password(realm=None,
-                                uri={'http':"http://%(user)s:%(pass)s/" % proxy_info},
-                                user=proxy_info['user'],
-                                passwd=proxy_info['pass'])"""
-            opener = urllib2.build_opener(proxy,self.cookie_handler)
-        else:
-            opener = urllib2.build_opener(self.cookie_handler)
-            
+                                    
         self._normalize_url()
 
         request = urllib2.Request(self.url, data, self.headers)
-        
-        #install globally so it can be used with urlopen.
-        #urllib2.install_opener(opener)
     
         args = {}
         if config.REQUEST_TIMEOUT is not None:
             args["timeout"] = config.REQUEST_TIMEOUT
 
-        response = opener.open(request, **args)
+        response = self.opener.open(request, **args)
         self.cookie_handler.save_cookies()
 
         return response
@@ -87,20 +60,21 @@ class DelayedRequest(Request):
         A delayed custom Request
     """
 
-    def __init__(self, url, cookie_handler=None, settings=None, delay=0, deviation=0):
+    def __init__(self, delay=0, deviation=0, **kwargs):
 
         FACTOR = 1000.0
 
         deviation = deviation * FACTOR
         randomize = random.randint(-deviation, deviation) / FACTOR
 
-        self.delay = delay + randomize
-        Request.__init__(self, url, cookie_handler)
+        self.delay = delay + randomize        
+        Request.__init__(self, **kwargs)
 
     def get_response(self, data=None, delay_factor=1):
         """
             Waits [delay] miliseconds and then make the request
         """
+        
         delay = self.delay * delay_factor
         time.sleep(delay)
         return Request.get_response(self, data)
