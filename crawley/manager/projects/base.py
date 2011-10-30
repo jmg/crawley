@@ -85,7 +85,7 @@ class BaseProject(object):
 
         for crawler_class in crawlers:
 
-            crawler = crawler_class(sessions=run_command.syncdb.sessions, debug=run_command.settings.SHOW_DEBUG_INFO)
+            crawler = crawler_class(sessions=run_command.syncdb.sessions, settings=run_command.settings)
             process = Process(target=crawler.start)
             process.start()
             process.join()

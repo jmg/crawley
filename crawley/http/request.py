@@ -12,7 +12,7 @@ class Request(object):
         Custom request object
     """
 
-    def __init__(self, url, cookie_handler=None):
+    def __init__(self, url, cookie_handler=None, settings=None):
 
         if cookie_handler is None:
            cookie_handler = CookieHandler()
@@ -24,6 +24,7 @@ class Request(object):
         self.headers["Accept-Language"] = "es-419,es;q=0.8"
 
         self.cookie_handler = cookie_handler
+        self.settings = settings
 
     def get_response(self, data=None, delay_factor=1):
         """
@@ -58,7 +59,7 @@ class DelayedRequest(Request):
         A delayed custom Request
     """
 
-    def __init__(self, url, cookie_handler=None, delay=0, deviation=0):
+    def __init__(self, url, cookie_handler=None, settings=None, delay=0, deviation=0):
 
         FACTOR = 1000.0
 

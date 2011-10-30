@@ -34,19 +34,20 @@ class RequestManager(object):
 
     MAX_TRIES = 3
 
-    def __init__(self, delay=None, deviation=None):
+    def __init__(self, settings=None, delay=None, deviation=None):
 
         self.host_counter = HostCounterDict()
         self.cookie_handler = CookieHandler()
         self.delay = delay
         self.deviation = deviation
+        self.settings = settings
 
     def _get_request(self, url):
 
         host = urllib2.urlparse.urlparse(url).netloc
         count = self.host_counter.count(host)
 
-        return DelayedRequest(url, self.cookie_handler, delay=self.delay, deviation=self.deviation)
+        return DelayedRequest(url, self.cookie_handler, settings=self.settings, delay=self.delay, deviation=self.deviation)
 
     def make_request(self, url, data=None, extractor=None):
         """

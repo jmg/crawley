@@ -81,7 +81,7 @@ class BaseCrawler(object):
 
     _url_regex = re_compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
 
-    def __init__(self, sessions=None, debug=False):
+    def __init__(self, sessions=None, settings=None):
         """
             Initializes the crawler
 
@@ -96,7 +96,8 @@ class BaseCrawler(object):
             sessions = []
 
         self.sessions = sessions
-        self.debug = debug
+        self.debug = getattr(settings, 'SHOW_DEBUG_INFO', True)
+        self.settings = settings
 
         if self.extractor is None:
             self.extractor = XPathExtractor
@@ -104,7 +105,7 @@ class BaseCrawler(object):
         self.extractor = self.extractor()
 
         self.pool = GreenPool(self.max_concurrency_level)
-        self.request_manager = RequestManager(delay=self.requests_delay, deviation=self.requests_deviation)
+        self.request_manager = RequestManager(settings=settings, delay=self.requests_delay, deviation=self.requests_deviation)
 
         self._initialize_scrapers()
 
