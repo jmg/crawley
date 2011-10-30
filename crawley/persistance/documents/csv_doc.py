@@ -6,7 +6,7 @@ csv_objects = []
 
 class CSVDocument(object):
     """
-        JSON Document base class
+        CSV Document base class
     """
     
     __metaclass__ = DocumentMeta
