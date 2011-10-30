@@ -1,7 +1,6 @@
 import os.path
 import shutil
 
-
 import elixir
 import crawley
 
@@ -10,7 +9,7 @@ from multiprocessing import Process
 from crawley.manager.utils import generate_template, get_full_template_path, has_valid_attr
 from crawley.persistance import Entity, UrlEntity, setup
 from crawley.persistance.databases import session as database_session
-from crawley.persistance.documents import json_session, JSONDocument, documents_entities, xml_session, XMLDocument
+from crawley.persistance.documents import json_session, JSONDocument, documents_entities, xml_session, XMLDocument, csv_session, CSVDocument
 from crawley.persistance.connectors import connectors
 
 class BaseProject(object):
@@ -68,6 +67,11 @@ class BaseProject(object):
 
             xml_session.file_name = syncb_command.settings.XML_DOCUMENT
             syncb_command.sessions.append(xml_session)
+            
+        if has_valid_attr(syncb_command.settings, 'CSV_DOCUMENT'):
+
+            csv_session.file_name = syncb_command.settings.CSV_DOCUMENT
+            syncb_command.sessions.append(csv_session)                    
 
         if has_valid_attr(syncb_command.settings, "DATABASE_ENGINE"):
 
