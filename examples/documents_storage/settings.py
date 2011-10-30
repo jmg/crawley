@@ -14,5 +14,6 @@ DATABASE_PORT = ''
 
 XML_DOCUMENT = 'data.xml'
 JSON_DOCUMENT = 'data.json'
+CSV_DOCUMENT = 'data.csv'
 
 SHOW_DEBUG_INFO = True

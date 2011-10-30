@@ -5,6 +5,7 @@
 *.pydevproject
 *.json
 *.xml
+*.csv
 build
 dist
 docs/build
