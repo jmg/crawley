@@ -25,16 +25,39 @@ class Request(object):
         
         self.cookie_handler = cookie_handler
     
-    def get_response(self, data=None):
+    def get_response(self, data=None,proxy_info=None):
         """
             Returns the response object from a request.
             Cookies are supported via a CookieHandler object
         """
+   
+        """The proxy settings is used as the following dictionary
+         
+        proxy_info = {		#proxy information
+		'user' : '',
+		'pass' : '',
+		'host' : "192.168.0.15",
+		'port' : 8000 
+		}"""
+		
+		# build a new opener that uses a proxy requiring authorization
+		proxy= urllib2.ProxyHandler({"http" :"http://%(user)s:%(pass)s@%(host)s:%(port)d" % proxy_info})
+		
+		"""Note: if the other method fails try this snipplet"""
+		"""proxy = urllib2.ProxyHandler()
+		proxy.add_password(realm=None,
+							uri={'http':"http://%(user)s:%(pass)s/" % proxy_info},
+							user=proxy_info['user'],
+							passwd=proxy_info['pass'])"""
         
         self._normalize_url()
         
         request = urllib2.Request(self.url, data, self.headers)        
-        opener = urllib2.build_opener(self.cookie_handler)
+        opener = urllib2.build_opener(proxy,self.cookie_handler)
+        
+        #install globally so it can be used with urlopen.
+		#urllib2.install_opener(opener)
+		
         
         if config.REQUEST_TIMEOUT is not None:
             response = opener.open(request, timeout=config.REQUEST_TIMEOUT)
