@@ -1,7 +1,7 @@
 import sys
 from PyQt4 import QtGui
 from command import BaseCommand
-from crawley.manager.utils import exit_with_error
+from crawley.utils import exit_with_error
 
 from crawley.web_browser.browser import Browser
 

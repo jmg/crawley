@@ -28,7 +28,9 @@ class pypiScraper(BaseScraper):
             XMLPackage(**data)
             #storing data in the json document
             JSONPackage(**data)
-
+            #storing data in the csv document
+            CSVPackage(**data)
+            
 
 class pypiCrawler(BaseCrawler):
 
