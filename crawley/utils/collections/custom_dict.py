@@ -1,3 +1,5 @@
+from crawley.utils import exit_with_error
+
 class CustomDict(dict):    
 
     def __init__(self, error="[%s] Not valid argument", *args, **kwargs):
