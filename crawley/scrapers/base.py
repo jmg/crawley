@@ -13,9 +13,10 @@ class BaseScraper(object):
 
     matching_urls = []
 
-    def __init__(self, debug=False):
+    def __init__(self, settings=None):
 
-        self.debug = debug
+        self.settings = settings
+        self.debug = settings.SHOW_DEBUG_INFO
 
     def try_scrape(self, response):
         """

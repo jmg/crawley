@@ -1,4 +1,4 @@
-from crawley.utils import exit_with_error
+from crawley.utils.common import exit_with_error
 
 class CustomDict(dict):    
 
