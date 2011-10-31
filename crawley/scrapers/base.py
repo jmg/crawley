@@ -16,7 +16,7 @@ class BaseScraper(object):
     def __init__(self, settings=None):
 
         self.settings = settings
-        self.debug = settings.SHOW_DEBUG_INFO
+        self.debug = getattr(settings, 'SHOW_DEBUG_INFO', True)
 
     def try_scrape(self, response):
         """
