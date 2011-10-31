@@ -6,7 +6,7 @@ from crawley.manager.commands.startproject import StartProjectCommand
 from crawley.manager.commands.run import RunCommand
 from crawley.manager.projects.template import TemplateProject
 from crawley.exceptions import InvalidProjectError
-from crawley.manager.utils import import_user_module
+from crawley.utils import import_user_module
 from crawley.simple_parser.config_parser import ConfigApp
 from crawley.simple_parser.parsers import DSLAnalizer
 from config import SELECTED_CLASS

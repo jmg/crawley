@@ -1,4 +1,4 @@
-from crawley.manager.utils import import_user_module
+from crawley.utils import import_user_module
 from command import ProjectCommand
 
 class SyncDbCommand(ProjectCommand):

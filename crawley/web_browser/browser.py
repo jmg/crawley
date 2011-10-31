@@ -6,7 +6,7 @@ from baseBrowser import BaseBrowser, BaseBrowserTab, FrmBaseConfig, FrmBaseSetti
 from config import DEFAULTS, SELECTED_CLASS
 
 from crawley.crawlers.offline import OffLineCrawler
-from crawley.manager.utils import get_full_template_path
+from crawley.utils import get_full_template_path
 from crawley.exceptions import InvalidProjectError        
 from crawley.extractors import XPathExtractor
 from crawley.persistance.connectors import connectors

@@ -2,7 +2,7 @@ import sys
 import os
 from optparse import OptionParser
 
-from crawley.manager.utils import exit_with_error, import_user_module, check_for_file, fix_file_extension
+from crawley.utils import exit_with_error, import_user_module, check_for_file, fix_file_extension
 from crawley.manager.projects import CodeProject, TemplateProject
 
 
