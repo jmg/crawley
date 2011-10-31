@@ -64,7 +64,7 @@ class BaseProject(object):
         
         for document_name, session in documents_sessions.iteritems():
             
-            if has_valid_attr(syncb_command.settings, 'JSON_DOCUMENT'):
+            if has_valid_attr(syncb_command.settings, document_name):
 
                 session.file_name = getattr(syncb_command.settings, document_name)
                 syncb_command.sessions.append(session)
