@@ -57,21 +57,17 @@ class BaseProject(object):
 
         self.connector = None
         syncb_command.sessions = []
-
-        if has_valid_attr(syncb_command.settings, 'JSON_DOCUMENT'):
-
-            json_session.file_name = syncb_command.settings.JSON_DOCUMENT
-            syncb_command.sessions.append(json_session)
-
-        if has_valid_attr(syncb_command.settings, 'XML_DOCUMENT'):
-
-            xml_session.file_name = syncb_command.settings.XML_DOCUMENT
-            syncb_command.sessions.append(xml_session)
+        
+        documents_sessions = { 'JSON_DOCUMENT' : json_session, 
+                               'XML_DOCUMENT' : xml_session, 
+                               'CSV_DOCUMENT' : csv_session, }
+        
+        for document_name, session in documents_sessions.iteritems():
             
-        if has_valid_attr(syncb_command.settings, 'CSV_DOCUMENT'):
+            if has_valid_attr(syncb_command.settings, 'JSON_DOCUMENT'):
 
-            csv_session.file_name = syncb_command.settings.CSV_DOCUMENT
-            syncb_command.sessions.append(csv_session)                    
+                session.file_name = getattr(syncb_command.settings, document_name)
+                syncb_command.sessions.append(session)
 
         if has_valid_attr(syncb_command.settings, "DATABASE_ENGINE"):
 
