@@ -2,7 +2,7 @@ from crawley.crawlers import BaseCrawler
 from crawley.extractors import XPathExtractor
 
 from command import BaseCommand
-from crawley.manager.utils import exit_with_error
+from crawley.utils import exit_with_error
 
 
 class ShellCommand(BaseCommand):

@@ -4,7 +4,7 @@ from eventlet.green import urllib2
 from request import DelayedRequest, Request
 from crawley.http.cookies import CookieHandler
 from crawley.http.response import Response
-from crawley.manager.utils import has_valid_attr
+from crawley.utils import has_valid_attr
 from crawley import config
 
 

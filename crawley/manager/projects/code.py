@@ -7,7 +7,7 @@ from crawley.persistance.connectors import connectors
 
 from crawley.persistance import UrlEntity
 
-from crawley.manager.utils import import_user_module, search_class, generate_template
+from crawley.utils import import_user_module, search_class, generate_template
 from crawley.crawlers import user_crawlers
 
 from base import BaseProject

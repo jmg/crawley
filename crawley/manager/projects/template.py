@@ -1,11 +1,11 @@
 import os.path
 
-from crawley.manager.utils import generate_template
+from crawley.utils import generate_template
 from crawley.simple_parser import Generator
 from crawley.simple_parser.compilers import CrawlerCompiler
 
 from base import BaseProject
-from crawley.manager.utils import generate_template, import_user_module
+from crawley.utils import generate_template, import_user_module
 
 
 class TemplateProject(BaseProject):

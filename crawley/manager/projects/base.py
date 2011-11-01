@@ -1,17 +1,17 @@
 import os.path
 import shutil
 
-
 import elixir
 import crawley
 
 from multiprocessing import Process
 
-from crawley.manager.utils import generate_template, get_full_template_path, has_valid_attr
+from crawley.utils import generate_template, get_full_template_path, has_valid_attr
 from crawley.persistance import Entity, UrlEntity, setup
 from crawley.persistance.databases import session as database_session
-from crawley.persistance.documents import json_session, JSONDocument, documents_entities, xml_session, XMLDocument
+from crawley.persistance.documents import json_session, JSONDocument, documents_entities, xml_session, XMLDocument, csv_session, CSVDocument
 from crawley.persistance.connectors import connectors
+
 
 class BaseProject(object):
     """
@@ -58,16 +58,17 @@ class BaseProject(object):
 
         self.connector = None
         syncb_command.sessions = []
+        
+        documents_sessions = { 'JSON_DOCUMENT' : json_session, 
+                               'XML_DOCUMENT' : xml_session, 
+                               'CSV_DOCUMENT' : csv_session, }
+        
+        for document_name, session in documents_sessions.iteritems():
+            
+            if has_valid_attr(syncb_command.settings, document_name):
 
-        if has_valid_attr(syncb_command.settings, 'JSON_DOCUMENT'):
-
-            json_session.file_name = syncb_command.settings.JSON_DOCUMENT
-            syncb_command.sessions.append(json_session)
-
-        if has_valid_attr(syncb_command.settings, 'XML_DOCUMENT'):
-
-            xml_session.file_name = syncb_command.settings.XML_DOCUMENT
-            syncb_command.sessions.append(xml_session)
+                session.file_name = getattr(syncb_command.settings, document_name)
+                syncb_command.sessions.append(session)
 
         if has_valid_attr(syncb_command.settings, "DATABASE_ENGINE"):
 

@@ -7,7 +7,7 @@ class CookieHandler(urllib2.HTTPCookieProcessor):
         Cookie jar wrapper for save and load cookie from a file
     """
     
-    COOKIE_FILE = "/tmp/crawley-cookie"
+    COOKIE_FILE = "/tmp/crawley_cookie"
     
     def __init__(self, *args, **kwargs):        
                 

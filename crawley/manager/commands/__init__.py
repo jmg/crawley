@@ -2,7 +2,7 @@
     All Crawley's commands must be here
 """
 
-from crawley.manager.utils import exit_with_error
+from crawley.utils import exit_with_error
 
 from run import RunCommand
 from shell import ShellCommand
@@ -24,8 +24,12 @@ commands = CommandsDict()
 d = { RunCommand.name : RunCommand,
       ShellCommand.name : ShellCommand,
       StartProjectCommand.name : StartProjectCommand,
+<<<<<<< HEAD
       SyncDbCommand.name : SyncDbCommand,
     }
+=======
+      SyncDbCommand.name : SyncDbCommand, }
+>>>>>>> dev
 
 commands.update(d)
 
