@@ -9,7 +9,7 @@ templates_files = [os.path.join(templates_dir, file) for file in os.listdir(temp
 
 setup(
     name="crawley",
-    version="0.2.0",
+    version="0.2.1",
     description="Pythonic Scraping / Crawling FrameWork built On Eventlet",
     author="Crawley Developers",
     author_email = "jmg.utn@gmail.com",
