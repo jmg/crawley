@@ -8,7 +8,6 @@ from run import RunCommand
 from shell import ShellCommand
 from startproject import StartProjectCommand
 from syncdb import SyncDbCommand
-from browser import BrowserCommand
 
 class CommandsDict(dict):
     
@@ -25,8 +24,7 @@ commands = CommandsDict()
 d = { RunCommand.name : RunCommand,
       ShellCommand.name : ShellCommand,
       StartProjectCommand.name : StartProjectCommand,
-      SyncDbCommand.name : SyncDbCommand,
-      BrowserCommand.name : BrowserCommand, }
+      SyncDbCommand.name : SyncDbCommand, }
 
 commands.update(d)
 
