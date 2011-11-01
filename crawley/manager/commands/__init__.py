@@ -24,12 +24,7 @@ commands = CommandsDict()
 d = { RunCommand.name : RunCommand,
       ShellCommand.name : ShellCommand,
       StartProjectCommand.name : StartProjectCommand,
-<<<<<<< HEAD
-      SyncDbCommand.name : SyncDbCommand,
-    }
-=======
       SyncDbCommand.name : SyncDbCommand, }
->>>>>>> dev
 
 commands.update(d)
 
