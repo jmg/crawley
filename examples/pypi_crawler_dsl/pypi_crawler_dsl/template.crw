@@ -1,0 +1,4 @@
+PAGE => http://pypi.python.org/pypi/cilantro/0.9b4 
+my_table.my_field_0 -> /html/body/div[5]/div/div/div[3]/ul/li/span 
+my_table.my_field_1 -> /html/body/div[5]/div/div/div[3]/ul/li[3]/span 
+my_table.my_field_2 -> /html/body/div[5]/div/div/div[3]/ul/li[4]/span 
