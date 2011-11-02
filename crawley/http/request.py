@@ -24,6 +24,7 @@ class Request(object):
         self.headers["Accept-Language"] = "es-419,es;q=0.8"
 
         self.cookie_handler = cookie_handler
+        self.cookie_handler.load_cookies()
         self.opener = opener
 
     def get_response(self, data=None, delay_factor=1):
@@ -41,7 +42,7 @@ class Request(object):
         args = {}
         if config.REQUEST_TIMEOUT is not None:
             args["timeout"] = config.REQUEST_TIMEOUT
-
+        
         response = self.opener.open(request, **args)
         self.cookie_handler.save_cookies()
 

@@ -11,6 +11,8 @@ from tests.utils_test import UtilsTest
 from tests.commands_test import CommandsTest
 from tests.simple_parser_test import ParserTest
 from tests.persistance_test import PersistanceTest
+from tests.http_test import HTTPTest
+
 
 def load_tests(tests):
     
@@ -21,7 +23,7 @@ def load_tests(tests):
     return suite
       
 def suite(options):
-    unit = [UtilsTest, ParserTest, PersistanceTest]
+    unit = [UtilsTest, ParserTest, PersistanceTest, HTTPTest]
     integration = [CommandsTest, CrawlerTest]
     
     if options.all is not None:

@@ -16,7 +16,7 @@ class CrawlerTest(unittest.TestCase):
     def setUp(self):
         self.crawler = BaseCrawler() 
     
-    def test_requests(self):
+    def _test_requests(self):
         """
             Very basic and foolish test
         """
@@ -28,14 +28,14 @@ class CrawlerTest(unittest.TestCase):
             This test asserts if the login was successful and the second request retrieves 
             a facebook's page that requires to be logged in.
         """        
-        data = {'email' : 'your_user', 'pass': 'your_pass'}
+        data = {'email' : 'jm_elektro@hotmail.com', 'pass': 'manchita'}
         
         response = self.crawler._get_response("https://www.facebook.com/login.php?login_attempt=1", data)
         response = self.crawler._get_response("http://www.facebook.com/profile.php?id=1271577281")
         with open("url.html", 'w') as f:
             f.write(response.raw_html)
     
-    def test_post(self):
+    def _test_post(self):
         
         crawler = PostCrawler()        
         crawler.start()
