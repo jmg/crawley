@@ -15,7 +15,7 @@ MOZILLA_USER_AGENT = "Mozilla/5.0 (X11; Linux i686) AppleWebKit/534.30 (KHTML, l
 
 # Crawlers
 
-MAX_GREEN_POOL_SIZE = 1000
+MAX_POOL_SIZE = 25
 
 # Scrapers
 

@@ -1,4 +1,5 @@
 from eventlet import GreenPool
+from crawley.multiprogramming.pool import ThreadPool
 
 from re import compile as re_compile
 from urllib2 import urlparse
@@ -25,6 +26,8 @@ class CrawlerMeta(type):
         super(CrawlerMeta, cls).__init__(name, bases, dct)
 
 
+Pools = {'greenlets' : GreenPool, 'threads' : ThreadPool }
+
 class BaseCrawler(object):
     """
         User's Crawlers must inherit from this class, may
@@ -49,7 +52,7 @@ class BaseCrawler(object):
     max_depth = -1
     """ The maximun crawling recursive level """
 
-    max_concurrency_level = config.MAX_GREEN_POOL_SIZE
+    max_concurrency_level = config.MAX_POOL_SIZE
     """ The maximun coroutines concurrecy level """
 
     requests_delay = config.REQUEST_DELAY
@@ -104,7 +107,11 @@ class BaseCrawler(object):
 
         self.extractor = self.extractor()
 
-        self.pool = GreenPool(self.max_concurrency_level)
+        pool = getattr(settings, 'POOL', 'greenlets')
+        self.single_threaded = getattr(settings, 'SINGLE_THREADED', False)
+        if not self.single_threaded:
+            self.pool = Pools[pool](self.max_concurrency_level)
+            
         self.request_manager = RequestManager(settings=settings, delay=self.requests_delay, deviation=self.requests_deviation)
 
         self._initialize_scrapers()
@@ -225,8 +232,11 @@ class BaseCrawler(object):
 
             if depth_level >= self.max_depth and self.max_depth != -1:
                 return
-
-            self.pool.spawn_n(self._fetch, new_url, depth_level + 1)
+            
+            if not self.single_threaded:
+                self.pool.spawn_n(self._fetch, new_url, depth_level + 1)
+            else:
+                self._fetch(new_url, depth_level + 1)
 
     def _login(self):
         """
@@ -251,9 +261,13 @@ class BaseCrawler(object):
         self._login()
 
         for url in self.start_urls:
-            self.pool.spawn_n(self._fetch, url, depth_level=0)
-
-        self.pool.waitall()
+            if not self.single_threaded:
+                self.pool.spawn_n(self._fetch, url, depth_level=0)
+            else:
+                self._fetch(url, depth_level=0)
+        
+        if not self.single_threaded:
+            self.pool.waitall()
         self.on_finish()
 
     #Overridables
