@@ -14,7 +14,7 @@ from crawley.persistance.documents import json_session, JSONDocument, documents_
 from crawley.persistance.connectors import connectors
 
 
-chief_process = { 'greenlets' : Thread, 'threads' : Thread }
+worker_type = { 'greenlets' : Thread, 'threads' : Thread }
 
 class BaseProject(object):
     """
@@ -86,16 +86,23 @@ class BaseProject(object):
         setup(elixir.entities)
 
     def run(self, run_command, crawlers):
+    
+        workers = []
 
         for crawler_class in crawlers:
 
             crawler = crawler_class(sessions=run_command.syncdb.sessions, settings=run_command.settings)
             
             pool_type = getattr(run_command.settings, 'POOL', 'greenlets')
-            worker_class = chief_process[pool_type]
+            worker_class = worker_type[pool_type]
             
             worker = worker_class(target=crawler.start)
+            workers.append(worker)
+        
+        for worker in workers:
             worker.start()
+        
+        for worker in workers:
             worker.join()
 
         for session in run_command.syncdb.sessions:
