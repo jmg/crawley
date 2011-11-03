@@ -14,7 +14,7 @@ from crawley.persistance.documents import json_session, JSONDocument, documents_
 from crawley.persistance.connectors import connectors
 
 
-chief_process = { 'greenlets' : Process, 'threads' : Thread }
+chief_process = { 'greenlets' : Thread, 'threads' : Thread }
 
 class BaseProject(object):
     """
