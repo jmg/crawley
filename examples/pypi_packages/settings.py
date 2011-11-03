@@ -14,7 +14,4 @@ DATABASE_PORT = ''
 
 SHOW_DEBUG_INFO = True
 
-SINGLE_THREADED = True
-POOL = 'threads'
-
 

@@ -13,5 +13,3 @@ DATABASE_HOST = ''
 DATABASE_PORT = ''     
 
 SHOW_DEBUG_INFO = True
-
-POOL = 'threads'

@@ -5,6 +5,7 @@ import elixir
 import crawley
 
 from multiprocessing import Process
+from threading import Thread
 
 from crawley.utils import generate_template, get_full_template_path, has_valid_attr
 from crawley.persistance import Entity, UrlEntity, setup
@@ -12,6 +13,8 @@ from crawley.persistance.databases import session as database_session
 from crawley.persistance.documents import json_session, JSONDocument, documents_entities, xml_session, XMLDocument, csv_session, CSVDocument
 from crawley.persistance.connectors import connectors
 
+
+chief_process = { 'greenlets' : Process, 'threads' : Thread }
 
 class BaseProject(object):
     """
@@ -87,9 +90,13 @@ class BaseProject(object):
         for crawler_class in crawlers:
 
             crawler = crawler_class(sessions=run_command.syncdb.sessions, settings=run_command.settings)
-            process = Process(target=crawler.start)
-            process.start()
-            process.join()
+            
+            pool_type = getattr(run_command.settings, 'POOL', 'greenlets')
+            worker_class = chief_process[pool_type]
+            
+            worker = worker_class(target=crawler.start)
+            worker.start()
+            worker.join()
 
         for session in run_command.syncdb.sessions:
             session.close()
