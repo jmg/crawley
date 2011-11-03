@@ -141,4 +141,4 @@ class CrawlerCompiler(object):
         attrs_dict["start_urls"] = self.config[('crawler','start_urls')].split(',')
         attrs_dict["max_depth"] = int(self.config[('crawler','max_depth')])
 
-        return type("GeneratedCrawler", (SmartCrawler, ), attrs_dict)
+        return type("GeneratedCrawler", (BaseCrawler, ), attrs_dict)

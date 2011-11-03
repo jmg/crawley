@@ -54,7 +54,7 @@ class TemplateProject(BaseProject):
             classes at runtime firts.
         """
 
-        scraper_classes = run_command.generator.gen_scrapers()
+        scraper_classes = run_command.syncdb.generator.gen_scrapers()
 
         compiler = CrawlerCompiler(scraper_classes, run_command.settings)
         crawler_class = compiler.compile()
