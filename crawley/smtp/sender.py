@@ -1,16 +1,23 @@
-from eventlet import patcher
-from eventlet.green import socket
-from eventlet.green import ssl
-from eventlet.green import time
+def patch_smtp():
+    
+    #FIXME: This code have some bug caused by the nonblocking I/O.
+    # At this this patcher isn't be used by the crawler. It just 
+    # import the regular smtplib module
+    from eventlet import patcher
+    from eventlet.green import socket
+    from eventlet.green import ssl
+    from eventlet.green import time
 
-smtplib = patcher.inject('smtplib',
-    globals(),
-    ('socket', socket),
-    ('ssl', ssl),
-    ('time', time))
+    smtplib = patcher.inject('smtplib',
+        globals(),
+        ('socket', socket),
+        ('ssl', ssl),
+        ('time', time))
 
-del patcher
+    del patcher
 
+#The Code begins here
+import smtplib
 
 class MailSender(object):
     """
