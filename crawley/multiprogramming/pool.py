@@ -19,9 +19,9 @@ class WorkerThread(KThread):
         Thread executing tasks from a given tasks queue
     """
     
-    def __init__(self, tasks):
+    def __init__(self, tasks, *args, **kwargs):
         
-        Thread.__init__(self)
+        KThread.__init__(self, *args, **kwargs)
         self.tasks = tasks
         self.daemon = True
         self.start()        
@@ -72,12 +72,7 @@ class ThreadPool(object):
             Wait for completion of all the tasks in the queue 
         """
         
-        while self.tasks:
-            try:            
-                self.tasks = [self.tasks.join(0.1) for t in self.tasks if t is not None and t.isAlive()]
-            except KeyboardInterrupt:
-                for t in self.tasks:
-                    t.killed = True
+        self.tasks.join()
 
 
 class SingleThreadedPool(object):
