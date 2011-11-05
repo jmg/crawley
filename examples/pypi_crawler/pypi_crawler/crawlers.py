@@ -26,6 +26,8 @@ class PackagesAuthorsCrawler(BaseCrawler):
 
     #specify you maximum crawling depth level
     max_depth = 1
+    
+    max_concurrency_level = 1
 
     #select your favourite HTML parsing tool
     extractor = XPathExtractor

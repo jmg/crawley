@@ -14,7 +14,7 @@ def run_cmd(args):
     cmd_name = args[1]
     cmd_args = args[2:]
     
-    cmd = commands[cmd_name](cmd_args)    
+    cmd = commands[cmd_name](cmd_args)
     cmd.checked_execute()
         
 

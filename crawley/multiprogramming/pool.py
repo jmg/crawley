@@ -1,7 +1,20 @@
 from Queue import Queue
 from threading import Thread
 
-class Worker(Thread):
+class KThread(Thread):
+    
+    def __init__(self, *args, **kwargs):
+        
+        Thread.__init__(self, *args, **kwargs)       
+        self.killed = False
+    
+    def run(self):
+        
+        while not self.killed:
+            Thread.run(self)
+
+
+class WorkerThread(KThread):
     """ 
         Thread executing tasks from a given tasks queue
     """
@@ -10,15 +23,15 @@ class Worker(Thread):
         
         Thread.__init__(self)
         self.tasks = tasks
-        self.daemon = True        
-        self.start()
+        self.daemon = True
+        self.start()        
     
     def run(self):
         """
-            Runs the function
+            Runs the thread functionality
         """
         
-        while True:
+        while not self.killed:
             
             func, args, kargs = self.tasks.get()
             try:                 
@@ -45,7 +58,7 @@ class ThreadPool(object):
         self.tasks = Queue(num_threads)
         
         for x in range(num_threads): 
-            Worker(self.tasks)
+            WorkerThread(self.tasks)
 
     def spawn_n(self, func, *args, **kargs):
         """ 
@@ -59,7 +72,12 @@ class ThreadPool(object):
             Wait for completion of all the tasks in the queue 
         """
         
-        self.tasks.join()
+        while self.tasks:
+            try:            
+                self.tasks = [self.tasks.join(0.1) for t in self.tasks if t is not None and t.isAlive()]
+            except KeyboardInterrupt:
+                for t in self.tasks:
+                    t.killed = True
 
 
 class SingleThreadedPool(object):

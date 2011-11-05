@@ -6,6 +6,7 @@ import crawley
 
 from multiprocessing import Process
 from threading import Thread
+from crawley.multiprogramming.pool import KThread
 
 from crawley.utils import generate_template, get_full_template_path, has_valid_attr
 from crawley.persistance import Entity, UrlEntity, setup
@@ -14,7 +15,7 @@ from crawley.persistance.documents import json_session, JSONDocument, documents_
 from crawley.persistance.connectors import connectors
 
 
-worker_type = { 'greenlets' : Thread, 'threads' : Thread }
+worker_type = { 'greenlets' : KThread, 'threads' : KThread }
 
 class BaseProject(object):
     """
@@ -102,9 +103,12 @@ class BaseProject(object):
         for worker in workers:
             worker.start()
         
-        for worker in workers:
-            worker.join()
+        while workers:
+            try:            
+                workers = [t.join(1) for t in workers if t is not None and t.isAlive()]
+            except KeyboardInterrupt:
+                for t in workers:
+                    t.killed = True
 
         for session in run_command.syncdb.sessions:
             session.close()
-
