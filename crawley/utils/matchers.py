@@ -35,7 +35,6 @@ def complex_matcher(pattern, url, strict=True):
     if match is None:
 
         return url in pattern
-
     group = match.group(0)
 
     if strict:
