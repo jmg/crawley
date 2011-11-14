@@ -6,9 +6,10 @@
 *.json
 *.xml
 *.csv
-build
-dist
-docs/build
-env
+build/
+dist/
+docs/build/
+env/
 url.html
 pip-log.txt
+deb_dist/
