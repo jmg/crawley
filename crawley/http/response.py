@@ -11,8 +11,8 @@ class Response(object):
 
         self.raw_html = raw_html
         self.html = extracted_html
-        self.url = url        
-        
+        self.url = url
+
         if response is not None:
             self.headers = response.headers
             self.code = response.getcode()

@@ -10,14 +10,14 @@ from startproject import StartProjectCommand
 from syncdb import SyncDbCommand
 
 class CommandsDict(dict):
-    
+
     def __getitem__(self, key):
-        
+
         if key in self:
             return dict.__getitem__(self, key)
         else:
             exit_with_error("[%s] Subcommand not valid" % (key))
-            
+
 
 commands = CommandsDict()
 
