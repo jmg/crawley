@@ -5,7 +5,9 @@ import elixir
 import crawley
 
 from multiprocessing import Process
-from threading import Thread
+from eventlet.green.threading import Thread as GreenThread
+from crawley.multiprogramming.threads import KThread
+from crawley.multiprogramming.collections import WorkersList
 
 from crawley.utils import generate_template, get_full_template_path, has_valid_attr
 from crawley.persistance import Entity, UrlEntity, setup
@@ -14,7 +16,7 @@ from crawley.persistance.documents import json_session, JSONDocument, documents_
 from crawley.persistance.connectors import connectors
 
 
-worker_type = { 'greenlets' : Thread, 'threads' : Thread }
+worker_type = { 'greenlets' : GreenThread, 'threads' : KThread }
 
 class BaseProject(object):
     """
@@ -87,7 +89,7 @@ class BaseProject(object):
 
     def run(self, run_command, crawlers):
     
-        workers = []
+        workers = WorkersList()
 
         for crawler_class in crawlers:
 
@@ -99,12 +101,8 @@ class BaseProject(object):
             worker = worker_class(target=crawler.start)
             workers.append(worker)
         
-        for worker in workers:
-            worker.start()
-        
-        for worker in workers:
-            worker.join()
+        workers.start()
+        workers.waitall()
 
         for session in run_command.syncdb.sessions:
             session.close()
-
