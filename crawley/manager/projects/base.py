@@ -63,13 +63,13 @@ class BaseProject(object):
 
         self.connector = None
         syncb_command.sessions = []
-        
-        documents_sessions = { 'JSON_DOCUMENT' : json_session, 
-                               'XML_DOCUMENT' : xml_session, 
+
+        documents_sessions = { 'JSON_DOCUMENT' : json_session,
+                               'XML_DOCUMENT' : xml_session,
                                'CSV_DOCUMENT' : csv_session, }
-        
+
         for document_name, session in documents_sessions.iteritems():
-            
+
             if has_valid_attr(syncb_command.settings, document_name):
 
                 session.file_name = getattr(syncb_command.settings, document_name)
