@@ -13,7 +13,7 @@ class PackagesAuthorsScraper(BaseScraper):
         project = response.html.xpath("/html/body/div[5]/div/div/div[3]/h1")[0].text
         author = response.html.xpath("/html/body/div[5]/div/div/div[3]/ul/li/span")[0].text
 
-        PackagesAuthors(project=project, author=author)
+        PackagesAuthors(project=project, author=author)        
 
 
 class PackagesAuthorsCrawler(BaseCrawler):

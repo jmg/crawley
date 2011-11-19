@@ -14,10 +14,10 @@ def import_user_module(module, exit=True):
     try:
         return __import__(module, locals(), globals(), [])
 
-    except ImportError:
+    except ImportError, e:
 
         if exit:
-            exit_with_error("%s.py file not found!" % module)
+            exit_with_error("%s.py file not found!: %s" % (module, e))
 
 
 def generate_template(tm_name, project_name, output_dir, new_extension=None):

@@ -49,7 +49,7 @@ class CodeProject(BaseProject):
         """
             Run the crawler of a code project
         """
-
+        
         import_user_module("crawlers")
         BaseProject.run(self, run_command, user_crawlers)
 
