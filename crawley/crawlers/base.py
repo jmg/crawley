@@ -276,16 +276,15 @@ class BaseCrawler(object):
                 continue
 
             url = link_tag.attrib["href"]
-
             
             if not urlparse.urlparse(url).netloc:
                 
                 parsed_url = urlparse.urlparse(response.url)
                 
-                if not parsed_url.netloc.endswith("/"):
-                     host = "%s/" % parsed_url.netloc
+                if not url.startswith("/"):
+                     url = "/%s" % url
                      
-                new_url = "%s://%s%s" % (parsed_url.scheme, host, url)
+                new_url = "%s://%s%s" % (parsed_url.scheme, parsed_url.netloc, url)
                 
                 if not new_url in urls:
                     urls.append(new_url)
