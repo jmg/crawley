@@ -15,17 +15,17 @@ setup(
     author_email = "jmg.utn@gmail.com",
     license = "GPL v3",
     keywords = "Scraping Crawling Framework Python",
-    packages=find_packages(exclude=["tests"]),      
+    packages=find_packages(exclude=["tests"]),
     data_files=[
         (templates_dir, templates_files)
     ],
-    include_package_data=True,    
-    scripts=['crawley/bin/crawley'],    
+    include_package_data=True,
+    scripts=['crawley/bin/crawley'],
     install_requires=[
         'lxml',
         'eventlet',
         'elixir',
-        'pyquery',        
+        'pyquery',
     ],
     url='http://crawley-project.com.ar/',
 )

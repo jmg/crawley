@@ -113,8 +113,8 @@ class BaseCrawler(object):
         """
             Instanciates all the scraper classes
         """
-        
-        self.scrapers = [scraper_class(settings=self.settings) for scraper_class in self.scrapers]            
+
+        self.scrapers = [scraper_class(settings=self.settings) for scraper_class in self.scrapers]
 
     def _make_request(self, url, data=None):
         """

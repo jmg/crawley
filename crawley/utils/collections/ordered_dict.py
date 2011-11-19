@@ -10,7 +10,7 @@ try:
     from _abcoll import KeysView, ValuesView, ItemsView
 except ImportError:
     pass
-    
+
 
 class OrderedDict(dict):
     'Dictionary that remembers insertion order'

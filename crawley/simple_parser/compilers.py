@@ -53,20 +53,20 @@ class DSLInterpreter(object):
 
         descriptors = {}
         fields = [line.field for lines in self.code_blocks for line in lines if not line.is_header]
-        
+
         for field in fields:
-            
+
             table = field["table"]
             column = field["column"]
-            
+
             if table not in descriptors:
                 descriptors[table] = [column, ]
             else:
                 if column not in descriptors[table]:
                     descriptors[table].append(column)
-                
+
         for entity_name, fields in descriptors.iteritems():
-                        
+
             attrs_dict = dict([(field, Field(Unicode(255))) for field in fields])
 
             entity = self._gen_class(entity_name, (Entity, ), attrs_dict)
@@ -80,7 +80,7 @@ class DSLInterpreter(object):
             Returns a dictionary containing methods and attributes for the
             scraper class.
         """
-        
+
         entities = self.entities
 
         def scrape(self, response):
@@ -89,25 +89,25 @@ class DSLInterpreter(object):
             """
 
             fields = {}
-                        
+
             for sentence in sentences:
-                                
+
                 nodes = response.html.xpath(sentence.xpath)
-                
+
                 column = sentence.field["column"]
                 table = sentence.field["table"]
-                                                
+
                 if nodes:
-                                        
+
                     value = _get_text_recursive(nodes[0])
-                    
+
                     if table not in fields:
                         fields[table] = {column : value}
                     else:
                         fields[table][column] = value
-            
-            for table, attrs_dict in fields.iteritems(): 
-                
+
+            for table, attrs_dict in fields.iteritems():
+
                 entities[table](**attrs_dict)
                 session.commit()
 
@@ -131,9 +131,9 @@ class CrawlerCompiler(object):
 
     def __init__(self, scrapers, settings):
 
-        self.scrapers = scrapers        
-        self.config = ConfigApp(settings.PROJECT_ROOT)    
-    
+        self.scrapers = scrapers
+        self.config = ConfigApp(settings.PROJECT_ROOT)
+
     def compile(self):
 
         attrs_dict = {}

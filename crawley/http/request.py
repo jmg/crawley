@@ -32,17 +32,17 @@ class Request(object):
             Returns the response object from a request.
             Cookies are supported via a CookieHandler object
         """
-   
+
         """The proxy settings is used as the following dictionary"""
-                                    
+
         self._normalize_url()
 
         request = urllib2.Request(self.url, data, self.headers)
-    
+
         args = {}
         if config.REQUEST_TIMEOUT is not None:
             args["timeout"] = config.REQUEST_TIMEOUT
-        
+
         response = self.opener.open(request, **args)
         self.cookie_handler.save_cookies()
 
@@ -68,14 +68,14 @@ class DelayedRequest(Request):
         deviation = deviation * FACTOR
         randomize = random.randint(-deviation, deviation) / FACTOR
 
-        self.delay = delay + randomize        
+        self.delay = delay + randomize
         Request.__init__(self, **kwargs)
 
     def get_response(self, data=None, delay_factor=1):
         """
             Waits [delay] miliseconds and then make the request
         """
-        
+
         delay = self.delay * delay_factor
         time.sleep(delay)
         return Request.get_response(self, data)
