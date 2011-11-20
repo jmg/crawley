@@ -1,6 +1,6 @@
 import csv 
     
-from meta import DocumentMeta
+from meta import DocumentMeta, BaseDocumentSession
 
 csv_objects = []
 
@@ -16,7 +16,7 @@ class CSVDocument(object):
         csv_objects.append(kwargs)
                 
                 
-class Session(object):
+class Session(BaseDocumentSession):
     """
         A class featuring a database session
     """
@@ -50,4 +50,4 @@ class Session(object):
         pass
             
 
-session = Session()
+csv_session = Session()

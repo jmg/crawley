@@ -18,7 +18,10 @@ XML_DOCUMENT = ''
 JSON_DOCUMENT = ''
 
 MONGO_DB_HOST = 'localhost'
-MONGO_DB_NAME = 'sarasa'
+MONGO_DB_NAME = 'mongo_db_name'
+
+COUCH_DB_HOST = 'http://localhost:5984'
+COUCH_DB_NAME = 'couch_db_name'
 
 #Show general debug information
 SHOW_DEBUG_INFO = True

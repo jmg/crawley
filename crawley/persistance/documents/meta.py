@@ -14,3 +14,11 @@ class DocumentMeta(type):
         if not hasattr(cls, '__module__' ) or not cls.__module__.startswith(CRAWLEY_ROOT_DIR):
             documents_entities.append(cls)
         super(DocumentMeta, cls).__init__(name, bases, dct)
+
+
+class BaseDocumentSession(object):
+    
+    def set_up(self, settings, storage_name):
+        
+        self.settings = settings
+        self.file_name = getattr(settings, storage_name)

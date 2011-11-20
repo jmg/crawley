@@ -1,5 +1,5 @@
 from lxml import etree
-from meta import DocumentMeta
+from meta import DocumentMeta, BaseDocumentSession
 
 root = etree.Element('root')
 
@@ -22,12 +22,10 @@ class XMLDocument(object):
             row.append(element)
             
             
-class Session(object):
+class Session(BaseDocumentSession):
     """
         A class featuring a database session
     """
-    
-    file_name = None
 
     def commit(self):
         """
@@ -41,4 +39,4 @@ class Session(object):
         pass
         
 
-session = Session()
+xml_session = Session()

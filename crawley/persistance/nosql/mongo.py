@@ -1,31 +1,30 @@
 from pymongo.connection import Connection
+from base import BaseNosqlSession, NosqlEntity
 
 mongo_objects = []
 
-class MongoEntity(object):
-
-    def __init__(self, **kwargs):
-
-        mongo_objects.append((self.__class__.__name__, kwargs))
+class MongoEntity(NosqlEntity):
+    
+    collection = mongo_objects
 
 
-class Session(object):
+class Session(BaseNosqlSession):
 
-    def set_up(self, settings):
+    def set_up(self, settings, storage_name):
 
-        self.settings = settings
-        self.connection = Connection(settings.MONGO_DB_HOST)
+        BaseNosqlSession.set_up(self, settings, storage_name)
+                
+        self.connection = Connection(self.db_host)
+        self.db = getattr(self.connection, self.settings.MONGO_DB_NAME)
 
     def commit(self):
-
-        db = getattr(self.connection, self.settings.MONGO_DB_NAME)
 
         for entity, obj in mongo_objects:
 
             if self.settings.SHOW_DEBUG_INFO:
                 print obj
-
-            doc = getattr(db, entity)
+            
+            doc = getattr(self.db, entity)
             doc.save(obj)
 
     def close(self):

@@ -18,6 +18,7 @@ from crawley.persistance.documents import documents_entities, xml_session, XMLDo
 from crawley.persistance.documents import csv_session, CSVDocument
 
 from crawley.persistance.nosql.mongo import mongo_session, MongoEntity
+from crawley.persistance.nosql.couch import couch_session, CouchEntity
 from crawley.persistance.relational.connectors import connectors
 
 
@@ -72,19 +73,16 @@ class BaseProject(object):
         documents_sessions = { 'JSON_DOCUMENT' : json_session,
                                'XML_DOCUMENT' : xml_session,
                                'CSV_DOCUMENT' : csv_session,
+                               'MONGO_DB_HOST' : mongo_session, 
+                               'COUCH_DB_HOST' : couch_session,
                              }
 
-        for document_name, session in documents_sessions.iteritems():
+        for storage_name, session in documents_sessions.iteritems():
 
-            if has_valid_attr(syncb_command.settings, document_name):
+            if has_valid_attr(syncb_command.settings, storage_name):
 
-                session.file_name = getattr(syncb_command.settings, document_name)
+                session.set_up(syncb_command.settings, storage_name)
                 syncb_command.sessions.append(session)
-
-        if has_valid_attr(syncb_command.settings, 'MONGO_DB_HOST'):
-
-            mongo_session.set_up(syncb_command.settings)
-            syncb_command.sessions.append(mongo_session)
 
         if has_valid_attr(syncb_command.settings, "DATABASE_ENGINE"):
 

@@ -3,7 +3,7 @@ try:
 except ImportError:
     import json as simplejson
     
-from meta import DocumentMeta
+from meta import DocumentMeta, BaseDocumentSession
 
 json_objects = []
 
@@ -19,12 +19,10 @@ class JSONDocument(object):
         json_objects.append(kwargs)
                 
                 
-class Session(object):
+class Session(BaseDocumentSession):
     """
         A class featuring a database session
-    """
-    
-    file_name = None
+    """            
 
     def commit(self):
         """
@@ -37,4 +35,4 @@ class Session(object):
         pass
             
 
-session = Session()
+json_session = Session()
