@@ -11,9 +11,14 @@ from crawley.multiprogramming.collections import WorkersList
 
 from crawley.utils import generate_template, get_full_template_path, has_valid_attr
 from crawley.persistance import Entity, UrlEntity, setup
-from crawley.persistance.databases import session as database_session
-from crawley.persistance.documents import json_session, JSONDocument, documents_entities, xml_session, XMLDocument, csv_session, CSVDocument
-from crawley.persistance.connectors import connectors
+from crawley.persistance.relational.databases import session as database_session
+
+from crawley.persistance.documents import json_session, JSONDocument
+from crawley.persistance.documents import documents_entities, xml_session, XMLDocument
+from crawley.persistance.documents import csv_session, CSVDocument
+
+from crawley.persistance.nosql.mongo import mongo_session, MongoEntity
+from crawley.persistance.relational.connectors import connectors
 
 
 worker_type = { 'greenlets' : GreenThread, 'threads' : KThread }
@@ -66,7 +71,8 @@ class BaseProject(object):
 
         documents_sessions = { 'JSON_DOCUMENT' : json_session,
                                'XML_DOCUMENT' : xml_session,
-                               'CSV_DOCUMENT' : csv_session, }
+                               'CSV_DOCUMENT' : csv_session,
+                             }
 
         for document_name, session in documents_sessions.iteritems():
 
@@ -74,6 +80,11 @@ class BaseProject(object):
 
                 session.file_name = getattr(syncb_command.settings, document_name)
                 syncb_command.sessions.append(session)
+
+        if has_valid_attr(syncb_command.settings, 'MONGO_DB_HOST'):
+
+            mongo_session.set_up(syncb_command.settings)
+            syncb_command.sessions.append(mongo_session)
 
         if has_valid_attr(syncb_command.settings, "DATABASE_ENGINE"):
 
@@ -88,19 +99,19 @@ class BaseProject(object):
         setup(elixir.entities)
 
     def run(self, run_command, crawlers):
-    
+
         workers = WorkersList()
 
         for crawler_class in crawlers:
 
             crawler = crawler_class(sessions=run_command.syncdb.sessions, settings=run_command.settings)
-            
+
             pool_type = getattr(run_command.settings, 'POOL', 'greenlets')
             worker_class = worker_type[pool_type]
-            
+
             worker = worker_class(target=crawler.start)
             workers.append(worker)
-        
+
         workers.start()
         workers.waitall()
 

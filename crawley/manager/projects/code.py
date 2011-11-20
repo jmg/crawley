@@ -3,7 +3,7 @@ import elixir
 from multiprocessing import Process
 
 from crawley.persistance import Entity, UrlEntity, setup
-from crawley.persistance.connectors import connectors
+from crawley.persistance.relational.connectors import connectors
 
 from crawley.persistance import UrlEntity
 
@@ -49,7 +49,7 @@ class CodeProject(BaseProject):
         """
             Run the crawler of a code project
         """
-        
+
         import_user_module("crawlers")
         BaseProject.run(self, run_command, user_crawlers)
 
