@@ -1,11 +1,11 @@
 Pypi Example
------------------------------------
+------------
 
 Lets make a scraper that extract data from the pypi's front page
 
 http://pypi.python.org/pypi
 
-Supose that we want extract data from the packages table and
+Suppose that we want extract data from the packages table and
 store it in a database.
 
 First at all we need to start a new crawley's project. In this case
@@ -16,13 +16,13 @@ it will be called pypi_packages.
     crawley startproject pypi_packages
     cd pypi_packages
     
-Then, inside the pypi_packages there will a settings.py file and another 
+Then, inside the pypi_packages there will a settings.py file and another
 directory containing a crawlers.py file and a models.py file.
 
-Lets start defining the models.py wich is very simple in this case.
+Lets start defining the models.py which is very simple in this case.
 
 Models
-===========
+======
 
 .. code-block:: python
 
@@ -42,7 +42,7 @@ Ok, now is time to code. Lets make the scraper. It must be located inside
 the crawlers.py file
 
 Crawlers
-===========
+========
 
 .. code-block:: python
 
@@ -89,8 +89,8 @@ Crawlers
         extractor = XPathExtractor
 
 
-The interesting part of this is the scrape method defined inside the 
-pypiScraper class. It uses Xpath in order to obtain the parsed html 
+The interesting part of this is the scrape method defined inside the
+pypiScraper class. It uses XPath in order to obtain the parsed html
 and then stores the extracted data in the Packages table.
 
 At this time we have finished our work. Very simple. Isn't it?

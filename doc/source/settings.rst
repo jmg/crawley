@@ -1,5 +1,5 @@
 Settings File
------------------------------------
+-------------
 
 The settings.py file is required in every crawley's project.
 A common settings file looks like this:
@@ -34,8 +34,8 @@ Configure your database
 The settings file provides you the capability for configure your database engine.
 The followings are configuration examples for the database engines supported so far.
 
-Sqlite 
-========
+Sqlite
+======
 
 It doesn't support host and user parameters. So, set it to empty.
 
@@ -50,8 +50,8 @@ It doesn't support host and user parameters. So, set it to empty.
     DATABASE_HOST = ''             
     DATABASE_PORT = ''    
 
-MySql 
-========
+MySql
+=====
 
 .. note:: Requires MySQLdb module
 
@@ -78,8 +78,8 @@ Postgres
     DATABASE_HOST = 'localhost'             
     DATABASE_PORT = '5432'  
     
-Oracle 
-========
+Oracle
+======
 
 .. note:: Requires cx_Oracle module
 
