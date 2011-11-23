@@ -1,4 +1,4 @@
-from json import JSONDocument, json_session
+from json_doc import JSONDocument, json_session
 from xml import XMLDocument, xml_session
 from csv_doc import CSVDocument, csv_session
 
