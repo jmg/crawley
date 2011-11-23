@@ -13,10 +13,10 @@ class Session(BaseNosqlSession):
     def set_up(self, settings, storage_name):
 
         BaseNosqlSession.set_up(self, settings, storage_name)            
-        couch = couchdb.Server(self.db_host)
+        server = couchdb.Server(self.db_host)
         
         try:
-            self.db = couch[settings.COUCH_DB_NAME]  
+            self.db = server[settings.COUCH_DB_NAME]  
         except:
             self.db = server.create(settings.COUCH_DB_NAME)
 

@@ -2,3 +2,5 @@ elixir
 eventlet
 pyquery
 lxml
+pymongo
+couchdb
