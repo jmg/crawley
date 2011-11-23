@@ -3,4 +3,4 @@ eventlet
 pyquery
 lxml
 pymongo
-couchdb
+couchdb>=0.8
