@@ -82,8 +82,13 @@ class BaseCrawler(object):
         If user doesn't define the get_urls method in scrapers then the crawler will search for urls
         in the current page itself depending on the [search_all_urls] attribute.
     """
+    
+    search_hidden_urls = False
+    """
+        Search for hidden urls in the whole html
+    """
 
-    _url_regex = re_compile(r'\b(([\w-]+://?|www[.])[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))')
+    _url_regex = re_compile(r'(http://|https://)([a-zA-Z0-9]+\.[a-zA-Z0-9\-]+|[a-zA-Z0-9\-]+)\.[a-zA-Z\.]{2,6}(/[a-zA-Z0-9\.\?=/#%&\+-]+|/|)')
 
     def __init__(self, sessions=None, settings=None):
         """
@@ -272,14 +277,10 @@ class BaseCrawler(object):
         """
             Returns a list of urls found in the current html page
         """
-        urls = []
-
-        for url_match in self._url_regex.finditer(response.raw_html):
-
-            urls.append(url_match.group(0))
-
+        urls = set()
+        
         tree = XPathExtractor().get_object(response.raw_html)
-
+        
         for link_tag in tree.xpath("//a"):
 
             if not 'href' in link_tag.attrib:
@@ -294,11 +295,16 @@ class BaseCrawler(object):
                 if not url.startswith("/"):
                      url = "/%s" % url
                      
-                new_url = "%s://%s%s" % (parsed_url.scheme, parsed_url.netloc, url)
-                
-                if not new_url in urls:
-                    urls.append(new_url)
+                url = "%s://%s%s" % (parsed_url.scheme, parsed_url.netloc, url)
+                                
+            urls.add(url)
+                    
+        if self.search_hidden_urls:
 
+            for url_match in self._url_regex.finditer(response.raw_html):
+                
+                urls.add(url_match.group(0))
+            
         return urls
 
     #Events section

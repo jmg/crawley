@@ -6,7 +6,7 @@
 
 * High Speed WebCrawler built on Eventlet.
 * Supports relational databases engines like Postgre, Mysql, Oracle, Sqlite.
-* Supports NoSQL databased like mongo and couchdb **New!**
+* Supports NoSQL databased like Mongodb and Couchdb. **New!**
 * Export your data into Json, XML or CSV formats. **New!**
 * Command line tools.
 * Extract data using your favourite tool. XPath or Pyquery (A Jquery-like library for python).
