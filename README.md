@@ -6,6 +6,7 @@
 
 * High Speed WebCrawler built on Eventlet.
 * Supports databases engines like Postgre, Mysql, Oracle, Sqlite.
+* Supports NoSQL databased like Mongodb and Couchdb. **New!**
 * Command line tools.
 * Extract data using your favourite tool. XPath or Pyquery (A Jquery-like library for python).
 * Cookie Handlers.
