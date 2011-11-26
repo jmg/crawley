@@ -1,6 +1,6 @@
 from crawley.scrapers import BaseScraper
 from crawley.crawlers import BaseCrawler
-from crawley.persistance.relational.databases import Entity, Field, Unicode, setup, session, elixir
+from crawley.persistance.relational.databases import Entity, Field, Unicode, setup, session, panacea
 from crawley.persistance.relational.connectors import connectors
 
 from config_parser import ConfigApp
