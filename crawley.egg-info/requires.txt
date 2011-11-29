@@ -1,4 +1,0 @@
-lxml
-eventlet
-elixir
-pyquery
