@@ -1,0 +1,268 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>crawley.crawlers &mdash; crawley v0.0.6 documentation</title>
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.6',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="crawley v0.0.6 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">crawley v0.0.6 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for crawley.crawlers</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">eventlet.green</span> <span class="kn">import</span> <span class="n">urllib2</span>
+<span class="kn">from</span> <span class="nn">eventlet</span> <span class="kn">import</span> <span class="n">GreenPool</span>
+
+<span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">match</span>
+
+<span class="kn">from</span> <span class="nn">http.request</span> <span class="kn">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">http.cookies</span> <span class="kn">import</span> <span class="n">CookieHandler</span>
+<span class="kn">from</span> <span class="nn">persistance</span> <span class="kn">import</span> <span class="n">session</span>
+<span class="kn">from</span> <span class="nn">extractors</span> <span class="kn">import</span> <span class="n">XPathExtractor</span>
+<span class="kn">from</span> <span class="nn">exceptions</span> <span class="kn">import</span> <span class="n">AuthenticationError</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">url_matcher</span>
+
+
+<div class="viewcode-block" id="BaseCrawler"><a class="viewcode-back" href="../../reference.html#crawley.crawlers.BaseCrawler">[docs]</a><span class="k">class</span> <span class="nc">BaseCrawler</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        User&#39;s Crawlers must inherit from this class, may</span>
+<span class="sd">        override some methods and define the start_urls list,</span>
+<span class="sd">        the scrapers and the max crawling depth.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">start_urls</span> <span class="o">=</span> <span class="p">[]</span>    
+    <span class="sd">&quot;&quot;&quot; A list containing the start urls for the crawler&quot;&quot;&quot;</span>
+    
+    <span class="n">allowed_urls</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="sd">&quot;&quot;&quot; A list of urls allowed for crawl&quot;&quot;&quot;</span>
+    
+    <span class="n">scrapers</span> <span class="o">=</span> <span class="p">[]</span>    
+    <span class="sd">&quot;&quot;&quot; A list of scrapers classes&quot;&quot;&quot;</span>
+    
+    <span class="n">max_depth</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="sd">&quot;&quot;&quot; The maximun crawling recursive level&quot;&quot;&quot;</span>
+    
+    <span class="n">extractor</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; The extractor class. Default is XPathExtractor&quot;&quot;&quot;</span>
+    
+    <span class="n">login</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="sd">&quot;&quot;&quot; The login data. A tuple of (url, login_dict).</span>
+<span class="sd">        Example: (&quot;www.mypage.com/login&quot;, {&#39;user&#39; : &#39;myuser&#39;, &#39;pass&#39;, &#39;mypassword&#39;})</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">_url_regex</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="s">r&#39;\b(([\w-]+://?|www[.])[^\s()&lt;&gt;]+(?:\([\w\d]+\)|([^[:punct:]\s]|/)))&#39;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">storage</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>        
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="o">=</span> <span class="n">storage</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">extractor</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">extractor</span> <span class="o">=</span> <span class="n">XPathExtractor</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">extractor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extractor</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cookie_hanlder</span> <span class="o">=</span> <span class="n">CookieHandler</span><span class="p">()</span>
+            
+    <span class="k">def</span> <span class="nf">_get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Returns the response object from a request</span>
+<span class="sd">            </span>
+<span class="sd">            params:</span>
+<span class="sd">                data: if this param is present it makes a POST.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+                
+        <span class="n">request</span> <span class="o">=</span> <span class="n">Request</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">cookie_handler</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cookie_hanlder</span><span class="p">)</span>
+                    
+        <span class="k">try</span><span class="p">:</span>            
+            <span class="k">return</span> <span class="n">request</span><span class="o">.</span><span class="n">get_response</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+    
+    <span class="k">def</span> <span class="nf">_get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Returns the response data from a request</span>
+<span class="sd">            </span>
+<span class="sd">            params:</span>
+<span class="sd">                data: if this param is present it makes a POST.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_response</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">response</span><span class="o">.</span><span class="n">getcode</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>            
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_manage_scrapers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Checks if some scraper is suited for data extraction on the current url.</span>
+<span class="sd">            If so, gets the extractor object and delegate the scraping task</span>
+<span class="sd">            to the scraper Object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">for</span> <span class="n">Scraper</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">scrapers</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">[</span><span class="n">pattern</span> <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">Scraper</span><span class="o">.</span><span class="n">matching_urls</span> <span class="k">if</span> <span class="n">url_matcher</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)]:</span> 
+                <span class="n">html</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extractor</span><span class="o">.</span><span class="n">get_object</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="n">Scraper</span><span class="p">()</span><span class="o">.</span><span class="n">scrape</span><span class="p">(</span><span class="n">html</span><span class="p">)</span>
+                <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_save_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">new_url</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Stores the url in an [UrlEntity] Object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">url</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">new_url</span><span class="p">)</span>
+            <span class="n">session</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    
+    <span class="k">def</span> <span class="nf">_validate_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Validates if the url is in the crawler&#39;s [allowed_urls] list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_urls</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">True</span>
+            
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">([</span><span class="bp">True</span> <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">allowed_urls</span> <span class="k">if</span> <span class="n">url_matcher</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)])</span>
+    
+    <span class="k">def</span> <span class="nf">_fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">depth_level</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Recursive url fetching. </span>
+<span class="sd">            </span>
+<span class="sd">            Params:</span>
+<span class="sd">                depth_level: The maximun recursion level</span>
+<span class="sd">                url: The url to start crawling</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+                                   
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_validate_url</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+            <span class="k">return</span>
+        
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data</span><span class="p">(</span><span class="n">url</span><span class="p">);</span>
+        <span class="k">if</span> <span class="n">data</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">_manage_scrapers</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+            
+        <span class="k">for</span> <span class="n">new_url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_urls</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+                                    
+            <span class="bp">self</span><span class="o">.</span><span class="n">_save_urls</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">new_url</span><span class="p">)</span>            
+            
+            <span class="k">if</span> <span class="n">depth_level</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_depth</span><span class="p">:</span>
+                <span class="k">return</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">spawn_n</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fetch</span><span class="p">,</span> <span class="n">new_url</span><span class="p">,</span> <span class="n">depth_level</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_login</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            If target pages are hidden behind a login then</span>
+<span class="sd">            pass through it first.</span>
+<span class="sd">            </span>
+<span class="sd">            self.login can be None or a tuple containing </span>
+<span class="sd">            (login_url, params_dict)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">login</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span>        
+            
+        <span class="n">url</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">login</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_response</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AuthenticationError</span><span class="p">(</span><span class="s">&quot;Can&#39;t login&quot;</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="BaseCrawler.start"><a class="viewcode-back" href="../../reference.html#crawley.crawlers.BaseCrawler.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Crawler&#39;s run method</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_login</span><span class="p">()</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">GreenPool</span><span class="p">()</span>        
+        
+        <span class="k">for</span> <span class="n">url</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_urls</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">spawn_n</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_fetch</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">depth_level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">waitall</span><span class="p">()</span>
+
+
+    <span class="c">#overridables</span>
+    </div>
+<div class="viewcode-block" id="BaseCrawler.get_urls"><a class="viewcode-back" href="../../reference.html#crawley.crawlers.BaseCrawler.get_urls">[docs]</a>    <span class="k">def</span> <span class="nf">get_urls</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">html</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Returns a list of urls found in the current html page</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">urls</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">url_match</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url_regex</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">html</span><span class="p">):</span>
+            <span class="n">urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">url_match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">urls</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" size="18" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">crawley v0.0.6 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2011, crawley developers.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
+    </div>
+  </body>
+</html>
