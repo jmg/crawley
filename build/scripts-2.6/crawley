@@ -1,0 +1,4 @@
+#!/usr/bin/python2.6
+
+from crawley.manager import manage
+manage()

@@ -1,0 +1,4 @@
+lxml
+eventlet
+elixir
+pyquery

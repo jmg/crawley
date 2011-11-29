@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: crawley
+Version: 0.2.3
+Summary: Pythonic Scraping / Crawling FrameWork built On Eventlet
+Home-page: http://crawley-project.com.ar/
+Author: Crawley Developers
+Author-email: jmg.utn@gmail.com
+License: GPL v3
+Description: UNKNOWN
+Keywords: Scraping Crawling Framework Python
+Platform: UNKNOWN
