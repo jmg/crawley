@@ -77,3 +77,16 @@ h2, h3 {
     background-color: #FFFFFF;
 }
 
+.vertical {    
+    display: table; 
+    height: 100px; 
+    position: relative; 
+    overflow: hidden;
+}
+
+.vcenter {
+    position: absolute; 
+    top: 30%;
+    display: table-cell; 
+    vertical-align: middle;
+}
