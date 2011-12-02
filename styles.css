@@ -51,3 +51,29 @@ border: 0;
 .content {
     min-height: 600px;
 }
+
+.main_image {
+    
+}
+
+h1 {
+    font-family: 'Lobster', cursive;
+    font-size: 60px;    
+}
+
+h2, h3 {
+    font-family: Georgia;
+    font-style: italic;
+    font-weight: bold;
+}
+
+.center {
+    text-align: center;
+    width: 100%;
+    
+}
+
+.page-header {
+    background-color: #FFFFFF;
+}
+
