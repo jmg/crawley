@@ -3,7 +3,7 @@ from crawley.extractors import XPathExtractor
 from models import *
 from crawley.scrapers.smart import SmartScraper
 
-class ebayScraper(SmartScraper):
+class EbayScraper(SmartScraper):
 
     #specify the urls that can be scraped by this class
     #example: ["%python.org%"] #(where % is a wildcard)
@@ -15,10 +15,10 @@ class ebayScraper(SmartScraper):
         #parse the html and populate your model's tables here.
         #example:
         data = response.html.xpath("/html/body/div/table/tr/td/div/table/tr/td[2]/form/table/tr/td/div/b/h1")
-        ebayClass(data[0].text)
+        EbayProducts(title=data[0].text)
 
 
-class ebayCrawler(BaseCrawler):
+class EbayCrawler(BaseCrawler):
 
     #add your starting urls here
     #example: ["http://packages.python.org/crawley/"]
@@ -27,7 +27,7 @@ class ebayCrawler(BaseCrawler):
 
     #add your scraper classes here
     #example: [ebayScraper]
-    scrapers = [ebayScraper]
+    scrapers = [EbayScraper]
 
     #specify you maximum crawling depth level
     max_depth = 1
