@@ -1,7 +1,7 @@
 import os.path
 import shutil
 
-import panacea
+import elixir
 import crawley
 
 from multiprocessing import Process
@@ -91,10 +91,10 @@ class BaseProject(object):
 
     def _setup_entities(self, entities, settings):
 
-        panacea.metadata.bind = self.connector.get_connection_string()
-        panacea.metadata.bind.echo = settings.SHOW_DEBUG_INFO
+        elixir.metadata.bind = self.connector.get_connection_string()
+        elixir.metadata.bind.echo = settings.SHOW_DEBUG_INFO
 
-        setup(panacea.entities)
+        setup(elixir.entities)
 
     def run(self, run_command, crawlers):
 

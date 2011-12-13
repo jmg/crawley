@@ -1,11 +1,9 @@
 from eventlet import GreenPool
 from crawley.multiprogramming.pool import ThreadPool
 
-from re import compile as re_compile
-from urllib2 import urlparse
-
 from crawley import config
 from crawley.http.managers import RequestManager
+from crawley.http.urls import UrlFinder
 from crawley.extractors import XPathExtractor
 from crawley.exceptions import AuthenticationError
 from crawley.utils import url_matcher
@@ -87,8 +85,6 @@ class BaseCrawler(object):
     """
         Search for hidden urls in the whole html
     """
-
-    _url_regex = re_compile(r'(http://|https://)([a-zA-Z0-9]+\.[a-zA-Z0-9\-]+|[a-zA-Z0-9\-]+)\.[a-zA-Z\.]{2,6}(/[a-zA-Z0-9\.\?=/#%&\+-]+|/|)')
 
     def __init__(self, sessions=None, settings=None):
         """
@@ -271,41 +267,14 @@ class BaseCrawler(object):
         self.pool.waitall()
         self.on_finish()
 
-    #Overridables
-
     def get_urls(self, response):
         """
             Returns a list of urls found in the current html page
         """
         urls = set()
         
-        tree = XPathExtractor().get_object(response.raw_html)
-        
-        for link_tag in tree.xpath("//a"):
-
-            if not 'href' in link_tag.attrib:
-                continue
-
-            url = link_tag.attrib["href"]
-            
-            if not urlparse.urlparse(url).netloc:
-                
-                parsed_url = urlparse.urlparse(response.url)
-                
-                if not url.startswith("/"):
-                     url = "/%s" % url
-                     
-                url = "%s://%s%s" % (parsed_url.scheme, parsed_url.netloc, url)
-                                
-            urls.add(url)
-                    
-        if self.search_hidden_urls:
-
-            for url_match in self._url_regex.finditer(response.raw_html):
-                
-                urls.add(url_match.group(0))
-            
-        return urls
+        finder = UrlFinder(response, self.search_hidden_urls)
+        return finder.get_urls()
 
     #Events section
 

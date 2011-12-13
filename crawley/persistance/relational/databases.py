@@ -1,20 +1,20 @@
-import panacea
-from panacea import Field, Unicode, UnicodeText
+import elixir
+from elixir import Field, Unicode, UnicodeText
 
-session = panacea.session
+session = elixir.session
 
 
-class Entity(panacea.EntityBase):
+class Entity(elixir.EntityBase):
     """
         Base Entity.
 
         Every Crawley's Entity must Inherit from this class
     """
 
-    __metaclass__ = panacea.EntityMeta
+    __metaclass__ = elixir.EntityMeta
 
 
-class UrlEntity(panacea.EntityBase):
+class UrlEntity(elixir.EntityBase):
     """
         Entity intended to save urls
     """
@@ -22,7 +22,7 @@ class UrlEntity(panacea.EntityBase):
     href = Field(Unicode(255))
     parent = Field(Unicode(255))
 
-    __metaclass__ = panacea.EntityMeta
+    __metaclass__ = elixir.EntityMeta
 
 
 def setup(entities):
@@ -30,5 +30,5 @@ def setup(entities):
         Setup the database based on a list of user's entities
     """
 
-    panacea.setup_entities(entities)
-    panacea.create_all()
+    elixir.setup_entities(entities)
+    elixir.create_all()
