@@ -29,16 +29,23 @@ class BaseProject(object):
         Base of all crawley's projects
     """
 
-    def set_up(self, project_name):
+    def set_up(self, project_name, base_dir=None):
         """
             Setups a crawley project
         """
 
-        self._create_module(project_name)
-        self._write_meta_data(project_name)
-        generate_template("settings", project_name, project_name)
-
-        self.project_dir = os.path.join(project_name, project_name)
+        main_module = project_name
+        
+        if base_dir is not None:
+            main_module = os.path.join(base_dir, project_name)
+        
+        self._create_module(main_module)        
+        self._write_meta_data(main_module)
+        
+        generate_template("settings", project_name, main_module)
+                        
+        self.project_dir = os.path.join(main_module, project_name)
+        
         self._create_module(self.project_dir)
 
     def _write_meta_data(self, directory_module):

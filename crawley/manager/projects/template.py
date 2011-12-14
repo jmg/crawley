@@ -18,12 +18,12 @@ class TemplateProject(BaseProject):
 
     name = "template"
 
-    def set_up(self, project_name):
+    def set_up(self, project_name, **kwargs):
         """
             Setups a crawley's template project
         """
 
-        BaseProject.set_up(self, project_name)
+        BaseProject.set_up(self, project_name, **kwargs)
 
         generate_template("template", project_name, self.project_dir, new_extension=".crw")
         generate_template("config", project_name, self.project_dir, new_extension=".ini")

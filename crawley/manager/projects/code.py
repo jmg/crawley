@@ -23,13 +23,13 @@ class CodeProject(BaseProject):
 
     name = "code"
 
-    def set_up(self, project_name):
+    def set_up(self, project_name, **kwargs):
         """
             Setups a code project.
             Generates the crawlers and models files based on a template.
         """
 
-        BaseProject.set_up(self, project_name)
+        BaseProject.set_up(self, project_name, **kwargs)
 
         generate_template("models", project_name, self.project_dir)
         generate_template("crawlers", project_name, self.project_dir)

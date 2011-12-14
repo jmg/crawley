@@ -14,15 +14,18 @@ class StartProjectCommand(BaseCommand):
 
     name = "startproject"
 
-    def __init__(self, args=None, project_type=None, project_name=None):
+    def __init__(self, args=None, project_type=None, project_name=None, base_dir=None):
 
-        self.project_type = project_type
-        self.project_name = project_name
+        self.project_type = project_type        
+        self.base_dir = base_dir
+        
+        if project_name is not None:
+            args = [project_name]
 
         BaseCommand.__init__(self, args)
 
     def validations(self):
-
+        
         return [(len(self.args) >= 1, "No given project name")]
 
     def execute(self):
@@ -45,4 +48,4 @@ class StartProjectCommand(BaseCommand):
             self.project_type = options.type
 
         project = project_types[self.project_type]()
-        project.set_up(self.project_name)
+        project.set_up(self.project_name, base_dir=self.base_dir)
