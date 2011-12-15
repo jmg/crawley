@@ -1,6 +1,7 @@
 """
     Database connectors for elixir
 """
+import os.path
 from crawley.utils import exit_with_error
 
 class Connector(object):
@@ -27,7 +28,7 @@ class SimpleConnector(Connector):
 
     def get_connection_string(self):
 
-        return "%s:///%s" % (self.settings.DATABASE_ENGINE, self.settings.DATABASE_NAME)
+        return "%s:///%s" % (self.settings.DATABASE_ENGINE, os.path.join(self.settings.PATH, self.settings.DATABASE_NAME))
 
 
 class HostConnector(Connector):
