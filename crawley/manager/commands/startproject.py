@@ -22,11 +22,11 @@ class StartProjectCommand(BaseCommand):
         self.project_type = project_type        
         self.base_dir = base_dir
         
-        if project_name is not None:
-            args.append(project_name)
-            
         if project_type is not None:
             args.extend(["--type", project_type])
+            
+        if project_name is not None:
+            args.append(project_name)
 
         BaseCommand.__init__(self, args)
 
