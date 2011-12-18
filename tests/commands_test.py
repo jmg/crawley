@@ -36,11 +36,21 @@ class CommandsTest(unittest.TestCase):
         
         cmd = RunCommand(self.settings_args)
         cmd.checked_execute()
-
+            
     def _test_shell(self):        
         """
             Skiped because it blocks the console
         """
         
         cmd = ShellCommand(self.test_name_args)
-        cmd.checked_execute()              
+        cmd.checked_execute()
+        
+    #database project tests              
+        
+    def test_params_run(self):
+        
+        cmd = RunCommand(template="sarasa", config="config_file")
+        self.assertTrue("template" in cmd.kwargs)
+        self.assertTrue(cmd.kwargs["template"] == "sarasa")
+        self.assertTrue("config" in cmd.kwargs)
+        self.assertTrue(cmd.kwargs["config"] == "config_file")

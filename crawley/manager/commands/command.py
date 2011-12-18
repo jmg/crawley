@@ -3,7 +3,7 @@ import os
 from optparse import OptionParser
 
 from crawley.utils import exit_with_error, import_user_module, check_for_file, fix_file_extension
-from crawley.manager.projects import CodeProject, TemplateProject
+from crawley.manager.projects import project_types
 
 
 class BaseCommand(object):
@@ -73,7 +73,7 @@ class ProjectCommand(BaseCommand):
         else:
             sys.path.insert(0, self.settings.PROJECT_ROOT)
 
-        self._check_setttings_errors()
+        self._check_settings_errors()
         self._check_project_type()
         BaseCommand.checked_execute(self)
 
@@ -108,7 +108,7 @@ class ProjectCommand(BaseCommand):
         sys.path.append(settings.PROJECT_ROOT)
         return settings
 
-    def _check_setttings_errors(self):
+    def _check_settings_errors(self):
         """
             Fix errors in settings.py
         """
@@ -125,15 +125,8 @@ class ProjectCommand(BaseCommand):
 
     def _check_project_type(self):
         """
-            Check for the project's type [code based project
-            or dsl templates based project]
-        """
-
-        if check_for_file(self.settings, "config.ini") and check_for_file(self.settings, "template.crw"):
-            self.project_type = TemplateProject()
-
-        elif import_user_module("models", exit=False) is not None:
-            self.project_type = CodeProject()
-
-        else:
-            exit_with_error("Unrecognized crawley project")
+            Check for the project's type            
+        """        
+        
+        meta_data = import_user_module("__init__")
+        self.project_type = project_types[meta_data.project_type]()

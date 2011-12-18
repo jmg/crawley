@@ -20,6 +20,7 @@ from crawley.persistance.documents import csv_session, CSVDocument
 from crawley.persistance.nosql.mongo import mongo_session, MongoEntity
 from crawley.persistance.nosql.couch import couch_session, CouchEntity
 from crawley.persistance.relational.connectors import connectors
+from crawley.manager.utils import import_user_module
 
 
 worker_type = { 'greenlets' : GreenThread, 'threads' : KThread }
@@ -90,9 +91,10 @@ class BaseProject(object):
 
                 session.set_up(syncb_command.settings, storage_name)
                 syncb_command.sessions.append(session)
-
+        
         if has_valid_attr(syncb_command.settings, "DATABASE_ENGINE"):
-
+            
+            import_user_module("models", exit=False)
             syncb_command.sessions.append(database_session)
             self.connector = connectors[syncb_command.settings.DATABASE_ENGINE](syncb_command.settings)
 
