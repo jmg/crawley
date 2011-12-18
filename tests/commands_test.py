@@ -10,8 +10,8 @@ class CommandsTest(unittest.TestCase):
     
     def setUp(self):
         
-        settings_dir = os.path.join(os.getcwd(), "tests", "test_project", "settings.py")
-        self.settings_args = ["-s", settings_dir]
+        self.settings_dir = os.path.join(os.getcwd(), "tests", "test_project")
+        self.settings_args = ["-s", os.path.join(self.settings_dir, "settings.py")]
         
         self.test_name_args = ["test"]
     
@@ -29,8 +29,8 @@ class CommandsTest(unittest.TestCase):
                 
         cmd = SyncDbCommand(self.settings_args)
         cmd.checked_execute()
-        self.assertTrue(os.path.exists("test_project.sqlite"))
-        os.remove("test_project.sqlite")
+        self.assertTrue(os.path.exists(os.path.join(self.settings_dir, "test_project.sqlite")))
+        os.remove(os.path.join(self.settings_dir, "test_project.sqlite"))
         
     def test_run(self):
         
