@@ -3,8 +3,6 @@ from crawley.crawlers import BaseCrawler
 from crawley.persistance.relational.databases import Entity, Field, Unicode, setup, session, elixir
 from crawley.persistance.relational.connectors import connectors
 
-from config_parser import ConfigApp
-
 class DSLInterpreter(object):
     """
         This class "compiles" the DSL into scraper classes for
@@ -129,10 +127,10 @@ class DSLInterpreter(object):
 
 class CrawlerCompiler(object):
 
-    def __init__(self, scrapers, settings):
+    def __init__(self, scrapers, config):
 
         self.scrapers = scrapers
-        self.config = ConfigApp(settings.PROJECT_ROOT)
+        self.config = config
 
     def compile(self):
 

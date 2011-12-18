@@ -55,8 +55,9 @@ class ProjectCommand(BaseCommand):
         A command that requires a settings.py file to run
     """
 
-    def __init__(self, args=None, settings=None):
+    def __init__(self, args=None, settings=None, **kwargs):
 
+        self.kwargs = kwargs
         self.settings = settings
 
         BaseCommand.__init__(self, args)
