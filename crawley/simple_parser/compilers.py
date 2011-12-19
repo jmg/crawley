@@ -1,4 +1,4 @@
-from crawley.scrapers import BaseScraper
+from crawley.scrapers import SmartScraper
 from crawley.crawlers import BaseCrawler
 from crawley.persistance.relational.databases import Entity, Field, Unicode, setup, session, elixir
 from crawley.persistance.relational.connectors import connectors
@@ -32,7 +32,7 @@ class DSLInterpreter(object):
             attrs_dict["matching_urls"] = [matching_url, ]
             attrs_dict["template_url"] = template_url
 
-            scraper = self._gen_class("GeneratedScraper", (BaseScraper, ), attrs_dict)
+            scraper = self._gen_class("GeneratedScraper", (SmartScraper, ), attrs_dict)
             scrapers.append(scraper)
 
         return scrapers

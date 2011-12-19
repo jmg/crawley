@@ -20,6 +20,15 @@ def import_user_module(module, exit=True):
             exit_with_error("%s.py file not found!: %s" % (module, e))
 
 
+def import_from_path(path, name, exit=True):
+    """
+        Import a module from a specific path
+    """
+            
+    module = "%s.%s" % (path.replace(os.sep, "."), name)
+    return import_user_module(module, exit=exit)
+
+
 def generate_template(tm_name, project_name, output_dir, new_extension=None):
     """
         Generates a project's file from a template
