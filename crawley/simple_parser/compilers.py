@@ -51,7 +51,7 @@ class DSLInterpreter(object):
 
         descriptors = {}
         fields = [line.field for lines in self.code_blocks for line in lines if not line.is_header]
-
+        
         for field in fields:
 
             table = field["table"]
@@ -66,6 +66,7 @@ class DSLInterpreter(object):
         for entity_name, fields in descriptors.iteritems():
 
             attrs_dict = dict([(field, Field(Unicode(255))) for field in fields])
+            attrs_dict["options_defaults"] = {"shortnames" : True }
 
             entity = self._gen_class(entity_name, (Entity, ), attrs_dict)
             self.entities[entity_name] = entity
