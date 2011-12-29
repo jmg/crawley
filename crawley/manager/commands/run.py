@@ -14,8 +14,10 @@ class RunCommand(ProjectCommand):
 
     def execute(self):
         
-        if "no_syncdb" not in self.kwargs or not self.kwargs["no_syncdb"]:
+        if "syncdb" not in self.kwargs or not self.kwargs["syncdb"]:
             self.syncdb = SyncDbCommand(args=self.args, settings=self.settings, **self.kwargs)
             self.syncdb.checked_execute()
+        else :
+            self.syncdb = self.kwargs["syncdb"]
 
         self.project_type.run(self)
