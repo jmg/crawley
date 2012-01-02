@@ -1,4 +1,4 @@
-from crawley.crawlers import BaseCrawler 
+from crawley.crawlers import BaseCrawler
 from crawley.extractors import XPathExtractor
 
 from command import BaseCommand

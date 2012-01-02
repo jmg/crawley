@@ -125,13 +125,13 @@ class ProjectCommand(BaseCommand):
 
     def _check_project_type(self):
         """
-            Check for the project's type            
-        """        
-        
-        if has_valid_attr(self.settings, "PROJECT_TYPE"):            
+            Check for the project's type
+        """
+
+        if has_valid_attr(self.settings, "PROJECT_TYPE"):
             project_type = self.settings.PROJECT_TYPE
         else:
             meta_data = import_user_module("__init__")
             project_type = meta_data.project_type
-                        
+
         self.project_type = project_types[project_type]()

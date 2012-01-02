@@ -25,11 +25,11 @@ class TemplateProject(BaseProject):
         """
 
         BaseProject.set_up(self, project_name, **kwargs)
-            
+
         self._generate_templates(project_name)
-                        
+
     def _generate_templates(self, project_name):
-        
+
         generate_template("template", project_name, self.project_dir, new_extension=".crw")
         generate_template("config", project_name, self.project_dir, new_extension=".ini")
 
@@ -49,11 +49,11 @@ class TemplateProject(BaseProject):
         entities = syncb_command.generator.gen_entities()
 
         self._setup_entities(entities, syncb_command.settings)
-        
+
     def _get_template(self, syncb_command):
-        
+
         with open(os.path.join(syncb_command.settings.PROJECT_ROOT, "template.crw"), "r") as f:
-            return f.read()        
+            return f.read()
 
     def run(self, run_command):
         """
@@ -64,14 +64,14 @@ class TemplateProject(BaseProject):
         """
 
         scraper_classes = run_command.syncdb.generator.gen_scrapers()
-        
+
         config = self._get_config(run_command)
-            
+
         compiler = CrawlerCompiler(scraper_classes, config)
         crawler_class = compiler.compile()
-        
+
         BaseProject.run(self, run_command, [crawler_class])
-        
+
     def _get_config(self, run_command):
-        
+
         return ConfigApp(run_command.settings.PROJECT_ROOT)

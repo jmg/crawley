@@ -51,7 +51,7 @@ class DSLInterpreter(object):
 
         descriptors = {}
         fields = [line.field for lines in self.code_blocks for line in lines if not line.is_header]
-        
+
         for field in fields:
 
             table = field["table"]

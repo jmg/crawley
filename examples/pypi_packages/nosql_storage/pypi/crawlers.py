@@ -23,9 +23,9 @@ class pypiScraper(BaseScraper):
             td_description = tr[2]
 
             #storing data in Packages table
-            
+
             data =  {'updated' : td_updated.text, 'package' : package_link.text, 'description' : td_description.text }
-            
+
             PackageMongo(**data)
             PackageCouch(**data)
 

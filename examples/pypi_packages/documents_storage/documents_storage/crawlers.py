@@ -30,7 +30,7 @@ class pypiScraper(BaseScraper):
             JSONPackage(**data)
             #storing data in the csv document
             CSVPackage(**data)
-            
+
 
 class pypiCrawler(BaseCrawler):
 

@@ -1,7 +1,7 @@
 def patch_smtp():
-    
+
     #FIXME: This code have some bug caused by the nonblocking I/O.
-    # At this moment this patcher isn't used by the crawler. It just 
+    # At this moment this patcher isn't used by the crawler. It just
     # import the regular smtplib module
     from eventlet import patcher
     from eventlet.green import socket

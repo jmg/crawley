@@ -1,8 +1,8 @@
 from crawley.persistance import Entity, Field, Unicode
 
 class Package(Entity):
-    
+
     #add your table fields here
-    updated = Field(Unicode(255))    
+    updated = Field(Unicode(255))
     package = Field(Unicode(255))
     description = Field(Unicode(255))
