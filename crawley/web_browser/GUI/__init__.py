@@ -15,9 +15,9 @@ class BrowserGUI(QtGui.QMainWindow):
     def __init__(self):
 
         QtGui.QMainWindow.__init__(self)
-        
+
         self.ui = Ui_MainWindow()
-        self.ui.setupUi(self)                  
+        self.ui.setupUi(self)
 
         self.ui.bt_back.setIcon(QtGui.QIcon().fromTheme("go-previous"))
         self.ui.bt_ahead.setIcon(QtGui.QIcon().fromTheme("go-next"))
@@ -50,19 +50,19 @@ class BrowserTabGUI(QtGui.QTabWidget):
 class FrmConfigGUI(QtGui.QDialog):
 
     def __init__(self, parent):
-        
+
         QtGui.QDialog.__init__(self, parent)
-        
+
         self.config_ui = Ui_FrmConfig()
         self.config_ui.setupUi(self)
-        
-        
+
+
 class FrmSettingsGUI(QtGui.QDialog):
 
     def __init__(self, parent):
-        
+
         QtGui.QDialog.__init__(self, parent)
-        
+
         self.settings_ui = Ui_Settings()
         self.settings_ui.setupUi(self)
 

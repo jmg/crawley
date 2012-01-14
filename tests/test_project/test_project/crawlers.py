@@ -7,7 +7,7 @@ class PackagesAuthorsScraper(SmartScraper):
 
     #The pages that have the precious data
     matching_urls = ["%pypi.python.org/pypi/%"]
-    
+
     #an example of a page that you want to scrap
     template_url = "http://pypi.python.org/pypi/Shake/0.5.10"
 

@@ -2,8 +2,8 @@
 class NosqlEntity(object):
     """
         Base of NosqlEntities like MongoEntity or CouchEntity
-        
-        Collection is a list of nosql objects and it must be overrrided 
+
+        Collection is a list of nosql objects and it must be overrrided
         in the base classes.
     """
     def __init__(self, **kwargs):

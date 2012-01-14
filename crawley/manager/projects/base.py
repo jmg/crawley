@@ -36,17 +36,17 @@ class BaseProject(object):
         """
 
         main_module = project_name
-        
+
         if base_dir is not None:
             main_module = os.path.join(base_dir, project_name)
-        
-        self._create_module(main_module)        
+
+        self._create_module(main_module)
         self._write_meta_data(main_module)
-        
+
         generate_template("settings", project_name, main_module)
-                        
+
         self.project_dir = os.path.join(main_module, project_name)
-        
+
         self._create_module(self.project_dir)
 
     def _write_meta_data(self, directory_module):
@@ -81,7 +81,7 @@ class BaseProject(object):
         documents_sessions = { 'JSON_DOCUMENT' : json_session,
                                'XML_DOCUMENT' : xml_session,
                                'CSV_DOCUMENT' : csv_session,
-                               'MONGO_DB_HOST' : mongo_session, 
+                               'MONGO_DB_HOST' : mongo_session,
                                'COUCH_DB_HOST' : couch_session,
                              }
 
@@ -91,9 +91,9 @@ class BaseProject(object):
 
                 session.set_up(syncb_command.settings, storage_name)
                 syncb_command.sessions.append(session)
-        
+
         if has_valid_attr(syncb_command.settings, "DATABASE_ENGINE"):
-            
+
             import_user_module("models", exit=False)
             syncb_command.sessions.append(database_session)
             self.connector = connectors[syncb_command.settings.DATABASE_ENGINE](syncb_command.settings)

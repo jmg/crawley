@@ -6,7 +6,7 @@ connection = Connection("localhost")
 db = connection.mongo_db_name
 
 print "-" * 80
-print "Mongo Entities"     
+print "Mongo Entities"
 print "-" * 80
 print ""
 
@@ -19,7 +19,7 @@ print "Total entities: %s" % db.Package.count()
 
 
 print "-" * 80
-print "CouchDb Entities"     
+print "CouchDb Entities"
 print "-" * 80
 print ""
 
@@ -31,7 +31,7 @@ try:
 except:
     db = couch.create(couch_db)
 
-for entity in db:    
+for entity in db:
     print db.get(entity)
 
 print "-" * 80

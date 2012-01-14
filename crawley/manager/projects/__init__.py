@@ -5,6 +5,6 @@ from database import DataBaseProject
 from crawley.utils import CustomDict
 
 project_types = CustomDict(error="[%s] Not valid project type")
-project_types.update({  TemplateProject.name : TemplateProject, 
+project_types.update({  TemplateProject.name : TemplateProject,
                         CodeProject.name : CodeProject,
                         DataBaseProject.name : DataBaseProject, })

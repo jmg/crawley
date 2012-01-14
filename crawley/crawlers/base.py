@@ -80,7 +80,7 @@ class BaseCrawler(object):
         If user doesn't define the get_urls method in scrapers then the crawler will search for urls
         in the current page itself depending on the [search_all_urls] attribute.
     """
-    
+
     search_hidden_urls = False
     """
         Search for hidden urls in the whole html
@@ -111,11 +111,11 @@ class BaseCrawler(object):
 
         pool_type = getattr(settings, 'POOL', 'greenlets')
         pool = Pools[pool_type]
-                
+
         if self.max_concurrency_level is None:
             self.max_concurrency_level = pool['max_concurrency']
-            
-        self.pool = pool['pool'](self.max_concurrency_level)            
+
+        self.pool = pool['pool'](self.max_concurrency_level)
         self.request_manager = RequestManager(settings=settings, delay=self.requests_delay, deviation=self.requests_deviation)
 
         self._initialize_scrapers()
@@ -236,7 +236,7 @@ class BaseCrawler(object):
 
             if depth_level >= self.max_depth and self.max_depth != -1:
                 return
-            
+
             self.pool.spawn_n(self._fetch, new_url, depth_level + 1)
 
     def _login(self):
@@ -262,8 +262,8 @@ class BaseCrawler(object):
         self._login()
 
         for url in self.start_urls:
-            self.pool.spawn_n(self._fetch, url, depth_level=0)                
-                
+            self.pool.spawn_n(self._fetch, url, depth_level=0)
+
         self.pool.waitall()
         self.on_finish()
 
@@ -272,7 +272,7 @@ class BaseCrawler(object):
             Returns a list of urls found in the current html page
         """
         urls = set()
-        
+
         finder = UrlFinder(response, self.search_hidden_urls)
         return finder.get_urls()
 
