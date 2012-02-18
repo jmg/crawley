@@ -2,7 +2,7 @@ import sys
 import os
 from optparse import OptionParser
 
-from crawley.utils import exit_with_error, import_user_module, check_for_file, fix_file_extension, has_valid_attr
+from crawley.utils import exit_with_error, import_user_module, check_for_file, fix_file_extension, has_valid_attr, add_to_path
 from crawley.manager.projects import project_types
 
 
@@ -71,7 +71,7 @@ class ProjectCommand(BaseCommand):
             self._add_options()
             self.settings = self._check_for_settings()
         else:
-            sys.path.insert(0, self.settings.PROJECT_ROOT)
+            add_to_path(self.settings.PROJECT_ROOT)
 
         self._check_settings_errors()
         self._check_project_type()
@@ -96,16 +96,16 @@ class ProjectCommand(BaseCommand):
 
             settings_dir, file_name = os.path.split(options.settings)
 
-            sys.path.insert(0, settings_dir)
+            add_to_path(settings_dir)
             settings_file = os.path.splitext(file_name)[0]
 
         else:
-            sys.path.insert(0, os.getcwd())
+            add_to_path(os.getcwd())
             settings_file = "settings"
 
         settings = import_user_module(settings_file)
 
-        sys.path.append(settings.PROJECT_ROOT)
+        add_to_path(settings.PROJECT_ROOT)
         return settings
 
     def _check_settings_errors(self):
