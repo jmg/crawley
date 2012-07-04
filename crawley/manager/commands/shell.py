@@ -27,7 +27,7 @@ class ShellCommand(BaseCommand):
         url = self.args[0]
         crawler = BaseCrawler()
 
-        response = crawler._get_data(url)
+        response = crawler._get_response(url)
         html = XPathExtractor().get_object(response)
 
         shell = IPython.Shell.IPShellEmbed(argv=[], user_ns={ 'response' : response })
