@@ -1,9 +1,14 @@
 import sys
-from PyQt4 import QtGui
 from command import BaseCommand
 from crawley.utils import exit_with_error
 
-from crawley.web_browser.browser import Browser
+try:
+    #install pyqt4
+    from PyQt4 import QtGui
+    from crawley.web_browser.browser import Browser
+except ImportError:
+    pass
+
 
 class BrowserCommand(BaseCommand):
     """
