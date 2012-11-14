@@ -22,6 +22,10 @@ class ServerHandler(SimpleHTTPServer.SimpleHTTPRequestHandler):
     
     def do_GET(self):
         """Serve a GET request."""
+        self.send_response(200)
+        self.send_header("Set-Cookie", 'cookie=123456')
+        self.end_headers()        
+        
         self.wfile.write('ABCDEF\n')
                 
     def handle_one_request(self):
