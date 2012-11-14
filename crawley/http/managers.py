@@ -1,11 +1,9 @@
 import urllib
 
-from eventlet.green import urllib2
 from request import DelayedRequest, Request
 from crawley.http.cookies import CookieHandler
 from crawley.http.response import Response
 from crawley.utils import has_valid_attr
-from crawley import config
 
 
 class HostCounterDict(dict):
@@ -42,10 +40,10 @@ class RequestManager(object):
         self.delay = delay
         self.deviation = deviation
         self.settings = settings
+        self.proxy = self._get_proxy()
+        self.request = None
 
-        self._install_opener()
-
-    def _install_opener(self):
+    def _get_proxy(self):
 
         if has_valid_attr(self.settings,'PROXY_HOST') and has_valid_attr(self.settings,'PROXY_PORT'):
 
@@ -57,38 +55,38 @@ class RequestManager(object):
             }
 
             # build a new opener that uses a proxy requiring authorization
-            proxy = urllib2.ProxyHandler({"http" :"http://%(user)s:%(pass)s@%(host)s:%(port)d" % proxy_info})
-            self.opener = urllib2.build_opener(proxy, self.cookie_handler)
+            return {"http" :"http://%(user)s:%(pass)s@%(host)s:%(port)d" % proxy_info}
 
-        else:
-            self.opener = urllib2.build_opener(self.cookie_handler)
+        return None
 
     def _get_request(self, url):
 
-        host = urllib2.urlparse.urlparse(url).netloc
-        count = self.host_counter.count(host)
-
-        return DelayedRequest(url=url, cookie_handler=self.cookie_handler, opener=self.opener, delay=self.delay, deviation=self.deviation)
+        return DelayedRequest(url=url, cookie_handler=self.cookie_handler, proxy=self.proxy, delay=self.delay, deviation=self.deviation)
 
     def make_request(self, url, data=None, extractor=None):
         """
             Acumulates a counter with the requests per host and
             then make a Delayed Request
         """
-        request = self._get_request(url)
+
+        if self.request is None:
+            self.request = self._get_request(url)
+        else:
+            self.request.url = url
 
         if data is not None:
             data = urllib.urlencode(data)
 
-        response = self.get_response(request, data)
-        raw_html = self._get_data(response)
+        response = self.get_response(self.request, data)
+        raw_html = response.text
+        binary_content = response.content
 
         extracted_html = None
 
         if extractor is not None:
             extracted_html = extractor.get_object(raw_html)
 
-        return Response(raw_html=raw_html, extracted_html=extracted_html, url=url, response=response)
+        return Response(raw_html=raw_html, binary_content=binary_content, extracted_html=extracted_html, url=url, response=response)
 
     def get_response(self, request, data):
         """
@@ -111,13 +109,9 @@ class RequestManager(object):
 
         return response
 
-    def _get_data(self, response):
-
-        return response.read()
-
 
 class FastRequestManager(RequestManager):
 
     def _get_request(self, url):
 
-        return Request(url=url, cookie_handler=self.cookie_handler, opener=self.opener)
+        return Request(url=url, cookie_handler=self.cookie_handler, proxy=self.proxy)

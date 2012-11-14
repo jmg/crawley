@@ -3,6 +3,8 @@ import random
 
 from eventlet.green import urllib2
 from cookies import CookieHandler
+import grequests
+from requests.cookies import cookiejar_from_dict
 
 from crawley import config
 
@@ -12,7 +14,7 @@ class Request(object):
         Custom request object
     """
 
-    def __init__(self, url=None, cookie_handler=None, opener=None):
+    def __init__(self, url=None, cookie_handler=None, proxy=None):
 
         if cookie_handler is None:
            cookie_handler = CookieHandler()
@@ -24,10 +26,9 @@ class Request(object):
         self.headers["Accept-Language"] = "es-419,es;q=0.8"
 
         self.cookie_handler = cookie_handler
-        self.cookie_handler.load_cookies()
-        self.opener = opener
+        self.proxy = proxy
 
-    def get_response(self, data=None, delay_factor=1):
+    def get_response(self, data=None, delay_factor=1, proxy=None):
         """
             Returns the response object from a request.
             Cookies are supported via a CookieHandler object
@@ -37,14 +38,23 @@ class Request(object):
 
         self._normalize_url()
 
-        request = urllib2.Request(self.url, data, self.headers)
+        method = 'GET' if data is None else 'POST'
 
-        args = {}
-        if config.REQUEST_TIMEOUT is not None:
-            args["timeout"] = config.REQUEST_TIMEOUT
+        request = grequests.request(
+                     method,
+                     self.url,
+                     data=data,
+                     headers=self.headers,
+                     timeout=config.REQUEST_TIMEOUT,
+                     proxies=[self.proxy] if self.proxy is not None else None,
+                     cookies=self.cookie_handler.jar
+                  )
 
-        response = self.opener.open(request, **args)
-        self.cookie_handler.save_cookies()
+        request.send()
+        if request.sent:
+            response = request.response
+
+        self.cookie_handler.cookiejar_from_dict(response.cookies.get_dict())
 
         return response
 
@@ -78,4 +88,4 @@ class DelayedRequest(Request):
 
         delay = self.delay * delay_factor
         time.sleep(delay)
-        return Request.get_response(self, data)
+        return Request.get_response(self, data, proxy=self.proxy)

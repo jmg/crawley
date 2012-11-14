@@ -1,8 +1,6 @@
 import unittest
 from crawley.crawlers import BaseCrawler
 
-import urllib
-
 
 class PostCrawler(BaseCrawler):
 
@@ -32,8 +30,8 @@ class CrawlerTest(unittest.TestCase):
 
         response = self.crawler._get_response("https://www.facebook.com/login.php?login_attempt=1", data)
         response = self.crawler._get_response("http://www.facebook.com/profile.php?id=1271577281")
-        with open("url.html", 'w') as f:
-            f.write(response.raw_html)
+        with open("url.html", 'wb') as f:
+            f.write(response.binary_content)
 
     def _test_post(self):
 
