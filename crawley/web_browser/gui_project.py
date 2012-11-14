@@ -116,7 +116,10 @@ class GUIProject(object):
             Runs the crawler of the generated project
         """
 
-        os.chdir(os.path.join(self.dir_name, self.project_name))
+        project_dir = os.path.join(self.dir_name, self.project_name)
+        
+        os.chdir(project_dir)
+        os.sys.path.insert(0, project_dir)
 
         cmd = RunCommand(settings=self.settings)
         cmd.checked_execute()

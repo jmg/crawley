@@ -26,6 +26,8 @@ setup(
         'eventlet',
         'elixir',
         'pyquery',
+        'pymongo',
+        'couchdb',
     ],
-    url='http://crawley-project.com.ar/',
+    url='http://crawley-project.org/',
 )

@@ -47,3 +47,11 @@ def get_settings_attribute(settings, default=None):
 
     attr = getattr(settings, attr_name, None)
     return attr is not None and attr
+
+
+def add_to_path(path, index=0):
+    """
+        Adds the [path] variable to python path
+    """
+    if not path in sys.path:
+        sys.path.insert(index, path)

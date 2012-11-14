@@ -9,7 +9,7 @@ class PackagesAuthorsScraper(SmartScraper):
     matching_urls = ["%pypi.python.org/pypi/%"]
 
     #an example of a page that you want to scrap
-    template_url = "http://pypi.python.org/pypi/Shake/0.5.10"
+    template_url = "http://pypi.python.org/pypi/crawley/0.2.4"
 
     def scrape(self, response):
 
