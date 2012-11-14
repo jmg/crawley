@@ -66,12 +66,11 @@ class ProjectCommand(BaseCommand):
         """
             Checks for settings before run
         """
-
         if self.settings is None:
             self._add_options()
             self.settings = self._check_for_settings()
         else:
-            add_to_path(self.settings.PROJECT_ROOT)
+            add_to_path(self.settings.PROJECT_ROOT, 1)
 
         self._check_settings_errors()
         self._check_project_type()
@@ -105,7 +104,7 @@ class ProjectCommand(BaseCommand):
 
         settings = import_user_module(settings_file)
 
-        add_to_path(settings.PROJECT_ROOT)
+        add_to_path(settings.PROJECT_ROOT, 1)
         return settings
 
     def _check_settings_errors(self):
