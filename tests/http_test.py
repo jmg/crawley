@@ -2,6 +2,7 @@ import unittest
 import urllib2
 import threading
 import SocketServer
+import cookielib
 
 from crawley.http.cookies import CookieHandler
 from crawley.http.request import Request
@@ -49,6 +50,7 @@ class TestRequest(unittest.TestCase):
     
     def tearDown(self):
         self.httpd.shutdown()
+        self.httpd.RequestHandlerClass.requests = []
     
     def test_simple_GET(self):
         opener = urllib2.build_opener()
@@ -64,5 +66,35 @@ class TestRequest(unittest.TestCase):
         self.assertEqual(request.command, 'GET')
         self.assertEqual(request.request_version, 'HTTP/1.1')
         self.assertIn('host', request.headers)
+        self.assertEqual(request.request_body, None)
+
+    def test_GET_cookie(self):
+        cj = cookielib.CookieJar()
+        opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
+
+        r = Request('http://%s:%s/hello' % (self.IP_ADDRESS, self.PORT),
+                    opener=opener)
+        response_body = r.get_response().read()
+        
+        r = Request('http://%s:%s/world' % (self.IP_ADDRESS, self.PORT),
+                    opener=opener)
+        response_body = r.get_response().read()
+        
+        self.assertEqual(response_body, 'ABCDEF\n')
+        self.assertEqual(len(self.httpd.RequestHandlerClass.requests), 2)
+        
+        request = self.httpd.RequestHandlerClass.requests[0]
+        self.assertEqual(request.path, '/hello')
+        self.assertEqual(request.command, 'GET')
+        self.assertEqual(request.request_version, 'HTTP/1.1')
+        self.assertIn('host', request.headers)
+        self.assertEqual(request.request_body, None)
+
+        request = self.httpd.RequestHandlerClass.requests[1]
+        self.assertEqual(request.path, '/world')
+        self.assertEqual(request.command, 'GET')
+        self.assertEqual(request.request_version, 'HTTP/1.1')
+        self.assertIn('cookie', request.headers)
+        self.assertEqual(request.headers['cookie'], 'cookie=123456')
         self.assertEqual(request.request_body, None)
         
