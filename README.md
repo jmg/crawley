@@ -1,3 +1,12 @@
+<blockquote>
+<span class="gittip-0001" gittip-username="jmg">
+</span>
+<script id="gittip-0001"
+  src="https://www.gittip.com/assets/widgets/0001.js">
+</script>
+</blockquote>
+
+
 # Pythonic Crawling / Scraping Framework Built on Eventlet 
 
 ------------------------------------------------------------------
