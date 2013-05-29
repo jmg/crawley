@@ -20,5 +20,6 @@ import manager
 import crawlers
 import persistance
 import scrapers
+from toolbox import *
 
 __version__ = "0.2.4"

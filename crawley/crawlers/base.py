@@ -150,6 +150,10 @@ class BaseCrawler(object):
 
         return self._make_request(url, data)
 
+    def request(self, url, data=None):
+
+        return self._get_response(url, data=data)
+
     def _manage_scrapers(self, response):
         """
             Checks if some scraper is suited for data extraction on the current url.
