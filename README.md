@@ -1,12 +1,3 @@
-<blockquote>
-<span class="gittip-0001" gittip-username="jmg">
-</span>
-<script id="gittip-0001"
-  src="https://www.gittip.com/assets/widgets/0001.js">
-</script>
-</blockquote>
-
-
 # Pythonic Crawling / Scraping Framework Built on Eventlet 
 
 ------------------------------------------------------------------
@@ -25,6 +16,10 @@
 ### Documentation
 
 http://packages.python.org/crawley/
+
+### Project WebSite
+
+http://project.crawley-cloud.com/
 
 ------------------------------------------------------------------
 
