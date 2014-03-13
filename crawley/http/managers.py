@@ -35,10 +35,11 @@ class RequestManager(object):
 
     MAX_TRIES = 3
 
-    def __init__(self, settings=None, delay=None, deviation=None):
+    def __init__(self, settings=None, headers=None, delay=None, deviation=None):
 
         self.host_counter = HostCounterDict()
         self.cookie_handler = CookieHandler()
+        self.headers = headers
         self.delay = delay
         self.deviation = deviation
         self.settings = settings
@@ -68,7 +69,7 @@ class RequestManager(object):
         host = urllib2.urlparse.urlparse(url).netloc
         count = self.host_counter.count(host)
 
-        return DelayedRequest(url=url, cookie_handler=self.cookie_handler, opener=self.opener, delay=self.delay, deviation=self.deviation)
+        return DelayedRequest(url=url, cookie_handler=self.cookie_handler, headers=self.headers, opener=self.opener, delay=self.delay, deviation=self.deviation)
 
     def make_request(self, url, data=None, extractor=None):
         """
@@ -120,4 +121,4 @@ class FastRequestManager(RequestManager):
 
     def _get_request(self, url):
 
-        return Request(url=url, cookie_handler=self.cookie_handler, opener=self.opener)
+        return Request(url=url, cookie_handler=self.cookie_handler, headers=self.headers, opener=self.opener)
