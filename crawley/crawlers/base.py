@@ -54,6 +54,9 @@ class BaseCrawler(object):
     max_concurrency_level = None
     """ The maximun coroutines concurrecy level """
 
+    headers = {}
+    """ The default request headers """
+
     requests_delay = config.REQUEST_DELAY
     """ The average delay time between requests """
 
@@ -116,7 +119,7 @@ class BaseCrawler(object):
             self.max_concurrency_level = pool['max_concurrency']
 
         self.pool = pool['pool'](self.max_concurrency_level)
-        self.request_manager = RequestManager(settings=settings, delay=self.requests_delay, deviation=self.requests_deviation)
+        self.request_manager = RequestManager(settings=settings, headers=self.headers, delay=self.requests_delay, deviation=self.requests_deviation)
 
         self._initialize_scrapers()
 

@@ -9,7 +9,7 @@ templates_files = [os.path.join(templates_dir, file) for file in os.listdir(temp
 
 setup(
     name="crawley",
-    version="0.2.4",
+    version="0.2.5",
     description="Pythonic Scraping / Crawling FrameWork built On Eventlet",
     author="Crawley Developers",
     author_email = "jmg.utn@gmail.com",
@@ -24,6 +24,7 @@ setup(
     install_requires=[
         'lxml',
         'eventlet',
+        'sqlalchemy==0.7.8',
         'elixir',
         'pyquery',
         'pymongo',
