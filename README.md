@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/crawley-project/crawley.png?label=ready&title=Ready)](https://waffle.io/crawley-project/crawley)
 # Pythonic Crawling / Scraping Framework Built on Eventlet 
 
 ------------------------------------------------------------------
