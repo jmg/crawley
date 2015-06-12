@@ -60,7 +60,8 @@ class DSLLine(object):
 
         if len(parts) > 2:
             raise TemplateSyntaxError(self.number, "More than one '%s' token found in the same line" % self.SEPARATOR)
-        elif len(parts) < 2:
+
+        if len(parts) < 2:
             raise TemplateSyntaxError(self.number, "Missed separator token '%s'" % self.SEPARATOR)
 
         self.field = self._parse_attribs(parts[0])

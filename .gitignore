@@ -13,3 +13,4 @@ env/
 url.html
 pip-log.txt
 deb_dist/
+.idea
