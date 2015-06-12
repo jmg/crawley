@@ -18,10 +18,11 @@ class Request(object):
            cookie_handler = CookieHandler()
 
         self.url = url
-        self.headers = headers if headers is not None else {}
-        self.headers["User-Agent"] = headers.get("User-Agent", config.MOZILLA_USER_AGENT)
-        self.headers["Accept-Charset"] = headers.get("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3")
-        self.headers["Accept-Language"] = headers.get("Accept-Language", "es-419,es;q=0.8")
+        
+        self.headers = headers or {}
+        self.headers["User-Agent"] = self.headers.get("User-Agent", config.MOZILLA_USER_AGENT)
+        self.headers["Accept-Charset"] = self.headers.get("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3")
+        self.headers["Accept-Language"] = self.headers.get("Accept-Language", "es-419,es;q=0.8")
 
         self.cookie_handler = cookie_handler
         self.cookie_handler.load_cookies()

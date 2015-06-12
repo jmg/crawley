@@ -1,4 +1,4 @@
-from pymongo.connection import Connection
+from pymongo import MongoClient
 from base import BaseNosqlSession, NosqlEntity
 
 mongo_objects = []
@@ -14,7 +14,7 @@ class Session(BaseNosqlSession):
 
         BaseNosqlSession.set_up(self, settings, storage_name)
 
-        self.connection = Connection(self.db_host)
+        self.connection = MongoClient(self.db_host)
         self.db = getattr(self.connection, self.settings.MONGO_DB_NAME)
 
     def commit(self):

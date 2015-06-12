@@ -2,6 +2,10 @@
 
 ------------------------------------------------------------------
 
+[![Build Status](https://travis-ci.org/crawley-project/crawley.svg)](https://travis-ci.org/crawley-project/crawley)
+[![Code Climate](https://codeclimate.com/github/crawley-project/crawley/badges/gpa.svg)](https://codeclimate.com/github/crawley-project/crawley)
+[![Stories in Ready](https://badge.waffle.io/crawley-project/crawley.png?label=ready&title=Ready)](https://waffle.io/crawley-project/crawley)
+
 ### Features
 
 * High Speed WebCrawler built on Eventlet.

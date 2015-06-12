@@ -1,7 +1,7 @@
-from pymongo.connection import Connection
+from pymongo import MongoClient
 import couchdb
 
-connection = Connection("localhost")
+connection = MongoClient("localhost")
 
 db = connection.mongo_db_name
 
