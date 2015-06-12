@@ -2,6 +2,8 @@
 
 ------------------------------------------------------------------
 
+[![Code Climate](https://codeclimate.com/github/crawley-project/crawley/badges/gpa.svg)](https://codeclimate.com/github/crawley-project/crawley)
+
 ### Features
 
 * High Speed WebCrawler built on Eventlet.
