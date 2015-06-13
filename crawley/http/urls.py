@@ -59,14 +59,7 @@ class UrlFinder(object):
             Fix relative urls
         """
 
-        parsed_url = urlparse.urlparse(self.response.url)
-
-        if not url.startswith("/"):
-             url = "/%s" % url
-
-        url = "%s://%s%s" % (parsed_url.scheme, parsed_url.netloc, url)
-
-        return url
+        return urlparse.urljoin(self.response.url, url)
 
     def _normalize_url(self, url):
         """
