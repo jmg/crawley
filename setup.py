@@ -24,7 +24,7 @@ setup(
     install_requires=[
         'lxml',
         'eventlet',
-        'sqlalchemy==0.7.8',
+        'sqlalchemy==1.3.0',
         'elixir',
         'pyquery',
         'pymongo',
