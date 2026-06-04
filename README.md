@@ -236,6 +236,27 @@ The test suite spins up a local HTTP server, so it never hits the network.
 
 ---
 
+## Examples
+
+Runnable, documented scripts live in [`examples/`](examples/):
+
+| File | Shows |
+|------|-------|
+| `01_scraping_quickstart.py` | The scraping API: `fetch`, CSS/XPath, `extract`. |
+| `02_crawler.py` | A crawler that follows pagination. |
+| `03_polite_crawler.py` | `robots.txt`, rate limiting and retries. |
+| `04_persistence_json.py` | Persisting scraped data to JSON. |
+| `05_concurrent_fetch.py` | Concurrent fetching with `afetch_all`. |
+
+```bash
+~$ python examples/01_scraping_quickstart.py
+```
+
+Every example is exercised by the test suite against a local server, so they
+stay in sync with the code.
+
+---
+
 ### License
 
 GPL v3

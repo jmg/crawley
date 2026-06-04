@@ -65,4 +65,15 @@ declarative API. This is the modernized release: the legacy `eventlet` /
 
 - Python 3.9+
 
+## Runnable examples
+
+The [`examples/`](https://github.com/jmg/crawley/tree/master/examples) folder
+has small, self-contained scripts you can run directly:
+
+- `01_scraping_quickstart.py` — the scraping API.
+- `02_crawler.py` — a crawler that follows pagination.
+- `03_polite_crawler.py` — robots.txt, rate limiting and retries.
+- `04_persistence_json.py` — persisting to a JSON document.
+- `05_concurrent_fetch.py` — concurrent fetching with `afetch_all`.
+
 Continue with the [installation guide](installation.md).

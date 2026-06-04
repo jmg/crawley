@@ -83,6 +83,12 @@ exclude_lines = [
 [tool.ruff]
 line-length = 88
 target-version = "py39"
+# Legacy "crawley startproject" sample projects kept for reference only.
+extend-exclude = [
+    "examples/ebay",
+    "examples/pypi_crawler*",
+    "examples/pypi_packages*",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "I"]
