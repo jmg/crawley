@@ -1,21 +1,17 @@
-from optparse import OptionParser
+"""``startproject`` command: scaffold a new crawley project."""
 
-from command import BaseCommand
-from crawley.manager.projects import project_types, CodeProject
+from argparse import ArgumentParser
+
+from crawley.manager.commands.command import BaseCommand
+from crawley.manager.projects import CodeProject, project_types
 
 
 class StartProjectCommand(BaseCommand):
-    """
-        Starts a new crawley project.
-
-        Copies the files inside conf/project_template in order
-        to generate a new project
-    """
+    """Generate a new crawley project from the bundled templates."""
 
     name = "startproject"
 
     def __init__(self, args=None, project_type=None, project_name=None, base_dir=None):
-
         if args is None:
             args = []
 
@@ -23,33 +19,27 @@ class StartProjectCommand(BaseCommand):
         self.base_dir = base_dir
 
         if project_type is not None:
-            args.extend(["--type", project_type])
-
+            args = list(args) + ["--type", project_type]
         if project_name is not None:
-            args.append(project_name)
+            args = list(args) + [project_name]
 
-        BaseCommand.__init__(self, args)
+        super().__init__(args)
 
     def validations(self):
-
         return [(len(self.args) >= 1, "No given project name")]
 
     def execute(self):
+        parser = ArgumentParser()
+        parser.add_argument(
+            "-t", "--type", default=CodeProject.name,
+            help="Project type: 'code', 'template' or 'database'",
+        )
+        parser.add_argument("project_name")
 
-        self.parser = OptionParser()
-        self.parser.add_option("-t", "--type", help="Type can be 'code' or 'template'")
-
-        (options, args) = self.parser.parse_args(self.args)
-
-        if options.type is None:
-
-            options.type = CodeProject.name
-            self.project_name = self.args[0]
-
-        else:
-            self.project_name = self.args[2]
+        options = parser.parse_args(self.args)
 
         self.project_type = options.type
+        self.project_name = options.project_name
 
         project = project_types[self.project_type]()
         project.set_up(self.project_name, base_dir=self.base_dir)

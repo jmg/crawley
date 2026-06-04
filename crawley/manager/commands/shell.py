@@ -1,34 +1,38 @@
-from crawley.crawlers import BaseCrawler
-from crawley.extractors import XPathExtractor
+"""``shell`` command: interactively scrape an url from a Python shell."""
 
-from command import BaseCommand
+from crawley.manager.commands.command import BaseCommand
+from crawley.toolbox import request
 from crawley.utils import exit_with_error
 
 
 class ShellCommand(BaseCommand):
-    """
-        Shows an url data in a console like the XPathExtractor see it.
-        So users can interactive scrape the data.
+    """Fetch an url and drop into an interactive shell to scrape it.
+
+    The fetched :class:`~crawley.http.response.Response` is exposed as
+    ``response`` in the shell namespace.
     """
 
     name = "shell"
 
     def validations(self):
-
         return [(len(self.args) >= 1, "No given url")]
 
     def execute(self):
+        url = self.args[0]
+        response = request(url)
+
+        namespace = {"response": response}
 
         try:
-            import IPython
+            from IPython import embed
+
+            embed(user_ns=namespace)
         except ImportError:
-            exit_with_error("Please install the ipython console")
+            import code
 
-        url = self.args[0]
-        crawler = BaseCrawler()
-
-        response = crawler._get_response(url)
-        html = XPathExtractor().get_object(response)
-
-        shell = IPython.Shell.IPShellEmbed(argv=[], user_ns={ 'response' : response })
-        shell()
+            try:
+                code.interact(local=namespace)
+            except SystemExit:
+                pass
+            except Exception as ex:  # noqa: BLE001
+                exit_with_error("Couldn't start the shell: %s" % ex)

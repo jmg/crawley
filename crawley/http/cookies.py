@@ -1,39 +1,32 @@
-import os.path
-import urllib2
-import cookielib
-import tempfile
+"""Persistent cookie handling.
 
-class CookieHandler(urllib2.HTTPCookieProcessor):
-    """
-        Cookie jar wrapper for save and load cookie from a file
-    """
+Wraps a :class:`http.cookiejar.LWPCookieJar` so cookies can be persisted to
+and restored from a file between runs. The underlying jar is shared with the
+``httpx`` client.
+"""
+
+import os.path
+import tempfile
+from http.cookiejar import LWPCookieJar
+
+
+class CookieHandler:
+    """A cookie jar that can be saved to / loaded from a temp file."""
 
     COOKIES_FILE = "crawley_cookies"
 
-    def _make_temp_file(self):
-
-        tmp = tempfile.gettempdir()
-        self.cookie_file = os.path.join(tmp, self.COOKIES_FILE)
-
-    def __init__(self, *args, **kwargs):
-
-        self._make_temp_file()
-
-        self._jar = cookielib.LWPCookieJar(self.cookie_file)
-        urllib2.HTTPCookieProcessor.__init__(self, self._jar, *args, **kwargs)
+    def __init__(self, cookie_file=None):
+        if cookie_file is None:
+            cookie_file = os.path.join(tempfile.gettempdir(), self.COOKIES_FILE)
+        self.cookie_file = cookie_file
+        self.jar = LWPCookieJar(self.cookie_file)
 
     def load_cookies(self):
-        """
-            Load cookies from the file
-        """
-
+        """Load cookies from the file if it exists."""
         if os.path.isfile(self.cookie_file):
-            self._jar.load()
+            self.jar.load(ignore_discard=True, ignore_expires=True)
 
     def save_cookies(self):
-        """
-            Save cookies if the jar is not empty
-        """
-
-        if self._jar is not None:
-            self._jar.save()
+        """Persist the cookies to the file."""
+        if self.jar is not None:
+            self.jar.save(ignore_discard=True, ignore_expires=True)

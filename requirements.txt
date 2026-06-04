@@ -1,7 +1,0 @@
-sqlalchemy==0.7.8
-elixir
-eventlet
-pyquery
-lxml
-pymongo
-couchdb>=0.8

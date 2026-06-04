@@ -1,143 +1,110 @@
-from crawley.scrapers import SmartScraper
-from crawley.crawlers import BaseCrawler
-from crawley.persistance.relational.databases import Entity, Field, Unicode, setup, session, elixir
-from crawley.persistance.relational.connectors import connectors
+"""Compile the parsed DSL into crawley scraper / crawler classes."""
 
-class DSLInterpreter(object):
-    """
-        This class "compiles" the DSL into scraper classes for
-        the crawley framework
-    """
+from crawley.crawlers import BaseCrawler
+from crawley.persistance.relational.databases import (
+    Entity,
+    Field,
+    Unicode,
+    session,
+)
+from crawley.scrapers import SmartScraper
+
+
+class DSLInterpreter:
+    """Turn DSL code blocks into runtime generated scraper classes."""
 
     def __init__(self, code_blocks, settings):
-
         self.code_blocks = code_blocks
         self.settings = settings
         self.entities = {}
 
     def gen_scrapers(self):
-        """
-            Returns a runtime generated scraper class
-        """
-
+        """Return a list of runtime generated scraper classes."""
         scrapers = []
 
         for block in self.code_blocks:
-
             header = block[0]
-            matching_url = "%"
-            template_url = header.xpath
-
             attrs_dict = self._gen_scrape_method(block[1:])
-            attrs_dict["matching_urls"] = [matching_url, ]
-            attrs_dict["template_url"] = template_url
+            attrs_dict["matching_urls"] = ["%"]
+            attrs_dict["template_url"] = header.xpath
 
-            scraper = self._gen_class("GeneratedScraper", (SmartScraper, ), attrs_dict)
+            scraper = self._gen_class(
+                "GeneratedScraper", (SmartScraper,), attrs_dict
+            )
             scrapers.append(scraper)
 
         return scrapers
 
     def _gen_class(self, name, bases, attrs_dict):
-        """
-            Generates a class at runtime
-        """
-
         return type(name, bases, attrs_dict)
 
     def gen_entities(self):
-        """
-            Generates the entities classes
-        """
-
+        """Generate the SQLAlchemy entity classes described by the DSL."""
         descriptors = {}
-        fields = [line.field for lines in self.code_blocks for line in lines if not line.is_header]
+        fields = [
+            line.field
+            for lines in self.code_blocks
+            for line in lines
+            if not line.is_header
+        ]
 
         for field in fields:
-
             table = field["table"]
             column = field["column"]
+            descriptors.setdefault(table, [])
+            if column not in descriptors[table]:
+                descriptors[table].append(column)
 
-            if table not in descriptors:
-                descriptors[table] = [column, ]
-            else:
-                if column not in descriptors[table]:
-                    descriptors[table].append(column)
-
-        for entity_name, fields in descriptors.iteritems():
-
-            attrs_dict = dict([(field, Field(Unicode(255))) for field in fields])
-            attrs_dict["options_defaults"] = {"shortnames" : True }
-
-            entity = self._gen_class(entity_name, (Entity, ), attrs_dict)
+        for entity_name, columns in descriptors.items():
+            attrs_dict = {column: Field(Unicode(255)) for column in columns}
+            entity = self._gen_class(entity_name, (Entity,), attrs_dict)
             self.entities[entity_name] = entity
 
-        return self.entities.values()
+        return list(self.entities.values())
 
     def _gen_scrape_method(self, sentences):
-        """
-            Generates scrapers methods.
-            Returns a dictionary containing methods and attributes for the
-            scraper class.
-        """
-
+        """Build the ``scrape`` method for a generated scraper class."""
         entities = self.entities
 
-        def scrape(self, response):
-            """
-                Generated scrape method
-            """
+        def _get_text_recursive(node):
+            if node.text is not None and node.text.strip():
+                return node.text
+            for child in node.getchildren():
+                return _get_text_recursive(child)
+            return None
 
+        def scrape(self, response):
             fields = {}
 
             for sentence in sentences:
-
                 nodes = response.html.xpath(sentence.xpath)
+                if not nodes:
+                    continue
 
                 column = sentence.field["column"]
                 table = sentence.field["table"]
+                value = _get_text_recursive(nodes[0])
 
-                if nodes:
+                fields.setdefault(table, {})[column] = value
 
-                    value = _get_text_recursive(nodes[0])
-
-                    if table not in fields:
-                        fields[table] = {column : value}
-                    else:
-                        fields[table][column] = value
-
-            for table, attrs_dict in fields.iteritems():
-
+            for table, attrs_dict in fields.items():
                 entities[table](**attrs_dict)
                 session.commit()
 
-
-        def _get_text_recursive(node):
-            """
-                Extract the text from html nodes recursively.
-            """
-            if node.text is not None and node.text.strip():
-                return node.text
-
-            childs = node.getchildren()
-
-            for child in childs:
-                return _get_text_recursive(child)
-
-        return { "scrape" : scrape }
+        return {"scrape": scrape}
 
 
-class CrawlerCompiler(object):
+class CrawlerCompiler:
+    """Compile a config and scrapers into a generated crawler class."""
 
     def __init__(self, scrapers, config):
-
         self.scrapers = scrapers
         self.config = config
 
     def compile(self):
-
-        attrs_dict = {}
-        attrs_dict["scrapers"] = self.scrapers
-        attrs_dict["start_urls"] = self.config[('crawler','start_urls')].split(',')
-        attrs_dict["max_depth"] = int(self.config[('crawler','max_depth')])
-
-        return type("GeneratedCrawler", (BaseCrawler, ), attrs_dict)
+        attrs_dict = {
+            "scrapers": self.scrapers,
+            "start_urls": self.config[("crawler", "start_urls")].split(","),
+            "max_depth": int(self.config[("crawler", "max_depth")]),
+        }
+        return type("GeneratedCrawler", (BaseCrawler,), attrs_dict)

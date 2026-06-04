@@ -1,16 +1,31 @@
+"""
+    Browser implementation.
+
+    Concrete PySide6 + QtWebEngine browser built on top of the base classes
+    defined in :mod:`crawley.web_browser.baseBrowser`. It implements the
+    actual browsing behaviour and the crawley project related actions
+    (start, open, configure, settings, save and run).
+"""
+
+import asyncio
 import multiprocessing
 
 from lxml import etree
-from PyQt4 import QtCore, QtWebKit, QtGui
-from baseBrowser import BaseBrowser, BaseBrowserTab, FrmBaseConfig, FrmBaseSettings
-from config import DEFAULTS, SELECTED_CLASS
+from PySide6 import QtWidgets
 
 from crawley.crawlers.offline import OffLineCrawler
-from crawley.manager.utils import get_full_template_path
 from crawley.exceptions import InvalidProjectError
 from crawley.extractors import XPathExtractor
 from crawley.persistance.relational.connectors import connectors
-from gui_project import GUIProject
+from crawley.utils import get_full_template_path
+from crawley.web_browser.baseBrowser import (
+    BaseBrowser,
+    BaseBrowserTab,
+    FrmBaseConfig,
+    FrmBaseSettings,
+)
+from crawley.web_browser.config import DEFAULTS, SELECTED_CLASS
+from crawley.web_browser.gui_project import GUIProject
 
 
 class Browser(BaseBrowser):
@@ -43,7 +58,7 @@ class Browser(BaseBrowser):
         """
 
         url = self.ui.tb_url.text() if self.ui.tb_url.text() else self.default_url
-        if not DEFAULTS['protocol'] in url:
+        if DEFAULTS['protocol'] not in url:
             url = "%s://%s" % (DEFAULTS['protocol'], url)
         tab = self.current_tab()
         self.ui.tb_url.setText(url)
@@ -114,7 +129,7 @@ class BrowserTab(BaseBrowserTab):
         self.pg_load.hide()
         index = self.parent.tab_pages.indexOf(self)
         self.parent.tab_pages.setTabText(index, self.html.title())
-        self.parent.tab_pages.setTabIcon(index, QtWebKit.QWebSettings.iconForUrl(QtCore.QUrl(self.url)))
+        self.parent.tab_pages.setTabIcon(index, self.html.icon())
 
     def load_start(self):
         """
@@ -129,11 +144,11 @@ class BrowserTab(BaseBrowserTab):
         """
 
         self.url = str(url)
-        html = self.crawler._get_response(self.url)
+        html = asyncio.run(self.crawler._get_response(self.url))
 
         with open(get_full_template_path("html_template"), "r") as f:
             template = f.read()
-            html = template % {'content': html, 'css_class': SELECTED_CLASS }
+            html = template % {'content': html, 'css_class': SELECTED_CLASS}
 
         if selected_nodes is not None:
             html = self._highlight_nodes(html, selected_nodes)
@@ -217,9 +232,9 @@ class BrowserTab(BaseBrowserTab):
         """
 
         if not is_new:
-            dir_name = str(QtGui.QFileDialog.getExistingDirectory(self, 'Open Project'))
+            dir_name = str(QtWidgets.QFileDialog.getExistingDirectory(self, 'Open Project'))
         else:
-            dir_name = str(QtGui.QFileDialog.getSaveFileName(self, 'Start Project'))
+            dir_name = str(QtWidgets.QFileDialog.getSaveFileName(self, 'Start Project')[0])
 
         if not dir_name:
             return
@@ -233,9 +248,9 @@ class BrowserTab(BaseBrowserTab):
             if is_new:
                 self.configure()
 
-        except InvalidProjectError, e:
+        except InvalidProjectError as e:
 
-            print "%s" % e
+            print("%s" % e)
 
             self._disable_enable_project_buttons(False)
 
@@ -271,9 +286,10 @@ class BrowserTab(BaseBrowserTab):
 
             url = self.parent.tb_url.text()
 
-            main_frame = self.html.page().mainFrame()
-            content = unicode(main_frame.toHtml())
-            self.current_project.generate_template(url, content)
+            def _on_html(content):
+                self.current_project.generate_template(url, str(content))
+
+            self.html.page().toHtml(_on_html)
 
     def _run(self):
         """
@@ -300,8 +316,8 @@ class BrowserTab(BaseBrowserTab):
             Connects the run signal to another handler
         """
 
-        self.disconnect(self.parent.bt_run, QtCore.SIGNAL("clicked()"), curr_handler)
-        self.connect(self.parent.bt_run, QtCore.SIGNAL("clicked()"), new_handler)
+        self.parent.bt_run.clicked.disconnect(curr_handler)
+        self.parent.bt_run.clicked.connect(new_handler)
 
         self.parent.bt_run.setText(label)
 
@@ -415,15 +431,15 @@ class FrmSettings(FrmBaseSettings):
         A GUI on the top of the settings.py files of crawley projects.
     """
 
-    attrs_controls = { 'tb_name' : "DATABASE_NAME",
-                       'tb_user' : "DATABASE_USER",
-                       'tb_password' : "DATABASE_PASSWORD",
-                       'tb_host' : "DATABASE_HOST",
-                       'tb_port' : "DATABASE_PORT",
-                       'tb_json' : "JSON_DOCUMENT",
-                       'tb_xml' : "XML_DOCUMENT",
-                       'ck_show_debug' : "SHOW_DEBUG_INFO",
-                     }
+    attrs_controls = {'tb_name': "DATABASE_NAME",
+                      'tb_user': "DATABASE_USER",
+                      'tb_password': "DATABASE_PASSWORD",
+                      'tb_host': "DATABASE_HOST",
+                      'tb_port': "DATABASE_PORT",
+                      'tb_json': "JSON_DOCUMENT",
+                      'tb_xml': "XML_DOCUMENT",
+                      'ck_show_debug': "SHOW_DEBUG_INFO",
+                      }
 
     def __init__(self, parent, settings):
         """
@@ -433,7 +449,7 @@ class FrmSettings(FrmBaseSettings):
         FrmBaseSettings.__init__(self, parent)
         self.settings = settings
 
-        for control_name, attribute_name in self.attrs_controls.iteritems():
+        for control_name, attribute_name in self.attrs_controls.items():
 
             control = getattr(self.settings_ui, control_name)
 
@@ -443,10 +459,10 @@ class FrmSettings(FrmBaseSettings):
             elif control_name.startswith("ck_"):
                 control.setChecked(self._check_for_attribute(attribute_name))
 
-
         engine = self._check_for_attribute("DATABASE_ENGINE")
 
         connectors_names = []
+        index = 0
 
         for i, connector in enumerate(connectors.keys()):
 
@@ -469,7 +485,7 @@ class FrmSettings(FrmBaseSettings):
 
         settings_dict = {}
 
-        for control_name, attribute_name in self.attrs_controls.iteritems():
+        for control_name, attribute_name in self.attrs_controls.items():
 
             control = getattr(self.settings_ui, control_name)
 
@@ -503,7 +519,7 @@ class FrmSettings(FrmBaseSettings):
                 key, value = [val.strip() for val in line]
                 new_value = settings_dict.get(key, None)
 
-                if isinstance(new_value, basestring) and new_value.count("'") != 2 and new_value.count('"') != 2:
+                if isinstance(new_value, str) and new_value.count("'") != 2 and new_value.count('"') != 2:
                     new_value = "'%s'" % new_value
 
                 if new_value is None:
@@ -518,7 +534,7 @@ class FrmSettings(FrmBaseSettings):
         stream = ""
 
         for line in new_lines:
-            if not "\n" in line:
+            if "\n" not in line:
                 line = "%s \n" % line
             stream += line
 

@@ -1,57 +1,23 @@
-import sys
-import os
+"""Common, dependency free helpers."""
 
-def exit_with_error(error="Non Specified Error"):
-    """
-        Terminates crawley with an error
-    """
-    print error
+import sys
+
+
+def exit_with_error(error="Non specified error"):
+    """Terminate crawley printing an error message."""
+    print(error, file=sys.stderr)
     sys.exit(1)
 
 
 def search_class(base_klass, entities_list, return_class=False):
-
+    """Return the first subclass of *base_klass* found in *entities_list*."""
     for klass in entities_list:
-        if issubclass(klass, base_klass) and not klass is base_klass:
+        if issubclass(klass, base_klass) and klass is not base_klass:
             return klass
-
-
-def check_for_file(settings, file_name):
-    """
-        Checks if a project file exists
-    """
-
-    return os.path.exists(os.path.join(settings.PROJECT_ROOT, file_name))
-
-
-def fix_file_extension(file_name, extension):
-    """
-        Fixes the file extensions
-    """
-
-    if not file_name.endswith(".%s" % extension):
-        file_name = "%s.%s" % (file_name, extension)
-    return file_name
-
-
-def has_valid_attr(settings, attr_name):
-    """
-        Checks if settings has the attribute [attr_name] and it's not an empty string.
-    """
-
-    attr = getattr(settings, attr_name, None)
-    return attr is not None and attr
-
-
-def get_settings_attribute(settings, default=None):
-
-    attr = getattr(settings, attr_name, None)
-    return attr is not None and attr
+    return None
 
 
 def add_to_path(path, index=0):
-    """
-        Adds the [path] variable to python path
-    """
-    if not path in sys.path:
+    """Add *path* to ``sys.path`` if it isn't there yet."""
+    if path not in sys.path:
         sys.path.insert(index, path)

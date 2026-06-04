@@ -1,7 +1,26 @@
-from PyQt4 import QtCore, QtWebKit, QtGui
-from GUI import BrowserGUI, BrowserTabGUI, FrmConfigGUI, FrmSettingsGUI
+"""
+    Base browser definitions.
 
-actions = {"Alt+Left" : QtWebKit.QWebPage.Back, "Alt+Right" : QtWebKit.QWebPage.Forward, "F5" : QtWebKit.QWebPage.Reload }
+    Defines the logic layer base classes that sit between the Qt Designer
+    generated GUI classes and the concrete browser implementation. These
+    classes wire up the Qt signals and declare the overridable handlers.
+"""
+
+from PySide6.QtWebEngineCore import QWebEnginePage
+
+from crawley.web_browser.GUI import (
+    BrowserGUI,
+    BrowserTabGUI,
+    FrmConfigGUI,
+    FrmSettingsGUI,
+)
+
+actions = {
+    "Alt+Left": QWebEnginePage.WebAction.Back,
+    "Alt+Right": QWebEnginePage.WebAction.Forward,
+    "F5": QWebEnginePage.WebAction.Reload,
+}
+
 
 class BaseBrowser(BrowserGUI):
     """
@@ -15,22 +34,22 @@ class BaseBrowser(BrowserGUI):
 
         BrowserGUI.__init__(self)
 
-        self.connect(self.ui.tb_url, QtCore.SIGNAL("returnPressed()"), self.browse)
-        self.connect(self.ui.tab_pages, QtCore.SIGNAL("tabCloseRequested(int)"), self.tab_closed)
-        self.connect(self.ui.tab_pages, QtCore.SIGNAL("currentChanged(int)"), self.tab_changed)
+        self.ui.tb_url.returnPressed.connect(self.browse)
+        self.ui.tab_pages.tabCloseRequested.connect(self.tab_closed)
+        self.ui.tab_pages.currentChanged.connect(self.tab_changed)
 
     # overridable methods section
 
-    def browse():
+    def browse(self):
         pass
 
-    def tab_closed(index):
+    def tab_closed(self, index):
         pass
 
-    def tab_changed(index):
+    def tab_changed(self, index):
         pass
 
-    def add_tab():
+    def add_tab(self):
         pass
 
 
@@ -46,36 +65,35 @@ class BaseBrowserTab(BrowserTabGUI):
 
         BrowserTabGUI.__init__(self, parent)
 
-        self.connect(self.parent.bt_back, QtCore.SIGNAL("clicked()"), self.back)
-        self.connect(self.parent.bt_ahead, QtCore.SIGNAL("clicked()"), self.ahead)
-        self.connect(self.parent.bt_reload, QtCore.SIGNAL("clicked()"), self.reload)
-        self.connect(self.parent.bt_save, QtCore.SIGNAL("clicked()"), self.save)
-        self.connect(self.parent.bt_run, QtCore.SIGNAL("clicked()"), self.run)
-        self.connect(self.parent.bt_start, QtCore.SIGNAL("clicked()"), self.start)
-        self.connect(self.parent.bt_open, QtCore.SIGNAL("clicked()"), self.open)
-        self.connect(self.parent.bt_configure, QtCore.SIGNAL("clicked()"), self.configure)
-        self.connect(self.parent.bt_settings, QtCore.SIGNAL("clicked()"), self.settings)
+        self.parent.bt_back.clicked.connect(self.back)
+        self.parent.bt_ahead.clicked.connect(self.ahead)
+        self.parent.bt_reload.clicked.connect(self.reload)
+        self.parent.bt_save.clicked.connect(self.save)
+        self.parent.bt_run.clicked.connect(self.run)
+        self.parent.bt_start.clicked.connect(self.start)
+        self.parent.bt_open.clicked.connect(self.open)
+        self.parent.bt_configure.clicked.connect(self.configure)
+        self.parent.bt_settings.clicked.connect(self.settings)
 
-        self.connect(self.html, QtCore.SIGNAL("loadStarted()"), self.load_start)
-        self.connect(self.html, QtCore.SIGNAL("loadFinished(bool)"), self.loaded_bar)
-        self.connect(self.html, QtCore.SIGNAL("loadProgress(int)"), self.load_bar)
-        self.connect(self.html, QtCore.SIGNAL("urlChanged(const QUrl)"), self.url_changed)
+        self.html.loadStarted.connect(self.load_start)
+        self.html.loadFinished.connect(self.loaded_bar)
+        self.html.loadProgress.connect(self.load_bar)
+        self.html.urlChanged.connect(self.url_changed)
 
         self._disable_enable_project_buttons(False)
-
 
     # overridable methods section
 
     def load_start(self):
         pass
 
-    def load_bar(self):
+    def load_bar(self, value):
         pass
 
-    def loaded_bar(self):
+    def loaded_bar(self, state):
         pass
 
-    def url_changed(self):
+    def url_changed(self, url):
         pass
 
     def back(self):
@@ -84,7 +102,7 @@ class BaseBrowserTab(BrowserTabGUI):
     def ahead(self):
         pass
 
-    def reload():
+    def reload(self):
         pass
 
 
@@ -93,8 +111,8 @@ class FrmBaseConfig(FrmConfigGUI):
     def __init__(self, parent):
 
         FrmConfigGUI.__init__(self, parent)
-        self.connect(self.config_ui.bt_ok, QtCore.SIGNAL("clicked()"), self.ok)
-        self.connect(self.config_ui.bt_cancel, QtCore.SIGNAL("clicked()"), self.cancel)
+        self.config_ui.bt_ok.clicked.connect(self.ok)
+        self.config_ui.bt_cancel.clicked.connect(self.cancel)
 
 
 class FrmBaseSettings(FrmSettingsGUI):
@@ -102,5 +120,5 @@ class FrmBaseSettings(FrmSettingsGUI):
     def __init__(self, parent):
 
         FrmSettingsGUI.__init__(self, parent)
-        self.connect(self.settings_ui.bt_ok, QtCore.SIGNAL("clicked()"), self.ok)
-        self.connect(self.settings_ui.bt_cancel, QtCore.SIGNAL("clicked()"), self.cancel)
+        self.settings_ui.bt_ok.clicked.connect(self.ok)
+        self.settings_ui.bt_cancel.clicked.connect(self.cancel)

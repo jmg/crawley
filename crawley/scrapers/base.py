@@ -1,83 +1,75 @@
-"""
-    User's Scrapers Base
-"""
+"""Base scraper class."""
+
+import logging
+
 from crawley.exceptions import ScraperCantParseError
 from crawley.utils import url_matcher
 
-class BaseScraper(object):
-    """
-       User's Scrappers must Inherit from this class,
-       implement the scrape method and define
-       the urls that may be procesed by it.
+log = logging.getLogger("crawley.scraper")
+
+
+class BaseScraper:
+    """User scrapers must inherit from this class.
+
+    Implement :meth:`scrape` with the data extraction logic and define the
+    ``matching_urls`` that this scraper is able to process.
     """
 
     matching_urls = []
 
     def __init__(self, settings=None):
-
         self.settings = settings
-        self.debug = getattr(settings, 'SHOW_DEBUG_INFO', True)
+        self.debug = getattr(settings, "SHOW_DEBUG_INFO", True)
 
     def try_scrape(self, response):
-        """
-            Tries to parse the html page
-        """
-
+        """Try to parse the html page, returning the urls it discovers."""
         try:
             self._validate(response)
             self.scrape(response)
             return self.get_urls(response)
-
-        except ScraperCantParseError, ex:
-            pass
-
-        except Exception, ex:
+        except ScraperCantParseError:
+            return None
+        except Exception as ex:  # noqa: BLE001 - delegated to error handler
             self.on_scrape_error(response, ex)
+            return None
 
     def _validate(self, response):
-        """
-            Override this method in order to provide more validations before the data extraction with the given scraper class
-        """
-
+        """Validate that this scraper can handle *response* before scraping."""
         for pattern in self.matching_urls:
-
             if url_matcher(response.url, pattern):
-
                 if self.debug:
-                    print "%s matches the url %s" % (self.__class__.__name__, response.url)
+                    log.debug(
+                        "%s matches the url %s",
+                        self.__class__.__name__,
+                        response.url,
+                    )
                 return
-
         self.on_cannot_scrape(response)
 
-    #Overridables
+    # -- overridables ----------------------------------------------------
 
     def scrape(self, response):
-        """
-            Define the data you want to extract here
-        """
-
-        pass
+        """Define the data you want to extract here."""
 
     def get_urls(self, response):
-        """
-            Return a list of urls in the current html
-        """
-
+        """Return a list of urls found in the current html."""
         return []
 
-    #Events section
+    # -- events ----------------------------------------------------------
 
     def on_scrape_error(self, response, ex):
-        """
-            Override this method to customize the scrape error handler.
-        """
-
+        """Customize the scrape error handler."""
         if self.debug:
-            print "%s failed to extract data from %s: %s" % (self.__class__.__name__, response.url, ex)
+            log.warning(
+                "%s failed to extract data from %s: %s",
+                self.__class__.__name__,
+                response.url,
+                ex,
+            )
 
     def on_cannot_scrape(self, response):
-        """
-            Override this method to customize the can't scrape handler.
-        """
-
-        raise ScraperCantParseError("The Scraper %s can't parse the html from %s" % (self.__class__.__name__, response.url))
+        """Customize the can't-scrape handler."""
+        raise ScraperCantParseError(
+            "The scraper %s can't parse the html from %s"
+            % (self.__class__.__name__, response.url)
+        )

@@ -1,13 +1,13 @@
+"""The crawley command line management interface."""
+
 import sys
 
-from commands import commands
+from crawley.manager.commands import commands
 from crawley.utils import exit_with_error
 
-def run_cmd(args):
-    """
-        Runs a crawley's command
-    """
 
+def run_cmd(args):
+    """Run a crawley command given the full ``argv`` list."""
     if len(args) <= 1:
         exit_with_error("Subcommand not specified")
 
@@ -19,8 +19,5 @@ def run_cmd(args):
 
 
 def manage():
-    """
-        Called when using crawley command from cmd line
-    """
+    """Entry point for the ``crawley`` console script."""
     run_cmd(sys.argv)
-

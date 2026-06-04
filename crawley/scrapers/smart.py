@@ -1,63 +1,64 @@
+"""Smart scraper able to detect pages with a similar html structure."""
+
 import difflib
+from html.parser import HTMLParser
 
-from HTMLParser import HTMLParser
+import httpx
 
-from base import BaseScraper
-from crawley.http.managers import FastRequestManager
-from crawley.exceptions import ScraperCantParseError
 from crawley.config import SIMILARITY_RATIO
+from crawley.scrapers.base import BaseScraper
 
 
 class SmartScraper(BaseScraper):
-    """
-        This class is used to find similar htmls
+    """Scrape only pages whose html structure is similar to a template page.
+
+    The structure of ``template_url`` is fetched once (synchronously) at
+    construction time and every candidate page is compared against it.
     """
 
     template_url = None
     ratio = SIMILARITY_RATIO
 
     def __init__(self, *args, **kwargs):
-
-        BaseScraper.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if self.template_url is None:
-            raise ValueError("%s must have a template_url attribute" % self.__class__.__name__)
+            raise ValueError(
+                "%s must define a template_url attribute"
+                % self.__class__.__name__
+            )
 
-        self.request_manager = FastRequestManager()
-        response = self.request_manager.make_request(self.template_url)
-        self.template_html_schema = self._get_html_schema(response.raw_html)
+        response = httpx.get(self.template_url, follow_redirects=True)
+        self.template_html_schema = self._get_html_schema(response.text)
 
     def _validate(self, response):
-
-        return BaseScraper._validate(self, response) and self._compare_with_template(response)
+        super()._validate(response)
+        self._compare_with_template(response)
 
     def _compare_with_template(self, response):
-
-        if self.debug :
-            print "Evaluating similar html structure of %s" % response.url
+        if self.debug:
+            print("Evaluating similar html structure of %s" % response.url)
 
         html_schema = self._get_html_schema(response.raw_html)
-
-        evaluated_ratio = difflib.SequenceMatcher(None, html_schema, self.template_html_schema).ratio()
+        evaluated_ratio = difflib.SequenceMatcher(
+            None, html_schema, self.template_html_schema
+        ).ratio()
 
         if evaluated_ratio <= self.ratio:
             self.on_cannot_scrape(response)
 
     def _get_html_schema(self, html):
-
-        html_schema = HtmlSchema()
-        html_schema.feed(html)
-        return html_schema.get_schema()
+        schema = HtmlSchema()
+        schema.feed(html)
+        return schema.get_schema()
 
 
 class HtmlSchema(HTMLParser):
-    """
-        This class represents an html page structure, used to compare with another pages
-    """
+    """Represents the structural skeleton of an html page (its tag sequence)."""
 
     def __init__(self):
+        super().__init__()
         self.tags = []
-        HTMLParser.__init__(self)
 
     def handle_starttag(self, tag, attrs):
         self.tags.append(tag)
