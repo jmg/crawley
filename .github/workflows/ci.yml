@@ -30,4 +30,4 @@ jobs:
         run: ruff check crawley
 
       - name: Run tests
-        run: pytest -q
+        run: pytest -q --cov=crawley --cov-report=term-missing

@@ -40,6 +40,7 @@ http2 = ["h2>=4.0"]
 dev = [
     "pytest>=7.4",
     "pytest-asyncio>=0.23",
+    "pytest-cov>=4.1",
     "sqlalchemy>=2.0",
     "ruff>=0.1",
 ]
@@ -62,6 +63,18 @@ crawley = ["conf/templates/*.tm"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.coverage.run]
+source = ["crawley"]
+# The PySide6 GUI can't run in a headless CI, so it's excluded from coverage.
+omit = ["crawley/web_browser/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
 
 [tool.ruff]
 line-length = 88

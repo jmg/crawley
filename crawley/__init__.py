@@ -21,6 +21,13 @@ __all__ = [
     "CSSExtractor",
     "RawExtractor",
     "Response",
+    "fetch",
+    "afetch",
+    "afetch_all",
+    "scrape",
+    "parse",
+    "Document",
+    "Element",
     "__version__",
 ]
 
@@ -53,4 +60,8 @@ def __getattr__(name):
         from crawley.http.response import Response
 
         return Response
+    if name in ("fetch", "afetch", "afetch_all", "scrape", "parse", "Document", "Element"):
+        from crawley import scraping
+
+        return getattr(scraping, name)
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

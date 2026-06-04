@@ -7,8 +7,7 @@ import pytest
 
 
 def test_json_document(tmp_path):
-    from crawley.persistance.documents import JSONDocument, json_session
-    from crawley.persistance.documents import json_doc
+    from crawley.persistance.documents import JSONDocument, json_doc, json_session
 
     json_doc.json_objects.clear()
 
@@ -27,8 +26,7 @@ def test_json_document(tmp_path):
 
 
 def test_csv_document(tmp_path):
-    from crawley.persistance.documents import CSVDocument, csv_session
-    from crawley.persistance.documents import csv_doc
+    from crawley.persistance.documents import CSVDocument, csv_doc, csv_session
 
     csv_doc.csv_objects.clear()
 
@@ -81,3 +79,37 @@ def test_relational_entity():
     rows = session.query(Package).all()
     assert {r.package for r in rows} == {"crawley", "httpx"}
     session.remove()
+
+
+def test_documents_are_registered():
+    from crawley.persistance.documents import JSONDocument
+    from crawley.persistance.documents.meta import documents_entities
+
+    class RegisteredDoc(JSONDocument):
+        pass
+
+    assert RegisteredDoc in documents_entities
+
+
+def test_nosql_entity_collects_without_driver():
+    from crawley.persistance.nosql import mongo
+
+    mongo.mongo_objects.clear()
+
+    class Pkg(mongo.MongoEntity):
+        pass
+
+    Pkg(name="crawley", stars=42)
+    assert mongo.mongo_objects == [("Pkg", {"name": "crawley", "stars": 42})]
+
+
+def test_couch_entity_collects_without_driver():
+    from crawley.persistance.nosql import couch
+
+    couch.couch_objects.clear()
+
+    class Pkg(couch.CouchEntity):
+        pass
+
+    Pkg(name="crawley")
+    assert couch.couch_objects == [("Pkg", {"name": "crawley"})]

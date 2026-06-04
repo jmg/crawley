@@ -91,6 +91,48 @@ print(response.status_code, response.html.xpath("//title")[0].text)
 
 ---
 
+## Modern scraping API (`crawley.scraping`)
+
+For "just scrape this page" use cases there's a small, ergonomic API
+(à la `parsel` / `requests-html`) built on the same `httpx` + `lxml` stack.
+Selectors accept an optional `::text` or `::attr(name)` suffix.
+
+```python
+from crawley.scraping import fetch
+
+doc = fetch("https://quotes.toscrape.com/")
+
+doc.title                       # -> "Quotes to Scrape"
+doc.css_first("h1").text        # first match (an Element)
+doc.css("span.text::text")      # list of texts
+doc.css("a::attr(href)")        # list of (absolute) hrefs
+doc.links()                     # de-duplicated absolute links
+
+# Declarative extraction: a string selector -> one value, [selector] -> a list
+doc.extract({
+    "quote":  "span.text::text",
+    "author": "small.author::text",
+    "tags":   ["a.tag::text"],
+})
+```
+
+Fetch many pages concurrently, or scrape an url in one call:
+
+```python
+import asyncio
+from crawley.scraping import afetch_all, scrape
+
+scrape("https://example.com", {"title": "h1::text"})
+
+docs = asyncio.run(afetch_all(["https://a.com", "https://b.com"]))
+```
+
+The same shortcuts (`response.css`, `response.css_first`, `response.extract`,
+`response.doc`) are available on the crawler's `response` object inside
+`scrape()`.
+
+---
+
 ## Quick start (as a framework / CLI)
 
 ### 1. Start a new project
