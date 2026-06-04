@@ -1,16 +1,27 @@
 *.pyc
+__pycache__/
 *.sqlite
 *.egg-info
 *.project
 *.pydevproject
-*.json
-*.xml
-*.csv
 build/
 dist/
-docs/build/
+deb_dist/
 env/
+.venv/
 url.html
 pip-log.txt
-deb_dist/
 .idea
+.vscode/
+
+# tests / tooling
+.pytest_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# docs
+site/
+docs/build/

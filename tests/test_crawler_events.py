@@ -36,7 +36,7 @@ async def test_request_error_handler():
             errors.append(url)
 
     crawler = C()
-    crawler.request_manager.MAX_TRIES = 0
+    crawler.request_manager.retry_policy.max_retries = 0
     await crawler.start()
     assert errors == ["http://127.0.0.1:1/unreachable"]
 

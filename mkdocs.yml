@@ -1,0 +1,56 @@
+site_name: crawley
+site_description: A pythonic crawling / scraping framework for Python 3, built on asyncio and httpx.
+repo_url: https://github.com/jmg/crawley
+repo_name: jmg/crawley
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - scheme: slate
+      primary: teal
+      accent: teal
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - toc.follow
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Scraping API: scraping.md
+  - Crawlers & Scrapers: crawler.md
+  - Politeness — robots, rate limiting, retries: politeness.md
+  - Persistence: persistence.md
+  - CLI & Framework: cli.md
+  - API Reference: reference.md
+
+markdown_extensions:
+  - admonition
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.inlinehilite
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: false
+            show_root_heading: true
+            heading_level: 3

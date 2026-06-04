@@ -7,8 +7,15 @@ tests are hermetic and never touch the network.
 import http.server
 import socketserver
 import threading
+from urllib.parse import parse_qs, urlparse
 
 import pytest
+
+# Per-key hit counters used by the "/flaky" endpoint (shared, thread-safe).
+_FLAKY_COUNTERS = {}
+_FLAKY_LOCK = threading.Lock()
+
+ROBOTS = "User-agent: *\nDisallow: /private\n"
 
 INDEX = """
 <html><body>
@@ -40,13 +47,33 @@ class _Handler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(payload)
 
+    def _send_status(self, status, body="", retry_after=None):
+        payload = body.encode("utf-8")
+        self.send_response(status)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(payload)))
+        if retry_after is not None:
+            self.send_header("Retry-After", str(retry_after))
+        self.end_headers()
+        self.wfile.write(payload)
+
     def do_GET(self):
-        if self.path == "/" or self.path == "":
+        path = urlparse(self.path).path
+
+        if path == "/robots.txt":
+            self._send(ROBOTS)
+        elif path == "/flaky":
+            self._handle_flaky()
+        elif path == "/always-503":
+            self._send_status(503, "<html><body>down</body></html>", retry_after=0)
+        elif path == "/" or path == "":
             self._send(INDEX)
-        elif self.path.startswith("/page") or self.path.startswith("/page3"):
-            n = self.path.rstrip("/").split("page")[-1] or "x"
+        elif path.startswith("/private"):
+            self._send(PAGE.format(n="private"))
+        elif path.startswith("/page"):
+            n = path.rstrip("/").split("page")[-1] or "x"
             self._send(PAGE.format(n=n))
-        elif self.path == "/setcookie":
+        elif path == "/setcookie":
             self.send_response(200)
             self.send_header("Set-Cookie", "session=abc; Path=/")
             self.send_header("Content-Type", "text/html")
@@ -54,6 +81,20 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             self.wfile.write(b"<html><body>ok</body></html>")
         else:
             self._send("<html><body><h1>404</h1></body></html>", status=404)
+
+    def _handle_flaky(self):
+        params = parse_qs(urlparse(self.path).query)
+        key = params.get("key", ["default"])[0]
+        fail = int(params.get("fail", ["1"])[0])
+
+        with _FLAKY_LOCK:
+            count = _FLAKY_COUNTERS.get(key, 0) + 1
+            _FLAKY_COUNTERS[key] = count
+
+        if count <= fail:
+            self._send_status(503, "<html><body>retry</body></html>", retry_after=0)
+        else:
+            self._send(PAGE.format(n="ok"))
 
     def do_POST(self):
         length = int(self.headers.get("Content-Length", 0))

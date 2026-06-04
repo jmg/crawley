@@ -33,8 +33,10 @@ async def test_make_request_post(server):
 
 
 async def test_retries_then_raises():
+    from crawley.http.retry import RetryPolicy
+
     manager = RequestManager(delay=0, deviation=0)
-    manager.MAX_TRIES = 1
+    manager.retry_policy = RetryPolicy(max_retries=1, backoff_factor=0)
     with pytest.raises(Exception):
         await manager.make_request("http://127.0.0.1:1/never")
     await manager.aclose()

@@ -8,6 +8,8 @@ from crawley import config
 from crawley.http.cookies import CookieHandler
 from crawley.http.request import DelayedRequest, Request
 from crawley.http.response import Response
+from crawley.http.retry import RetryPolicy
+from crawley.http.throttle import HostRateLimiter
 from crawley.utils import has_valid_attr
 
 
@@ -24,9 +26,15 @@ class HostCounterDict(dict):
 class RequestManager:
     """Manage HTTP requests through a shared :class:`httpx.AsyncClient`."""
 
-    MAX_TRIES = config.REQUEST_MAX_RETRIES
-
-    def __init__(self, settings=None, headers=None, delay=None, deviation=None):
+    def __init__(
+        self,
+        settings=None,
+        headers=None,
+        delay=None,
+        deviation=None,
+        retry_policy=None,
+        rate_limiter=None,
+    ):
         self.host_counter = HostCounterDict()
         self.cookie_handler = CookieHandler()
         self.cookie_handler.load_cookies()
@@ -36,6 +44,10 @@ class RequestManager:
             deviation if deviation is not None else config.REQUEST_DEVIATION
         )
         self.settings = settings
+        self.retry_policy = retry_policy if retry_policy is not None else RetryPolicy()
+        self.rate_limiter = (
+            rate_limiter if rate_limiter is not None else HostRateLimiter()
+        )
         self._client = None
 
     # -- client lifecycle ------------------------------------------------
@@ -86,7 +98,17 @@ class RequestManager:
     async def make_request(self, url, data=None, extractor=None):
         """Issue a request and wrap the result in a :class:`Response`."""
         request = self._get_request(url)
-        response = await self.get_response(request, data)
+        host = urllib.parse.urlparse(url).netloc
+
+        semaphore = self.rate_limiter.semaphore(host)
+        if semaphore is not None:
+            await semaphore.acquire()
+        try:
+            await self.rate_limiter.throttle(host)
+            response = await self.get_response(request, data)
+        finally:
+            if semaphore is not None:
+                semaphore.release()
 
         raw_html = response.text
 
@@ -102,18 +124,29 @@ class RequestManager:
         )
 
     async def get_response(self, request, data):
-        """Try ``MAX_TRIES`` times to perform the request."""
-        last_exc = None
+        """Perform the request, retrying with backoff per the retry policy."""
+        attempt = 0
 
-        for tries in range(self.MAX_TRIES + 1):
+        while True:
             try:
-                return await request.get_response(
-                    self.client, data, delay_factor=tries
-                )
-            except Exception as ex:  # noqa: BLE001 - retried below
-                last_exc = ex
+                response = await request.get_response(self.client, data)
+            except Exception as ex:  # noqa: BLE001 - decided by the retry policy
+                if self.retry_policy.should_retry(attempt, exception=ex):
+                    await self.retry_policy.sleep(
+                        self.retry_policy.backoff_time(attempt)
+                    )
+                    attempt += 1
+                    continue
+                raise
 
-        raise last_exc
+            if self.retry_policy.should_retry(attempt, response=response):
+                await self.retry_policy.sleep(
+                    self.retry_policy.backoff_time(attempt, response)
+                )
+                attempt += 1
+                continue
+
+            return response
 
 
 class FastRequestManager(RequestManager):

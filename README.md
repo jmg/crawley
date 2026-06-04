@@ -8,16 +8,22 @@
 declarative API. This is the modernized release: the legacy `eventlet` / `elixir`
 stack has been replaced by **asyncio**, **httpx** and **SQLAlchemy 2.x**.
 
+📖 **Documentation:** run `mkdocs serve` (see [Development](#development)) or
+browse the [`docs/`](docs/) folder.
+
 ---
 
 ### Features
 
 * High speed asynchronous crawler powered by `asyncio` + `httpx`.
+* A modern, ergonomic **scraping API** (`fetch`, `Document`, CSS/XPath, `extract`).
 * Extract data with your favourite tool: **XPath**, **CSS selectors** or
   **PyQuery** (a jQuery-like API).
+* **Politeness** built in: `robots.txt`, per-host rate limiting and retries with
+  exponential backoff.
 * Persist to relational databases (SQLite, PostgreSQL, MySQL, Oracle) via
   SQLAlchemy 2.x, to **MongoDB** / **CouchDB**, or export to **JSON / XML / CSV**.
-* Cookie handling, proxies, request delays and retries out of the box.
+* Cookie handling and proxies out of the box.
 * A small DSL to define scrapers declaratively.
 * Command line tools (`crawley startproject`, `crawley run`, ...).
 * Optional visual scraping browser (PySide6).
@@ -197,12 +203,33 @@ Other commands: `crawley syncdb`, `crawley migratedb`, `crawley shell <url>`,
 
 ---
 
+## Politeness
+
+Crawl responsibly with a few class attributes (see
+[`docs/politeness.md`](docs/politeness.md)):
+
+```python
+class PoliteCrawler(BaseCrawler):
+    start_urls = ["https://example.com/"]
+    respect_robots = True             # honour robots.txt (+ Crawl-delay)
+    crawl_delay = 1.0                 # >= 1s between requests to the same host
+    max_concurrency_per_host = 2      # at most 2 concurrent requests per host
+    max_retries = 3                   # retry 429/5xx + network errors...
+    retry_backoff = 0.5               # ...with exponential backoff + jitter
+```
+
+Retries honour the `Retry-After` header, and `on_robots_blocked(url)` lets you
+react to disallowed urls.
+
+---
+
 ## Development
 
 ```bash
 ~$ pip install -e ".[dev]"
 ~$ pytest          # run the (hermetic) test suite
 ~$ ruff check crawley
+~$ pip install -e ".[docs]" && mkdocs serve   # docs preview
 ```
 
 The test suite spins up a local HTTP server, so it never hits the network.

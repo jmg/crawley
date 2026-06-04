@@ -2,11 +2,15 @@
 
 import asyncio
 import logging
+import urllib.parse
 
 from crawley import config
 from crawley.exceptions import AuthenticationError
 from crawley.extractors import XPathExtractor
 from crawley.http.managers import RequestManager
+from crawley.http.retry import RetryPolicy
+from crawley.http.robots import RobotsPolicy
+from crawley.http.throttle import HostRateLimiter
 from crawley.http.urls import UrlFinder
 from crawley.multiprogramming.pool import AsyncPool
 from crawley.utils import url_matcher
@@ -79,6 +83,24 @@ class BaseCrawler(metaclass=CrawlerMeta):
     search_hidden_urls = False
     """Search for urls hidden anywhere in the html (not only ``<a>`` tags)."""
 
+    max_retries = config.REQUEST_MAX_RETRIES
+    """How many times a failed request is retried."""
+
+    retry_backoff = config.RETRY_BACKOFF_FACTOR
+    """Base seconds for the exponential retry backoff."""
+
+    retry_statuses = config.RETRY_STATUSES
+    """HTTP status codes that trigger a retry."""
+
+    respect_robots = config.RESPECT_ROBOTS
+    """When ``True`` the crawler honours each site's ``robots.txt``."""
+
+    crawl_delay = config.CRAWL_DELAY
+    """Minimum seconds between two requests to the same host."""
+
+    max_concurrency_per_host = config.MAX_CONCURRENCY_PER_HOST
+    """Maximum simultaneous requests per host (``None`` disables the limit)."""
+
     def __init__(self, sessions=None, settings=None):
         self.sessions = sessions if sessions is not None else []
         self.debug = getattr(settings, "SHOW_DEBUG_INFO", True)
@@ -92,14 +114,33 @@ class BaseCrawler(metaclass=CrawlerMeta):
                 settings, "MAX_CONCURRENCY", config.MAX_CONCURRENCY
             )
 
-        self.request_manager = RequestManager(
-            settings=settings,
+        self.retry_policy = RetryPolicy(
+            max_retries=self.max_retries,
+            backoff_factor=self.retry_backoff,
+            statuses=self.retry_statuses,
+        )
+        self.rate_limiter = HostRateLimiter(
+            delay=self.crawl_delay,
+            max_per_host=self.max_concurrency_per_host,
+        )
+        self.robots = RobotsPolicy(
+            user_agent=self.headers.get("User-Agent", config.MOZILLA_USER_AGENT),
+            enabled=self.respect_robots,
+        )
+
+        self.request_manager = self._make_request_manager()
+
+        self._initialize_scrapers()
+
+    def _make_request_manager(self):
+        return RequestManager(
+            settings=self.settings,
             headers=self.headers,
             delay=self.requests_delay,
             deviation=self.requests_deviation,
+            retry_policy=self.retry_policy,
+            rate_limiter=self.rate_limiter,
         )
-
-        self._initialize_scrapers()
 
     def _initialize_scrapers(self):
         self.scrapers = [
@@ -159,6 +200,10 @@ class BaseCrawler(metaclass=CrawlerMeta):
         if not self._validate_url(url):
             return
 
+        if self.respect_robots and not await self._robots_allowed(url):
+            self.on_robots_blocked(url)
+            return
+
         if self.debug:
             log.info("crawling -> %s", url)
 
@@ -181,6 +226,15 @@ class BaseCrawler(metaclass=CrawlerMeta):
 
         for new_url in urls:
             self.pool.spawn(self._fetch(new_url, depth_level + 1))
+
+    async def _robots_allowed(self, url):
+        """Check robots.txt and apply its ``Crawl-delay`` for the host."""
+        allowed = await self.robots.allowed(url, self.request_manager.client)
+        delay = self.robots.crawl_delay(url)
+        if delay:
+            host = urllib.parse.urlparse(url).netloc
+            self.rate_limiter.set_delay(host, delay)
+        return allowed
 
     async def _login(self):
         """Authenticate before crawling, if ``login`` is configured."""
@@ -229,3 +283,8 @@ class BaseCrawler(metaclass=CrawlerMeta):
         """Override to customize the request error handler."""
         if self.debug:
             log.warning("Request to %s returned error: %s", url, ex)
+
+    def on_robots_blocked(self, url):
+        """Override to react when robots.txt disallows crawling *url*."""
+        if self.debug:
+            log.info("robots.txt disallows -> %s", url)

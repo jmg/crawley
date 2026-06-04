@@ -7,8 +7,10 @@ from crawley.http.managers import FastRequestManager
 class FastCrawler(BaseCrawler):
     """Like :class:`BaseCrawler` but issues requests without delays."""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.request_manager = FastRequestManager(
-            settings=self.settings, headers=self.headers
+    def _make_request_manager(self):
+        return FastRequestManager(
+            settings=self.settings,
+            headers=self.headers,
+            retry_policy=self.retry_policy,
+            rate_limiter=self.rate_limiter,
         )

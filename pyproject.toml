@@ -44,6 +44,10 @@ dev = [
     "sqlalchemy>=2.0",
     "ruff>=0.1",
 ]
+docs = [
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.24",
+]
 
 [project.scripts]
 crawley = "crawley.manager:manage"
