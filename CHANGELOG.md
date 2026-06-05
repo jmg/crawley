@@ -23,6 +23,9 @@ A full port of the legacy Python 2 framework to a modern Python 3 (3.9+) stack.
   and crawl loops.
 - Documentation site (MkDocs Material + mkdocstrings) and a set of runnable,
   test-covered `examples/`.
+- **Type hints** on the public modules and a PEP 561 `py.typed` marker so
+  downstream code gets type information; `mypy` runs in CI.
+- A `LICENSE` file (GPL-3.0).
 - A hermetic `pytest` suite (~170 tests, ~92% core coverage).
 
 ### Changed

@@ -43,6 +43,7 @@ dev = [
     "pytest-cov>=4.1",
     "sqlalchemy>=2.0",
     "ruff>=0.1",
+    "mypy>=1.8",
 ]
 docs = [
     "mkdocs-material>=9.5",
@@ -61,12 +62,29 @@ include = ["crawley*"]
 exclude = ["tests*", "examples*"]
 
 [tool.setuptools.package-data]
-crawley = ["conf/templates/*.tm"]
+crawley = ["conf/templates/*.tm", "py.typed"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.mypy]
+python_version = "3.9"
+ignore_missing_imports = true
+no_implicit_optional = true
+# Only report on the typed modules below; still follow imports for inference.
+follow_imports = "silent"
+# The typed, public-facing modules. The rest of the package is gradually typed.
+files = [
+    "crawley/scraping.py",
+    "crawley/extractors.py",
+    "crawley/toolbox.py",
+    "crawley/http/response.py",
+    "crawley/http/retry.py",
+    "crawley/http/throttle.py",
+    "crawley/http/robots.py",
+]
 
 [tool.coverage.run]
 source = ["crawley"]

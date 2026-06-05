@@ -1,5 +1,12 @@
 """Crawley's HTTP response object."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Optional
+
+if TYPE_CHECKING:
+    from crawley.scraping import Document, Selected
+
 
 class Response:
     """Encapsulates an HTTP response.
@@ -13,12 +20,18 @@ class Response:
         headers: the response headers.
     """
 
-    def __init__(self, raw_html=None, extracted_html=None, url=None, response=None):
+    def __init__(
+        self,
+        raw_html: Optional[str] = None,
+        extracted_html: Any = None,
+        url: Optional[str] = None,
+        response: Any = None,
+    ) -> None:
         self.raw_html = raw_html
         self.html = extracted_html
         self.url = url
         self.response = response
-        self._doc = None
+        self._doc: Optional[Document] = None
 
         if response is not None:
             self.headers = response.headers
@@ -29,11 +42,11 @@ class Response:
 
     # Backwards compatible alias (the legacy API exposed ``code``).
     @property
-    def code(self):
+    def code(self) -> Any:
         return self.status_code
 
     @property
-    def doc(self):
+    def doc(self) -> "Document":
         """Return the body as a high level :class:`~crawley.scraping.Document`.
 
         Lets you scrape a crawler response with the modern, ergonomic API::
@@ -47,17 +60,17 @@ class Response:
             self._doc = Document(self.raw_html or "", url=self.url)
         return self._doc
 
-    def css(self, selector):
+    def css(self, selector: str) -> "list[Selected]":
         """Shortcut for ``response.doc.css(selector)``."""
         return self.doc.css(selector)
 
-    def css_first(self, selector):
+    def css_first(self, selector: str) -> "Optional[Selected]":
         """Shortcut for ``response.doc.css_first(selector)``."""
         return self.doc.css_first(selector)
 
-    def extract(self, rules):
+    def extract(self, rules: dict) -> dict:
         """Shortcut for ``response.doc.extract(rules)``."""
         return self.doc.extract(rules)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "<Response [%s] %s>" % (self.status_code, self.url)

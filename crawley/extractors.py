@@ -5,7 +5,10 @@ user can scrape it with their favourite tool (XPath, a jQuery-like API or
 CSS selectors).
 """
 
+from __future__ import annotations
+
 from io import StringIO
+from typing import Any
 
 from lxml import etree
 from pyquery import PyQuery
@@ -14,21 +17,21 @@ from pyquery import PyQuery
 class BaseExtractor:
     """Interface for every extractor."""
 
-    def get_object(self, data):  # pragma: no cover - interface only
+    def get_object(self, data: str) -> Any:  # pragma: no cover - interface only
         raise NotImplementedError
 
 
 class PyQueryExtractor(BaseExtractor):
     """Extractor using PyQuery (a jQuery-like library for Python)."""
 
-    def get_object(self, data):
+    def get_object(self, data: str) -> PyQuery:
         return PyQuery(data)
 
 
 class XPathExtractor(BaseExtractor):
     """Extractor exposing an :mod:`lxml` tree, ready to be queried via XPath."""
 
-    def get_object(self, data):
+    def get_object(self, data: str) -> Any:
         parser = etree.HTMLParser()
         return etree.parse(StringIO(data), parser)
 
@@ -40,7 +43,7 @@ class CSSExtractor(BaseExtractor):
     ``cssselect`` package.
     """
 
-    def get_object(self, data):
+    def get_object(self, data: str) -> Any:
         parser = etree.HTMLParser()
         return etree.parse(StringIO(data), parser)
 
@@ -48,5 +51,5 @@ class CSSExtractor(BaseExtractor):
 class RawExtractor(BaseExtractor):
     """Returns the raw html data untouched."""
 
-    def get_object(self, data):
+    def get_object(self, data: str) -> str:
         return data

@@ -29,5 +29,8 @@ jobs:
       - name: Lint
         run: ruff check crawley
 
+      - name: Type check
+        run: mypy
+
       - name: Run tests
         run: pytest -q --cov=crawley --cov-report=term-missing

@@ -8,8 +8,8 @@
 declarative API. This is the modernized release: the legacy `eventlet` / `elixir`
 stack has been replaced by **asyncio**, **httpx** and **SQLAlchemy 2.x**.
 
-📖 **Documentation:** run `mkdocs serve` (see [Development](#development)) or
-browse the [`docs/`](docs/) folder.
+📖 **Documentation:** <https://jmg.github.io/crawley/> — or run `mkdocs serve`
+locally (see [Development](#development)).
 
 ---
 

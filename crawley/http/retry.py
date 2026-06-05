@@ -9,6 +9,7 @@ import asyncio
 import datetime
 import random
 from email.utils import parsedate_to_datetime
+from typing import Any, Iterable, Optional
 
 import httpx
 
@@ -20,12 +21,12 @@ class RetryPolicy:
 
     def __init__(
         self,
-        max_retries=None,
-        backoff_factor=None,
-        max_backoff=None,
-        statuses=None,
-        jitter=True,
-    ):
+        max_retries: Optional[int] = None,
+        backoff_factor: Optional[float] = None,
+        max_backoff: Optional[float] = None,
+        statuses: Optional[Iterable[int]] = None,
+        jitter: bool = True,
+    ) -> None:
         self.max_retries = (
             config.REQUEST_MAX_RETRIES if max_retries is None else max_retries
         )
@@ -40,7 +41,12 @@ class RetryPolicy:
         )
         self.jitter = jitter
 
-    def should_retry(self, attempt, response=None, exception=None):
+    def should_retry(
+        self,
+        attempt: int,
+        response: Any = None,
+        exception: Optional[BaseException] = None,
+    ) -> bool:
         """Return ``True`` if a further attempt should be made."""
         if attempt >= self.max_retries:
             return False
@@ -50,7 +56,7 @@ class RetryPolicy:
             return response.status_code in self.statuses
         return False
 
-    def backoff_time(self, attempt, response=None):
+    def backoff_time(self, attempt: int, response: Any = None) -> float:
         """Seconds to wait before retry number *attempt* (0-based)."""
         if response is not None:
             retry_after = self._retry_after(response)
@@ -64,12 +70,12 @@ class RetryPolicy:
             backoff = backoff * (0.5 + random.random() / 2)
         return backoff
 
-    async def sleep(self, seconds):
+    async def sleep(self, seconds: float) -> None:
         if seconds > 0:
             await asyncio.sleep(seconds)
 
     @staticmethod
-    def _retry_after(response):
+    def _retry_after(response: Any) -> Optional[float]:
         """Parse the ``Retry-After`` header (seconds or an HTTP date)."""
         value = response.headers.get("Retry-After")
         if not value:
