@@ -94,6 +94,16 @@ async def test_concurrent_fetch(quotes_server):
     assert all(count == 2 for count in counts.values())
 
 
+# -- 06 spider --------------------------------------------------------------
+
+
+def test_spider_example(quotes_server):
+    mod = load_example("06_spider.py")
+    items = mod.crawl_quotes(quotes_server)
+    assert len(items) == TOTAL_QUOTES
+    assert {it["page"] for it in items} == {1, 2, 3}
+
+
 # -- every example at least imports cleanly ---------------------------------
 
 
@@ -105,6 +115,7 @@ async def test_concurrent_fetch(quotes_server):
         "03_polite_crawler.py",
         "04_persistence_json.py",
         "05_concurrent_fetch.py",
+        "06_spider.py",
     ],
 )
 def test_example_imports(filename):

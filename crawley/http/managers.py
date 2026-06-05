@@ -34,6 +34,7 @@ class RequestManager:
         deviation=None,
         retry_policy=None,
         rate_limiter=None,
+        cache=None,
     ):
         self.host_counter = HostCounterDict()
         self.cookie_handler = CookieHandler()
@@ -48,6 +49,7 @@ class RequestManager:
         self.rate_limiter = (
             rate_limiter if rate_limiter is not None else HostRateLimiter()
         )
+        self.cache = cache
         self._client = None
 
     # -- client lifecycle ------------------------------------------------
@@ -85,19 +87,27 @@ class RequestManager:
 
     # -- requests --------------------------------------------------------
 
-    def _get_request(self, url):
+    def _get_request(self, url, headers=None):
         host = urllib.parse.urlparse(url).netloc
         self.host_counter.increase(host)
+        merged = {**self.headers, **(headers or {})}
         return DelayedRequest(
             url=url,
-            headers=self.headers,
+            headers=merged,
             delay=self.delay,
             deviation=self.deviation,
         )
 
-    async def make_request(self, url, data=None, extractor=None):
+    async def make_request(self, url, data=None, extractor=None, headers=None):
         """Issue a request and wrap the result in a :class:`Response`."""
-        request = self._get_request(url)
+        method = "POST" if data is not None else "GET"
+
+        if self.cache is not None:
+            cached = self.cache.get(method, url, data)
+            if cached is not None:
+                return self._response_from_cache(cached, extractor)
+
+        request = self._get_request(url, headers)
         host = urllib.parse.urlparse(url).netloc
 
         semaphore = self.rate_limiter.semaphore(host)
@@ -111,16 +121,40 @@ class RequestManager:
                 semaphore.release()
 
         raw_html = response.text
+        final_url = str(response.url)
+
+        if self.cache is not None:
+            self.cache.store(
+                method, url, data, response.status_code, final_url,
+                dict(response.headers), raw_html,
+            )
 
         extracted_html = None
         if extractor is not None:
             extracted_html = extractor.get_object(raw_html)
 
-        return Response(
+        result = Response(
             raw_html=raw_html,
             extracted_html=extracted_html,
-            url=str(response.url),
+            url=final_url,
             response=response,
+        )
+        elapsed = getattr(response, "elapsed", None)
+        if elapsed is not None:
+            result.latency = elapsed.total_seconds()
+        return result
+
+    @staticmethod
+    def _response_from_cache(cached, extractor):
+        from crawley.http.cache import _CachedResponse
+
+        raw_html = cached["body"]
+        extracted = extractor.get_object(raw_html) if extractor is not None else None
+        return Response(
+            raw_html=raw_html,
+            extracted_html=extracted,
+            url=cached["url"],
+            response=_CachedResponse(cached["status"], cached["headers"]),
         )
 
     async def get_response(self, request, data):
@@ -152,7 +186,8 @@ class RequestManager:
 class FastRequestManager(RequestManager):
     """A request manager without per-request delays."""
 
-    def _get_request(self, url):
+    def _get_request(self, url, headers=None):
         host = urllib.parse.urlparse(url).netloc
         self.host_counter.increase(host)
-        return Request(url=url, headers=self.headers)
+        merged = {**self.headers, **(headers or {})}
+        return Request(url=url, headers=merged)

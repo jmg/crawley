@@ -84,6 +84,26 @@ policy.should_retry(attempt=0, response=resp)   # -> bool
 policy.backoff_time(attempt=2)                  # -> seconds
 ```
 
+## AutoThrottle
+
+Instead of a fixed `crawl_delay`, let crawley adapt the per-host delay to the
+observed response latency, aiming to keep roughly `target_concurrency` requests
+in flight per host:
+
+```python
+class MyCrawler(BaseCrawler):
+    start_urls = ["https://example.com/"]
+    autothrottle = True
+    autothrottle_target_concurrency = 2.0   # ~2 concurrent req/host
+    autothrottle_start_delay = 1.0
+    autothrottle_max_delay = 30.0
+```
+
+After each response the per-host delay is nudged towards
+`latency / target_concurrency` (smoothed and clamped to `max_delay`). Slower
+servers are hit more gently, faster ones a bit harder. The primitive is
+`crawley.http.autothrottle.AutoThrottle`.
+
 ## Putting it together
 
 ```python

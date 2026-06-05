@@ -31,6 +31,8 @@ class Response:
         self.html = extracted_html
         self.url = url
         self.response = response
+        self.request: Any = None
+        self.latency: Optional[float] = None
         self._doc: Optional[Document] = None
 
         if response is not None:
@@ -71,6 +73,28 @@ class Response:
     def extract(self, rules: dict) -> dict:
         """Shortcut for ``response.doc.extract(rules)``."""
         return self.doc.extract(rules)
+
+    @property
+    def meta(self) -> dict:
+        """The ``meta`` dict carried by the originating request (if any)."""
+        if self.request is not None:
+            return self.request.meta
+        return {}
+
+    def follow(self, url: str, callback: Any = None, **kwargs: Any) -> Any:
+        """Build a :class:`~crawley.spider.Request` to a (possibly relative) url.
+
+        Relative urls are resolved against this response's url, and ``meta`` is
+        inherited from the current request unless overridden.
+        """
+        from urllib.parse import urljoin
+
+        from crawley.spider import Request
+
+        absolute = urljoin(self.url or "", url)
+        if "meta" not in kwargs and self.request is not None:
+            kwargs["meta"] = dict(self.request.meta)
+        return Request(absolute, callback=callback, **kwargs)
 
     def __repr__(self) -> str:
         return "<Response [%s] %s>" % (self.status_code, self.url)

@@ -51,9 +51,39 @@ QuotesCrawler().run()               # synchronous entry point
 | `unique_urls`              | `True`           | Skip already-visited urls (prevents loops).        |
 | `post_urls`                | `[]`             | `(pattern, data)` tuples to issue POSTs.           |
 | `login`                    | `None`           | `(url, data)` to authenticate before crawling.     |
+| `unique_urls`              | `True`           | Skip already-visited urls.                         |
+| `http_cache`               | `False`          | Cache responses on disk (development helper).      |
+| `http_cache_dir`           | `.crawley_cache` | Where the HTTP cache is stored.                    |
+| `render_js`                | `False`          | Render pages with Playwright (`crawley[js]`).      |
 
 See [Politeness](politeness.md) for `respect_robots`, `crawl_delay`,
 `max_concurrency_per_host` and the retry options.
+
+## Stats
+
+Every crawler / spider owns a `stats` collector. It counts requests, responses,
+per-status codes, errors, robots blocks, items (spiders) and the elapsed time,
+and logs a summary when the crawl finishes:
+
+```python
+crawler = MyCrawler()
+crawler.run()
+print(crawler.stats.get_stats())
+# {'requests': 12, 'responses': 12, 'status/200': 12, 'elapsed_seconds': 1.3, ...}
+```
+
+## HTTP cache (development)
+
+Set `http_cache = True` to cache every response on disk (keyed by
+method + url + body). Re-running the crawl then serves from the cache instead of
+hitting the site again — handy while developing scrapers:
+
+```python
+class MyCrawler(BaseCrawler):
+    start_urls = ["https://example.com/"]
+    http_cache = True
+    http_cache_dir = ".crawley_cache"
+```
 
 ## URL matching
 

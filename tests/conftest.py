@@ -66,6 +66,15 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             self._handle_flaky()
         elif path == "/always-503":
             self._send_status(503, "<html><body>down</body></html>", retry_after=0)
+        elif path == "/login-form":
+            self._send(
+                '<html><body><form action="/echo" method="post">'
+                '<input name="user" value="bob">'
+                '<input name="token" value="xyz">'
+                '<input name="pass" type="password">'
+                '<input type="submit" value="go">'
+                "</form></body></html>"
+            )
         elif path == "/loop-a":
             self._send('<html><body><a href="/loop-b">b</a></body></html>')
         elif path == "/loop-b":
@@ -178,10 +187,30 @@ class _QuotesHandler(http.server.BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(payload)
 
+    def _send_xml(self, body):
+        payload = body.encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/xml; charset=utf-8")
+        self.send_header("Content-Length", str(len(payload)))
+        self.end_headers()
+        self.wfile.write(payload)
+
     def do_GET(self):
         path = urlparse(self.path).path
         if path == "/robots.txt":
             self._send("User-agent: *\nAllow: /\n")
+        elif path == "/sitemap.xml":
+            host = self.headers.get("Host", "")
+            locs = "".join(
+                "<url><loc>http://%s/page/%d/</loc></url>" % (host, n)
+                for n in (1, 2, 3)
+            )
+            self._send_xml(
+                '<?xml version="1.0" encoding="UTF-8"?>'
+                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+                + locs
+                + "</urlset>"
+            )
         elif path == "/" or path == "":
             self._send(quotes_page(1))
         elif path.startswith("/page/"):

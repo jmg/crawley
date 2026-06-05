@@ -23,6 +23,29 @@ Auto-generated from the docstrings.
 ::: crawley.scrapers.base.BaseScraper
 ::: crawley.scrapers.smart.SmartScraper
 
+## Spiders
+
+::: crawley.spider.Spider
+::: crawley.spider.Request
+::: crawley.spider.FormRequest
+::: crawley.spider.Item
+::: crawley.spiders.CrawlSpider
+::: crawley.spiders.SitemapSpider
+::: crawley.spiders.LinkExtractor
+::: crawley.spiders.Rule
+
+## Pipelines & middlewares
+
+::: crawley.pipelines.ItemPipeline
+::: crawley.pipelines.DropItem
+::: crawley.middlewares.DownloaderMiddleware
+
+## Stats, cache & throttling
+
+::: crawley.stats.StatsCollector
+::: crawley.http.cache.HttpCache
+::: crawley.http.autothrottle.AutoThrottle
+
 ## Extractors
 
 ::: crawley.extractors.XPathExtractor

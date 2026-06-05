@@ -104,11 +104,39 @@ class BaseCrawler(metaclass=CrawlerMeta):
     unique_urls = True
     """Skip urls that have already been visited during the crawl."""
 
+    render_js = False
+    """Render pages with a headless browser (Playwright). Needs ``crawley[js]``."""
+
+    playwright_options = {}
+    """Extra options for the Playwright manager (browser_type, headless, ...)."""
+
+    http_cache = False
+    """Cache responses on disk (development helper)."""
+
+    http_cache_dir = ".crawley_cache"
+    """Directory used by the on-disk HTTP cache."""
+
+    autothrottle = False
+    """Adapt the per-host delay to the observed response latency."""
+
+    autothrottle_target_concurrency = 1.0
+    """Target number of concurrent requests per host for AutoThrottle."""
+
+    autothrottle_start_delay = 1.0
+    """Initial per-host delay used by AutoThrottle (seconds)."""
+
+    autothrottle_max_delay = 60.0
+    """Maximum per-host delay AutoThrottle may set (seconds)."""
+
     def __init__(self, sessions=None, settings=None):
         self.sessions = sessions if sessions is not None else []
         self.debug = getattr(settings, "SHOW_DEBUG_INFO", True)
         self.settings = settings
         self._seen = set()
+
+        from crawley.stats import StatsCollector
+
+        self.stats = StatsCollector()
 
         extractor_class = self.extractor or XPathExtractor
         self.extractor = extractor_class()
@@ -132,11 +160,53 @@ class BaseCrawler(metaclass=CrawlerMeta):
             enabled=self.respect_robots,
         )
 
+        self._autothrottle = None
+        if self.autothrottle:
+            from crawley.http.autothrottle import AutoThrottle
+
+            self._autothrottle = AutoThrottle(
+                target_concurrency=self.autothrottle_target_concurrency,
+                start_delay=self.autothrottle_start_delay,
+                max_delay=self.autothrottle_max_delay,
+            )
+            self.rate_limiter.delay = self.autothrottle_start_delay
+
         self.request_manager = self._make_request_manager()
 
         self._initialize_scrapers()
 
+    def _record_latency(self, url, response):
+        """Feed the response latency to AutoThrottle (if enabled)."""
+        if self._autothrottle is None:
+            return
+        latency = getattr(response, "latency", None)
+        if latency is None:
+            return
+        host = urllib.parse.urlparse(url).netloc
+        self.rate_limiter.set_delay(host, self._autothrottle.adjust(host, latency))
+
+    def _make_cache(self):
+        if not self.http_cache:
+            return None
+        from crawley.http.cache import HttpCache
+
+        return HttpCache(self.http_cache_dir, enabled=True)
+
     def _make_request_manager(self):
+        cache = self._make_cache()
+        if self.render_js:
+            from crawley.http.playwright import PlaywrightRequestManager
+
+            return PlaywrightRequestManager(
+                settings=self.settings,
+                headers=self.headers,
+                delay=self.requests_delay,
+                deviation=self.requests_deviation,
+                retry_policy=self.retry_policy,
+                rate_limiter=self.rate_limiter,
+                cache=cache,
+                **self.playwright_options,
+            )
         return RequestManager(
             settings=self.settings,
             headers=self.headers,
@@ -144,6 +214,7 @@ class BaseCrawler(metaclass=CrawlerMeta):
             deviation=self.requests_deviation,
             retry_policy=self.retry_policy,
             rate_limiter=self.rate_limiter,
+            cache=cache,
         )
 
     def _initialize_scrapers(self):
@@ -210,17 +281,24 @@ class BaseCrawler(metaclass=CrawlerMeta):
             self._seen.add(url)
 
         if self.respect_robots and not await self._robots_allowed(url):
+            self.stats.inc("robots_blocked")
             self.on_robots_blocked(url)
             return
 
         if self.debug:
             log.info("crawling -> %s", url)
 
+        self.stats.inc("requests")
         try:
             response = await self._get_response(url)
         except Exception as ex:  # noqa: BLE001 - delegated to error handler
+            self.stats.inc("request_errors")
             self.on_request_error(url, ex)
             return
+
+        self.stats.inc("responses")
+        self.stats.inc("status/%s" % response.status_code)
+        self._record_latency(url, response)
 
         urls = self._manage_scrapers(response)
 
@@ -258,6 +336,7 @@ class BaseCrawler(metaclass=CrawlerMeta):
         """Run the crawler (coroutine)."""
         self.pool = AsyncPool(self.max_concurrency_level)
         self._seen = set()
+        self.stats.open()
 
         self.on_start()
         await self._login()
@@ -270,6 +349,9 @@ class BaseCrawler(metaclass=CrawlerMeta):
         finally:
             await self.request_manager.aclose()
 
+        self.stats.close()
+        if self.debug:
+            log.info("stats: %s", self.stats.get_stats())
         self.on_finish()
 
     def run(self):

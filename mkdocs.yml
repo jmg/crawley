@@ -29,6 +29,7 @@ nav:
   - Installation: installation.md
   - Scraping API: scraping.md
   - Crawlers & Scrapers: crawler.md
+  - Spiders (callbacks, items, rules): spiders.md
   - Politeness — robots, rate limiting, retries: politeness.md
   - Persistence: persistence.md
   - CLI & Framework: cli.md

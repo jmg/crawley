@@ -11,6 +11,7 @@ Runnable, documented examples. Each one targets
 | [`03_polite_crawler.py`](03_polite_crawler.py) | Politeness: `robots.txt`, per-host rate limiting and retries. |
 | [`04_persistence_json.py`](04_persistence_json.py) | Persisting scraped data to a JSON document. |
 | [`05_concurrent_fetch.py`](05_concurrent_fetch.py) | Fetching many pages concurrently with `afetch_all`. |
+| [`06_spider.py`](06_spider.py) | The callback-driven `Spider` with an item pipeline. |
 
 Run any of them with:
 
