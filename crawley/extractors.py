@@ -1,42 +1,55 @@
-"""
-    Data Extractors classes
+"""Data extractor classes.
+
+An extractor turns the raw html of a page into a convenient object so the
+user can scrape it with their favourite tool (XPath, a jQuery-like API or
+CSS selectors).
 """
 
-from pyquery import PyQuery
+from __future__ import annotations
+
+from io import StringIO
+from typing import Any
 
 from lxml import etree
-from StringIO import StringIO
+from pyquery import PyQuery
 
 
-class PyQueryExtractor(object):
-    """
-        Extractor using PyQuery (A JQuery-like library for Python)
-    """
+class BaseExtractor:
+    """Interface for every extractor."""
 
-    def get_object(self, data):
-
-        html = PyQuery(data)
-        return html
+    def get_object(self, data: str) -> Any:  # pragma: no cover - interface only
+        raise NotImplementedError
 
 
-class XPathExtractor(object):
-    """
-        Extractor using Xpath
-    """
+class PyQueryExtractor(BaseExtractor):
+    """Extractor using PyQuery (a jQuery-like library for Python)."""
 
-    def get_object(self, data):
+    def get_object(self, data: str) -> PyQuery:
+        return PyQuery(data)
 
+
+class XPathExtractor(BaseExtractor):
+    """Extractor exposing an :mod:`lxml` tree, ready to be queried via XPath."""
+
+    def get_object(self, data: str) -> Any:
         parser = etree.HTMLParser()
-        html = etree.parse(StringIO(data), parser)
-        return html
+        return etree.parse(StringIO(data), parser)
 
 
-class RawExtractor(object):
+class CSSExtractor(BaseExtractor):
+    """Extractor exposing an :mod:`lxml` tree queryable with CSS selectors.
+
+    The returned tree supports ``tree.cssselect("div.foo a")`` thanks to the
+    ``cssselect`` package.
     """
-        Returns the raw html data
-        Use your favourite python tool to scrape it.
-    """
 
-    def get_object(self, data):
+    def get_object(self, data: str) -> Any:
+        parser = etree.HTMLParser()
+        return etree.parse(StringIO(data), parser)
 
+
+class RawExtractor(BaseExtractor):
+    """Returns the raw html data untouched."""
+
+    def get_object(self, data: str) -> str:
         return data

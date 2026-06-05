@@ -1,308 +1,300 @@
-from eventlet import GreenPool
-from crawley.multiprogramming.pool import ThreadPool
+"""Base crawler class (asyncio powered)."""
+
+import asyncio
+import logging
+import urllib.parse
 
 from crawley import config
-from crawley.http.managers import RequestManager
-from crawley.http.urls import UrlFinder
-from crawley.extractors import XPathExtractor
 from crawley.exceptions import AuthenticationError
+from crawley.extractors import XPathExtractor
+from crawley.http.managers import RequestManager
+from crawley.http.retry import RetryPolicy
+from crawley.http.robots import RobotsPolicy
+from crawley.http.throttle import HostRateLimiter
+from crawley.http.urls import UrlFinder
+from crawley.multiprogramming.pool import AsyncPool
 from crawley.utils import url_matcher
+
+log = logging.getLogger("crawley.crawler")
 
 user_crawlers = []
 
+
 class CrawlerMeta(type):
-    """
-        This metaclass adds the user's crawlers to a list
-        used by the CLI commands.
-        Abstract base crawlers won't be added.
+    """Register user crawler classes for the CLI commands.
+
+    Abstract base crawlers (those defined inside the ``crawley`` package) are
+    not registered.
     """
 
     def __init__(cls, name, bases, dct):
-
-        if not hasattr(cls, '__module__' ) or not cls.__module__.startswith(config.CRAWLEY_ROOT_DIR):
+        module = getattr(cls, "__module__", "") or ""
+        if not module.startswith(config.CRAWLEY_ROOT_DIR):
             user_crawlers.append(cls)
-        super(CrawlerMeta, cls).__init__(name, bases, dct)
+        super().__init__(name, bases, dct)
 
 
-Pools = {'greenlets' : {'pool' : GreenPool, 'max_concurrency' : config.MAX_GREEN_POOL_SIZE },
-         'threads' : {'pool' : ThreadPool, 'max_concurrency' : config.MAX_THREAD_POOL_SIZE }, }
+class BaseCrawler(metaclass=CrawlerMeta):
+    """User crawlers must inherit from this class.
 
-class BaseCrawler(object):
+    Override the relevant methods and define ``start_urls``, ``scrapers`` and
+    the ``max_depth`` to control the crawl.
     """
-        User's Crawlers must inherit from this class, may
-        override some methods and define the start_urls list,
-        the scrapers and the max crawling depth.
-    """
-
-    __metaclass__ = CrawlerMeta
 
     start_urls = []
-    """ A list containing the start urls for the crawler """
+    """A list containing the start urls for the crawler."""
 
     allowed_urls = []
-    """ A list of urls allowed for crawl """
+    """A list of url patterns allowed for crawl."""
 
     black_list = []
-    """ A list of blocked urls which never be crawled """
+    """A list of blocked url patterns that are never crawled."""
 
     scrapers = []
-    """ A list of scrapers classes """
+    """A list of scraper classes."""
 
     max_depth = -1
-    """ The maximun crawling recursive level """
+    """The maximum crawling recursive level (``-1`` means unlimited)."""
 
     max_concurrency_level = None
-    """ The maximun coroutines concurrecy level """
+    """The maximum number of concurrent requests."""
 
     headers = {}
-    """ The default request headers """
+    """The default request headers."""
 
     requests_delay = config.REQUEST_DELAY
-    """ The average delay time between requests """
+    """The average delay time between requests."""
 
     requests_deviation = config.REQUEST_DEVIATION
-    """ The requests deviation time """
+    """The requests deviation time."""
 
     extractor = None
-    """ The extractor class. Default is XPathExtractor """
+    """The extractor class. Defaults to :class:`XPathExtractor`."""
 
     post_urls = []
-    """
-        The Post data for the urls. A List of tuples containing (url, data_dict)
-        Example: ("http://www.mypage.com/post_url", {'page' : '1', 'color' : 'blue'})
-    """
+    """POST data for urls: a list of ``(url, data_dict)`` tuples."""
 
     login = None
-    """
-        The login data. A tuple of (url, login_dict).
-        Example: ("http://www.mypage.com/login", {'user' : 'myuser', 'pass', 'mypassword'})
-    """
+    """Login data: a tuple of ``(url, login_dict)``."""
 
     search_all_urls = True
-    """
-        If user doesn't define the get_urls method in scrapers then the crawler will search for urls
-        in the current page itself depending on the [search_all_urls] attribute.
-    """
+    """Search for urls in the page when scrapers don't return any."""
 
     search_hidden_urls = False
-    """
-        Search for hidden urls in the whole html
-    """
+    """Search for urls hidden anywhere in the html (not only ``<a>`` tags)."""
+
+    max_retries = config.REQUEST_MAX_RETRIES
+    """How many times a failed request is retried."""
+
+    retry_backoff = config.RETRY_BACKOFF_FACTOR
+    """Base seconds for the exponential retry backoff."""
+
+    retry_statuses = config.RETRY_STATUSES
+    """HTTP status codes that trigger a retry."""
+
+    respect_robots = config.RESPECT_ROBOTS
+    """When ``True`` the crawler honours each site's ``robots.txt``."""
+
+    crawl_delay = config.CRAWL_DELAY
+    """Minimum seconds between two requests to the same host."""
+
+    max_concurrency_per_host = config.MAX_CONCURRENCY_PER_HOST
+    """Maximum simultaneous requests per host (``None`` disables the limit)."""
+
+    unique_urls = True
+    """Skip urls that have already been visited during the crawl."""
 
     def __init__(self, sessions=None, settings=None):
-        """
-            Initializes the crawler
-
-            params:
-
-                sessions: Database or Documents persistant sessions
-
-                debug: indicates if the crawler logs to stdout debug info
-        """
-
-        if sessions is None:
-            sessions = []
-
-        self.sessions = sessions
-        self.debug = getattr(settings, 'SHOW_DEBUG_INFO', True)
+        self.sessions = sessions if sessions is not None else []
+        self.debug = getattr(settings, "SHOW_DEBUG_INFO", True)
         self.settings = settings
+        self._seen = set()
 
-        if self.extractor is None:
-            self.extractor = XPathExtractor
-
-        self.extractor = self.extractor()
-
-        pool_type = getattr(settings, 'POOL', 'greenlets')
-        pool = Pools[pool_type]
+        extractor_class = self.extractor or XPathExtractor
+        self.extractor = extractor_class()
 
         if self.max_concurrency_level is None:
-            self.max_concurrency_level = pool['max_concurrency']
+            self.max_concurrency_level = getattr(
+                settings, "MAX_CONCURRENCY", config.MAX_CONCURRENCY
+            )
 
-        self.pool = pool['pool'](self.max_concurrency_level)
-        self.request_manager = RequestManager(settings=settings, headers=self.headers, delay=self.requests_delay, deviation=self.requests_deviation)
+        self.retry_policy = RetryPolicy(
+            max_retries=self.max_retries,
+            backoff_factor=self.retry_backoff,
+            statuses=self.retry_statuses,
+        )
+        self.rate_limiter = HostRateLimiter(
+            delay=self.crawl_delay,
+            max_per_host=self.max_concurrency_per_host,
+        )
+        self.robots = RobotsPolicy(
+            user_agent=self.headers.get("User-Agent", config.MOZILLA_USER_AGENT),
+            enabled=self.respect_robots,
+        )
+
+        self.request_manager = self._make_request_manager()
 
         self._initialize_scrapers()
 
+    def _make_request_manager(self):
+        return RequestManager(
+            settings=self.settings,
+            headers=self.headers,
+            delay=self.requests_delay,
+            deviation=self.requests_deviation,
+            retry_policy=self.retry_policy,
+            rate_limiter=self.rate_limiter,
+        )
+
     def _initialize_scrapers(self):
-        """
-            Instanciates all the scraper classes
-        """
+        self.scrapers = [
+            scraper_class(settings=self.settings)
+            for scraper_class in self.scrapers
+        ]
 
-        self.scrapers = [scraper_class(settings=self.settings) for scraper_class in self.scrapers]
+    # -- requests --------------------------------------------------------
 
-    def _make_request(self, url, data=None):
-        """
-            Returns the response object from a request
+    async def _make_request(self, url, data=None):
+        return await self.request_manager.make_request(url, data, self.extractor)
 
-            params:
-                data: if this param is present it makes a POST.
-        """
-        return self.request_manager.make_request(url, data, self.extractor)
-
-    def _get_response(self, url, data=None):
-        """
-            Returns the response data from a request
-
-            params:
-                data: if this param is present it makes a POST.
-        """
-
+    async def _get_response(self, url, data=None):
         for pattern, post_data in self.post_urls:
             if url_matcher(url, pattern):
                 data = post_data
 
-        return self._make_request(url, data)
+        return await self._make_request(url, data)
 
-    def request(self, url, data=None):
+    async def request(self, url, data=None):
+        return await self._get_response(url, data=data)
 
-        return self._get_response(url, data=data)
+    # -- scraping --------------------------------------------------------
 
     def _manage_scrapers(self, response):
-        """
-            Checks if some scraper is suited for data extraction on the current url.
-            If so, gets the extractor object and delegate the scraping task
-            to the scraper Object
-        """
+        """Delegate the data extraction to the matching scrapers."""
         scraped_urls = []
 
         for scraper in self.scrapers:
-
             urls = scraper.try_scrape(response)
-
             if urls is not None:
-
                 self._commit()
                 scraped_urls.extend(urls)
 
         return scraped_urls
 
     def _commit(self):
-        """
-            Makes a Commit in all sessions
-        """
-
         for session in self.sessions:
             session.commit()
 
-    def _search_in_urls_list(self, urls_list, url, default=True):
-        """
-            Searches an url in a list of urls
-        """
+    # -- url validation --------------------------------------------------
 
+    def _search_in_urls_list(self, urls_list, url, default=True):
         if not urls_list:
             return default
-
-        for pattern in urls_list:
-            if url_matcher(url, pattern):
-                return True
-
-        return False
+        return any(url_matcher(url, pattern) for pattern in urls_list)
 
     def _validate_url(self, url):
-        """
-            Validates if the url is in the crawler's [allowed_urls] list and not in [black_list].
-        """
+        return self._search_in_urls_list(
+            self.allowed_urls, url
+        ) and not self._search_in_urls_list(self.black_list, url, default=False)
 
-        return self._search_in_urls_list(self.allowed_urls, url) and not self._search_in_urls_list(self.black_list, url, default=False)
+    # -- crawl -----------------------------------------------------------
 
-    def _fetch(self, url, depth_level=0):
-        """
-            Recursive url fetching.
-
-            Params:
-                depth_level: The maximun recursion level
-                url: The url to start crawling
-        """
-
+    async def _fetch(self, url, depth_level=0):
+        """Recursive url fetching."""
         if not self._validate_url(url):
             return
 
-        if self.debug:
-            print "-" * 80
-            print "crawling -> %s" % url
+        if self.unique_urls:
+            if url in self._seen:
+                return
+            self._seen.add(url)
 
-        try:
-            response = self._get_response(url)
-        except Exception, ex:
-            self.on_request_error(url, ex)
+        if self.respect_robots and not await self._robots_allowed(url):
+            self.on_robots_blocked(url)
             return
 
         if self.debug:
-            print "-" * 80
+            log.info("crawling -> %s", url)
+
+        try:
+            response = await self._get_response(url)
+        except Exception as ex:  # noqa: BLE001 - delegated to error handler
+            self.on_request_error(url, ex)
+            return
 
         urls = self._manage_scrapers(response)
 
         if not urls:
-
             if self.search_all_urls:
                 urls = self.get_urls(response)
             else:
                 return
 
+        if self.max_depth != -1 and depth_level >= self.max_depth:
+            return
+
         for new_url in urls:
+            self.pool.spawn(self._fetch(new_url, depth_level + 1))
 
-            if depth_level >= self.max_depth and self.max_depth != -1:
-                return
+    async def _robots_allowed(self, url):
+        """Check robots.txt and apply its ``Crawl-delay`` for the host."""
+        allowed = await self.robots.allowed(url, self.request_manager.client)
+        delay = self.robots.crawl_delay(url)
+        if delay:
+            host = urllib.parse.urlparse(url).netloc
+            self.rate_limiter.set_delay(host, delay)
+        return allowed
 
-            self.pool.spawn_n(self._fetch, new_url, depth_level + 1)
-
-    def _login(self):
-        """
-            If target pages are hidden behind a login then
-            pass through it first.
-
-            self.login can be None or a tuple containing
-            (login_url, params_dict)
-        """
+    async def _login(self):
+        """Authenticate before crawling, if ``login`` is configured."""
         if self.login is None:
             return
 
         url, data = self.login
-        if self._get_response(url, data) is None:
+        if await self._get_response(url, data) is None:
             raise AuthenticationError("Can't login")
 
-    def start(self):
-        """
-            Crawler's run method
-        """
+    async def start(self):
+        """Run the crawler (coroutine)."""
+        self.pool = AsyncPool(self.max_concurrency_level)
+        self._seen = set()
+
         self.on_start()
-        self._login()
+        await self._login()
 
         for url in self.start_urls:
-            self.pool.spawn_n(self._fetch, url, depth_level=0)
+            self.pool.spawn(self._fetch(url, depth_level=0))
 
-        self.pool.waitall()
+        try:
+            await self.pool.join()
+        finally:
+            await self.request_manager.aclose()
+
         self.on_finish()
 
-    def get_urls(self, response):
-        """
-            Returns a list of urls found in the current html page
-        """
-        urls = set()
+    def run(self):
+        """Convenience synchronous entry point."""
+        asyncio.run(self.start())
 
+    def get_urls(self, response):
+        """Return the urls found in the current html page."""
         finder = UrlFinder(response, self.search_hidden_urls)
         return finder.get_urls()
 
-    #Events section
+    # -- events ----------------------------------------------------------
 
     def on_start(self):
-        """
-            Override this method to do some work when the crawler starts.
-        """
-
-        pass
+        """Override to run code when the crawler starts."""
 
     def on_finish(self):
-        """
-            Override this method to do some work when the crawler finishes.
-        """
-
-        pass
+        """Override to run code when the crawler finishes."""
 
     def on_request_error(self, url, ex):
-        """
-            Override this method to customize the request error handler.
-        """
-
+        """Override to customize the request error handler."""
         if self.debug:
-            print "Request to %s returned error: %s" % (url, ex)
+            log.warning("Request to %s returned error: %s", url, ex)
+
+    def on_robots_blocked(self, url):
+        """Override to react when robots.txt disallows crawling *url*."""
+        if self.debug:
+            log.info("robots.txt disallows -> %s", url)

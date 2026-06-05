@@ -1,25 +1,73 @@
-#
-#   This file is part of crawley.
-#
-#    crawley is free software; you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation; either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    crawley is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with crawley; if not, write to the Free Software
-#    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+"""
+crawley
+~~~~~~~
+
+A pythonic crawling / scraping framework for Python 3.
+
+The crawling core is built on top of :mod:`asyncio` and `httpx`, providing
+high concurrency without the legacy ``eventlet`` dependency.
+"""
+
+import logging
+
+# Library best practice: attach a no-op handler so importing crawley never
+# emits "No handlers could be found" warnings. Applications configure logging.
+logging.getLogger("crawley").addHandler(logging.NullHandler())
+
+__version__ = "0.3.0"
+
+__all__ = [
+    "BaseCrawler",
+    "FastCrawler",
+    "OffLineCrawler",
+    "BaseScraper",
+    "SmartScraper",
+    "XPathExtractor",
+    "PyQueryExtractor",
+    "CSSExtractor",
+    "RawExtractor",
+    "Response",
+    "fetch",
+    "afetch",
+    "afetch_all",
+    "scrape",
+    "parse",
+    "Document",
+    "Element",
+    "__version__",
+]
 
 
-import manager
-import crawlers
-import persistance
-import scrapers
-from toolbox import *
+def __getattr__(name):
+    """Lazily expose the public API.
 
-__version__ = "0.2.4"
+    Importing :mod:`crawley` should be cheap and must not drag in optional
+    dependencies (databases, GUI, ...). The public objects are resolved on
+    first access instead.
+    """
+    if name in ("BaseCrawler", "FastCrawler", "OffLineCrawler"):
+        from crawley import crawlers
+
+        return getattr(crawlers, name)
+    if name in ("BaseScraper", "SmartScraper"):
+        from crawley import scrapers
+
+        return getattr(scrapers, name)
+    if name in (
+        "XPathExtractor",
+        "PyQueryExtractor",
+        "CSSExtractor",
+        "RawExtractor",
+    ):
+        from crawley import extractors
+
+        return getattr(extractors, name)
+    if name == "Response":
+        from crawley.http.response import Response
+
+        return Response
+    if name in ("fetch", "afetch", "afetch_all", "scrape", "parse", "Document", "Element"):
+        from crawley import scraping
+
+        return getattr(scraping, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

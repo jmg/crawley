@@ -1,53 +1,33 @@
+"""CSV document storage."""
+
 import csv
 
-from meta import DocumentMeta, BaseDocumentSession
+from crawley.persistance.documents.meta import BaseDocument, BaseDocumentSession
 
 csv_objects = []
 
-class CSVDocument(object):
-    """
-        CSV Document base class
-    """
 
-    __metaclass__ = DocumentMeta
+class CSVDocument(BaseDocument):
+    """A row to be dumped as CSV."""
 
     def __init__(self, **kwargs):
-
         csv_objects.append(kwargs)
 
 
 class Session(BaseDocumentSession):
-    """
-        A class featuring a database session
-    """
-
-    file_name = None
+    """Dump the scraped rows to a CSV file."""
 
     def commit(self):
-        """
-            Dumps the scraped data to the filesystem
-        """
+        if not csv_objects:
+            open(self.file_name, "w", encoding="utf-8").close()
+            return
 
-        with open(self.file_name, 'wb') as f:
-
-            writer = csv.writer(f)
-
-            if csv_objects:
-
-                titles = self._encode(csv_objects[0].keys())
-                writer.writerow(titles)
-
-                for csv_object in csv_objects:
-
-                    values = self._encode(csv_object.values())
-                    writer.writerow(values)
-
-    def _encode(self, list_values):
-
-        return [v.encode('utf-8') for v in list_values if v is not None]
-
-    def close(self):
-        pass
+        fieldnames = list(csv_objects[0].keys())
+        with open(self.file_name, "w", encoding="utf-8", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in csv_objects:
+                writer.writerow(row)
 
 
 csv_session = Session()

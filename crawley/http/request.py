@@ -1,82 +1,54 @@
-import time
-import random
+"""Async HTTP request objects built on top of ``httpx``."""
 
-from eventlet.green import urllib2
-from cookies import CookieHandler
+import asyncio
+import random
+import urllib.parse
 
 from crawley import config
 
 
-class Request(object):
+class Request:
+    """A single HTTP request.
+
+    The actual network I/O is delegated to a shared :class:`httpx.AsyncClient`
+    passed to :meth:`get_response`.
     """
-        Custom request object
-    """
 
-    def __init__(self, url=None, cookie_handler=None, headers=None, opener=None):
+    SAFE_CHARS = "%/:=&?~#+!$,;'@()*[]|"
 
-        if cookie_handler is None:
-           cookie_handler = CookieHandler()
-
+    def __init__(self, url=None, headers=None):
         self.url = url
-        
-        self.headers = headers or {}
-        self.headers["User-Agent"] = self.headers.get("User-Agent", config.MOZILLA_USER_AGENT)
-        self.headers["Accept-Charset"] = self.headers.get("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3")
-        self.headers["Accept-Language"] = self.headers.get("Accept-Language", "es-419,es;q=0.8")
-
-        self.cookie_handler = cookie_handler
-        self.cookie_handler.load_cookies()
-        self.opener = opener
-
-    def get_response(self, data=None, delay_factor=1):
-        """
-            Returns the response object from a request.
-            Cookies are supported via a CookieHandler object
-        """
-
-        """The proxy settings is used as the following dictionary"""
-
-        self._normalize_url()
-
-        request = urllib2.Request(self.url, data, self.headers)
-
-        args = {}
-        if config.REQUEST_TIMEOUT is not None:
-            args["timeout"] = config.REQUEST_TIMEOUT
-
-        response = self.opener.open(request, **args)
-        self.cookie_handler.save_cookies()
-
-        return response
+        self.headers = dict(headers or {})
+        self.headers.setdefault("User-Agent", config.MOZILLA_USER_AGENT)
+        self.headers.setdefault(
+            "Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3"
+        )
+        self.headers.setdefault("Accept-Language", "es-419,es;q=0.8,en;q=0.6")
 
     def _normalize_url(self):
-        """
-            Normalize the request url
-        """
+        """Quote unsafe characters in the request url."""
+        self.url = urllib.parse.quote(self.url, safe=self.SAFE_CHARS)
 
-        self.url = urllib2.quote(self.url.encode('utf-8'), safe="%/:=&?~#+!$,;'@()*[]")
+    async def get_response(self, client, data=None, delay_factor=1):
+        """Perform the request and return the ``httpx`` response.
+
+        A POST is issued when *data* is provided, otherwise a GET.
+        """
+        self._normalize_url()
+
+        if data is not None:
+            return await client.post(self.url, data=data, headers=self.headers)
+        return await client.get(self.url, headers=self.headers)
 
 
 class DelayedRequest(Request):
-    """
-        A delayed custom Request
-    """
+    """A request that waits a (randomized) delay before hitting the network."""
 
     def __init__(self, delay=0, deviation=0, **kwargs):
+        randomize = random.uniform(-deviation, deviation)
+        self.delay = max(0.0, delay + randomize)
+        super().__init__(**kwargs)
 
-        FACTOR = 1000.0
-
-        deviation = deviation * FACTOR
-        randomize = random.randint(-deviation, deviation) / FACTOR
-
-        self.delay = delay + randomize
-        Request.__init__(self, **kwargs)
-
-    def get_response(self, data=None, delay_factor=1):
-        """
-            Waits [delay] miliseconds and then make the request
-        """
-
-        delay = self.delay * delay_factor
-        time.sleep(delay)
-        return Request.get_response(self, data)
+    async def get_response(self, client, data=None, delay_factor=1):
+        await asyncio.sleep(self.delay * delay_factor)
+        return await super().get_response(client, data, delay_factor)

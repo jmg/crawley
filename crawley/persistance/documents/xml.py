@@ -1,42 +1,35 @@
+"""XML document storage."""
+
 from lxml import etree
-from meta import DocumentMeta, BaseDocumentSession
 
-root = etree.Element('root')
+from crawley.persistance.documents.meta import BaseDocument, BaseDocumentSession
 
-class XMLDocument(object):
-    """
-        XML Document base class
-    """
+root = etree.Element("root")
 
-    __metaclass__ = DocumentMeta
+
+class XMLDocument(BaseDocument):
+    """A row to be dumped as XML."""
 
     def __init__(self, **kwargs):
-
-        row = etree.Element(self.__class__.__name__)
-        root.append(row)
-
-        for key, value in kwargs.iteritems():
-
-            element = etree.Element(key)
-            element.text = value
-            row.append(element)
+        row = etree.SubElement(root, self.__class__.__name__)
+        for key, value in kwargs.items():
+            element = etree.SubElement(row, key)
+            element.text = "" if value is None else str(value)
 
 
 class Session(BaseDocumentSession):
-    """
-        A class featuring a database session
-    """
+    """Dump the scraped rows to an XML file."""
 
     def commit(self):
-        """
-            Dumps the scraped data to the filesystem
-        """
-
-        with open(self.file_name, "w") as f:
-            f.writelines(etree.tostring(root, pretty_print=True, xml_declaration=True, encoding='UTF-8'))
-
-    def close(self):
-        pass
+        with open(self.file_name, "wb") as f:
+            f.write(
+                etree.tostring(
+                    root,
+                    pretty_print=True,
+                    xml_declaration=True,
+                    encoding="UTF-8",
+                )
+            )
 
 
 xml_session = Session()

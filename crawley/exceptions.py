@@ -1,43 +1,25 @@
-"""
-    Crawley exceptions
-"""
-
-class AuthenticationError(Exception):
-    """
-        Raised when a login error occurs
-    """
-
-    def __init__(self, *args, **kwargs):
-
-        Exception.__init__(self, *args, **kwargs)
+"""Crawley exceptions."""
 
 
-class TemplateSyntaxError(Exception):
-    """
-        DSL Template sintax error
-    """
+class CrawleyError(Exception):
+    """Base class for every crawley specific error."""
+
+
+class AuthenticationError(CrawleyError):
+    """Raised when a login attempt fails."""
+
+
+class TemplateSyntaxError(CrawleyError):
+    """Raised when the DSL template has a syntax error."""
 
     def __init__(self, line=0, *args, **kwargs):
-
         self.line = line
-        Exception.__init__(self, *args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
-class ScraperCantParseError(Exception):
-    """
-        Raised when a scraper can't parse an html page
-    """
-
-    def __init__(self, *args, **kwargs):
-
-        Exception.__init__(self, *args, **kwargs)
+class ScraperCantParseError(CrawleyError):
+    """Raised when a scraper can't parse an html page."""
 
 
-class InvalidProjectError(Exception):
-    """
-        Raised when the user opens a invalid directory with the browser
-    """
-
-    def __init__(self, *args, **kwargs):
-
-        Exception.__init__(self, *args, **kwargs)
+class InvalidProjectError(CrawleyError):
+    """Raised when the user opens an invalid project directory."""

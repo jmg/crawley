@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'base.ui'
-#
-# Created: Mon Oct 10 14:34:16 2011
-#      by: PyQt4 UI code generator 4.7.4
-#
-# WARNING! All changes made in this file will be lost!
+"""
+    Placeholder for the main window form.
 
+    Originally generated from the Qt Designer ``base.ui`` file. The actual
+    UI definition now lives in :mod:`crawley.web_browser.GUI.base`.
+"""

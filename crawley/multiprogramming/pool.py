@@ -1,54 +1,50 @@
-from Queue import Queue
-from threads import WorkerThread, KThread
+"""Concurrency primitives built on top of :mod:`asyncio`.
 
-class ThreadPool(object):
-    """
-        Pool of threads consuming tasks from a queue
-    """
+The legacy framework relied on ``eventlet`` green pools. The modern core is
+fully asynchronous, so concurrency is expressed with asyncio tasks bounded by
+a semaphore.
+"""
 
-    def __init__(self, num_threads):
-
-        if num_threads < 1:
-            raise ValueError("ThreadPool must have 1 thread or greenlet at least")
-
-        elif num_threads == 1:
-            self.__class__ = SingleThreadedPool
-            return
-
-        self.tasks = Queue(num_threads)
-
-        for x in range(num_threads):
-            WorkerThread(self.tasks)
-
-    def spawn_n(self, func, *args, **kargs):
-        """
-            Add a task to the queue and asign a thread to do the work
-        """
-
-        self.tasks.put((func, args, kargs))
-
-    def waitall(self):
-        """
-            Wait for completion of all the tasks in the queue
-        """
-
-        self.tasks.join()
+import asyncio
 
 
-class SingleThreadedPool(object):
-    """
-        One thread "pool" abstraction
+class AsyncPool:
+    """A bounded pool of asyncio tasks.
+
+    ``spawn`` schedules a coroutine to run as soon as a slot is available
+    (limited by *size*). Coroutines may themselves call ``spawn`` to enqueue
+    more work; ``join`` waits until every scheduled task -- including the ones
+    spawned recursively -- has finished.
     """
 
-    def spawn_n(self, func, *args, **kargs):
-        """
-            Just executes the function in the same thread
-        """
+    def __init__(self, size):
+        if size < 1:
+            raise ValueError("AsyncPool must allow at least 1 concurrent task")
+        self.size = size
+        self._semaphore = asyncio.Semaphore(size)
+        self._tasks = set()
 
-        func(*args, **kargs)
+    def spawn(self, coro):
+        """Schedule *coro* for execution and return the created task."""
+        task = asyncio.ensure_future(self._run(coro))
+        self._tasks.add(task)
+        task.add_done_callback(self._tasks.discard)
+        return task
 
-    def waitall(self):
-        """
-            SingleThreaded pool don't need to wait for anything
-        """
-        pass
+    # Backwards compatible alias with the old eventlet based API.
+    def spawn_n(self, func, *args, **kwargs):
+        """Schedule ``func(*args, **kwargs)`` where *func* returns a coroutine."""
+        return self.spawn(func(*args, **kwargs))
+
+    async def _run(self, coro):
+        async with self._semaphore:
+            return await coro
+
+    async def join(self):
+        """Wait until all scheduled tasks (and their children) complete."""
+        while self._tasks:
+            await asyncio.gather(*list(self._tasks), return_exceptions=True)
+
+    # Backwards compatible alias.
+    async def waitall(self):
+        await self.join()

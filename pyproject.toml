@@ -1,0 +1,113 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "crawley"
+version = "0.3.0"
+description = "A pythonic crawling / scraping framework for Python 3, built on asyncio and httpx."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "GPL-3.0-or-later" }
+authors = [{ name = "Juan Manuel Garcia", email = "jmg.utn@gmail.com" }]
+keywords = ["scraping", "crawling", "framework", "asyncio", "httpx"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: AsyncIO",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP :: Indexing/Search",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+dependencies = [
+    "httpx>=0.26",
+    "lxml>=4.9",
+    "pyquery>=2.0",
+    "cssselect>=1.2",
+]
+
+[project.optional-dependencies]
+sql = ["sqlalchemy>=2.0"]
+mongo = ["pymongo>=4.0"]
+shell = ["ipython>=8.0"]
+gui = ["PySide6>=6.5"]
+http2 = ["h2>=4.0"]
+dev = [
+    "pytest>=7.4",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=4.1",
+    "sqlalchemy>=2.0",
+    "ruff>=0.1",
+    "mypy>=1.8",
+]
+docs = [
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.24",
+]
+
+[project.scripts]
+crawley = "crawley.manager:manage"
+
+[project.urls]
+Homepage = "https://github.com/jmg/crawley"
+Repository = "https://github.com/jmg/crawley"
+
+[tool.setuptools.packages.find]
+include = ["crawley*"]
+exclude = ["tests*", "examples*"]
+
+[tool.setuptools.package-data]
+crawley = ["conf/templates/*.tm", "py.typed"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.mypy]
+python_version = "3.9"
+ignore_missing_imports = true
+no_implicit_optional = true
+# Only report on the typed modules below; still follow imports for inference.
+follow_imports = "silent"
+# The typed, public-facing modules. The rest of the package is gradually typed.
+files = [
+    "crawley/scraping.py",
+    "crawley/extractors.py",
+    "crawley/toolbox.py",
+    "crawley/http/response.py",
+    "crawley/http/retry.py",
+    "crawley/http/throttle.py",
+    "crawley/http/robots.py",
+]
+
+[tool.coverage.run]
+source = ["crawley"]
+# The PySide6 GUI can't run in a headless CI, so it's excluded from coverage.
+omit = ["crawley/web_browser/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+# Legacy "crawley startproject" sample projects kept for reference only.
+extend-exclude = [
+    "examples/ebay",
+    "examples/pypi_crawler*",
+    "examples/pypi_packages*",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]

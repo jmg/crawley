@@ -1,34 +1,31 @@
-"""
-    All Crawley's commands must be here
-"""
+"""All crawley management commands live here."""
 
-from crawley.utils import exit_with_error
+from crawley.manager.commands.browser import BrowserCommand
+from crawley.manager.commands.migratedb import MigrateDbCommand
+from crawley.manager.commands.run import RunCommand
+from crawley.manager.commands.shell import ShellCommand
+from crawley.manager.commands.startproject import StartProjectCommand
+from crawley.manager.commands.syncdb import SyncDbCommand
+from crawley.utils.collections import CustomDict
 
-from run import RunCommand
-from shell import ShellCommand
-from startproject import StartProjectCommand
-from syncdb import SyncDbCommand
-from migratedb import MigrateDbCommand
-from browser import BrowserCommand
+commands = CustomDict(error="[%s] is not a valid subcommand")
+commands.update(
+    {
+        RunCommand.name: RunCommand,
+        ShellCommand.name: ShellCommand,
+        StartProjectCommand.name: StartProjectCommand,
+        SyncDbCommand.name: SyncDbCommand,
+        BrowserCommand.name: BrowserCommand,
+        MigrateDbCommand.name: MigrateDbCommand,
+    }
+)
 
-class CommandsDict(dict):
-
-    def __getitem__(self, key):
-
-        if key in self:
-            return dict.__getitem__(self, key)
-        else:
-            exit_with_error("[%s] Subcommand not valid" % (key))
-
-
-commands = CommandsDict()
-
-d = { RunCommand.name : RunCommand,
-      ShellCommand.name : ShellCommand,
-      StartProjectCommand.name : StartProjectCommand,
-      SyncDbCommand.name : SyncDbCommand,
-      BrowserCommand.name : BrowserCommand,
-      MigrateDbCommand.name : MigrateDbCommand }
-
-commands.update(d)
-
+__all__ = [
+    "commands",
+    "RunCommand",
+    "ShellCommand",
+    "StartProjectCommand",
+    "SyncDbCommand",
+    "BrowserCommand",
+    "MigrateDbCommand",
+]

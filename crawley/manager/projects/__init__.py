@@ -1,10 +1,17 @@
-from code import CodeProject
-from template import TemplateProject
-from database import DataBaseProject
+"""Project types registry."""
 
-from crawley.utils import CustomDict
+from crawley.manager.projects.code import CodeProject
+from crawley.manager.projects.database import DataBaseProject
+from crawley.manager.projects.template import TemplateProject
+from crawley.utils.collections import CustomDict
 
-project_types = CustomDict(error="[%s] Not valid project type")
-project_types.update({  TemplateProject.name : TemplateProject,
-                        CodeProject.name : CodeProject,
-                        DataBaseProject.name : DataBaseProject, })
+project_types = CustomDict(error="[%s] is not a valid project type")
+project_types.update(
+    {
+        CodeProject.name: CodeProject,
+        TemplateProject.name: TemplateProject,
+        DataBaseProject.name: DataBaseProject,
+    }
+)
+
+__all__ = ["project_types", "CodeProject", "TemplateProject", "DataBaseProject"]

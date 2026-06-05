@@ -1,30 +1,26 @@
-def patch_smtp():
+"""
+    SMTP mail sender.
 
-    #FIXME: This code have some bug caused by the nonblocking I/O.
-    # At this moment this patcher isn't used by the crawler. It just
-    # import the regular smtplib module
-    from eventlet import patcher
-    from eventlet.green import socket
-    from eventlet.green import ssl
-    from eventlet.green import time
+    A thin wrapper around the standard library :mod:`smtplib` used by
+    crawley to send notification emails. Messages are built with
+    :class:`email.message.EmailMessage` and delivered through
+    :meth:`smtplib.SMTP.send_message`.
+"""
 
-    smtplib = patcher.inject('smtplib',
-        globals(),
-        ('socket', socket),
-        ('ssl', ssl),
-        ('time', time))
-
-    del patcher
-
-#The Code begins here
 import smtplib
+from email.message import EmailMessage
+
 
 class MailSender(object):
     """
-        Smtp server wrapper
+        Smtp server wrapper.
     """
 
     def __init__(self, host, port=25, user=None, password=None, enable_ssl=True):
+        """
+            Opens a connection to the SMTP server and optionally starts a
+            TLS/SSL session.
+        """
 
         self.host = host
         self.port = port
@@ -38,7 +34,8 @@ class MailSender(object):
 
     def start_ssl(self):
         """
-            Starts the ssl session over the stmp protocol
+            Starts the ssl session over the smtp protocol and authenticates
+            the configured user.
         """
 
         self.server.ehlo()
@@ -48,21 +45,28 @@ class MailSender(object):
 
     def send(self, to_addresses, body, from_address=None, subject='Crawley Mailer'):
         """
-            Sends an email to a list of to_addresses
+            Sends an email to a list of ``to_addresses``.
         """
 
         if from_address is None and self.user is not None:
             from_address = self.user
-        else:
+        elif from_address is None:
             from_address = self.host
 
-        msg = "\r\n".join(["From: %s" % from_address, "To: %s" % ",".join(to_addresses), "Subject: %s" % subject, "", body])
+        msg = EmailMessage()
+        msg['From'] = from_address
+        msg['To'] = ", ".join(to_addresses)
+        msg['Subject'] = subject
+        msg.set_content(body)
 
-        self.server.sendmail(from_address, to_addresses, msg)
+        self.server.send_message(msg)
 
     def __del__(self):
         """
-            Ends the server
+            Ends the server, ignoring any error raised while closing it.
         """
 
-        self.server.quit()
+        try:
+            self.server.quit()
+        except Exception:
+            pass

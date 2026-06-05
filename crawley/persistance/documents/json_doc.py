@@ -1,38 +1,25 @@
-try:
-    import simplejson
-except ImportError:
-    import json as simplejson
+"""JSON document storage."""
 
-from meta import DocumentMeta, BaseDocumentSession
+import json
+
+from crawley.persistance.documents.meta import BaseDocument, BaseDocumentSession
 
 json_objects = []
 
-class JSONDocument(object):
-    """
-        JSON Document base class
-    """
 
-    __metaclass__ = DocumentMeta
+class JSONDocument(BaseDocument):
+    """A row to be dumped as JSON."""
 
     def __init__(self, **kwargs):
-
         json_objects.append(kwargs)
 
 
 class Session(BaseDocumentSession):
-    """
-        A class featuring a database session
-    """
+    """Dump the scraped rows to a JSON file."""
 
     def commit(self):
-        """
-            Dumps the scraped data to the filesystem
-        """
-        with open(self.file_name, 'w') as f:
-            simplejson.dump(json_objects, f)
-
-    def close(self):
-        pass
+        with open(self.file_name, "w", encoding="utf-8") as f:
+            json.dump(json_objects, f, ensure_ascii=False, indent=2)
 
 
 json_session = Session()

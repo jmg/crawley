@@ -1,9 +1,16 @@
-from base import BaseCrawler
+"""A crawler without per-request delays."""
+
+from crawley.crawlers.base import BaseCrawler
 from crawley.http.managers import FastRequestManager
 
+
 class FastCrawler(BaseCrawler):
+    """Like :class:`BaseCrawler` but issues requests without delays."""
 
-    def __init__(self, *args, **kwargs):
-
-        BaseCrawler.__init__(self, *args, **kwargs)
-        self.request_manager = FastRequestManager()
+    def _make_request_manager(self):
+        return FastRequestManager(
+            settings=self.settings,
+            headers=self.headers,
+            retry_policy=self.retry_policy,
+            rate_limiter=self.rate_limiter,
+        )

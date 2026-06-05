@@ -1,68 +1,84 @@
+"""
+    Graphical user interface widgets for the crawley browser.
+
+    Glues together the Qt Designer generated forms (``base``, ``config`` and
+    ``settings``) into ready to use PySide6 widgets.
+"""
+
 import os.path
-from PyQt4 import QtGui, QtWebKit
-from PyQt4.uic import loadUi
-from base import Ui_MainWindow
-from config import Ui_FrmConfig
-from settings import Ui_Settings
+
+from PySide6 import QtGui, QtWebEngineWidgets, QtWidgets
+
+from crawley.web_browser.GUI.base import Ui_MainWindow
+from crawley.web_browser.GUI.config import Ui_FrmConfig
+from crawley.web_browser.GUI.settings import Ui_Settings
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 
-class BrowserGUI(QtGui.QMainWindow):
+
+class BrowserGUI(QtWidgets.QMainWindow):
     """
-        The Graphical user interface of the browser
+        The Graphical user interface of the browser.
     """
 
     def __init__(self):
 
-        QtGui.QMainWindow.__init__(self)
+        QtWidgets.QMainWindow.__init__(self)
 
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
-        self.ui.bt_back.setIcon(QtGui.QIcon().fromTheme("go-previous"))
-        self.ui.bt_ahead.setIcon(QtGui.QIcon().fromTheme("go-next"))
-        self.ui.bt_reload.setIcon(QtGui.QIcon().fromTheme("view-refresh"))
+        self.ui.bt_back.setIcon(QtGui.QIcon.fromTheme("go-previous"))
+        self.ui.bt_ahead.setIcon(QtGui.QIcon.fromTheme("go-next"))
+        self.ui.bt_reload.setIcon(QtGui.QIcon.fromTheme("view-refresh"))
 
-        self.setWindowIcon(QtGui.QIcon("GUI/logo.png"))
+        self.setWindowIcon(QtGui.QIcon(os.path.join(PATH, "logo.png")))
 
-        self.ui.tab_pages.setCornerWidget(QtGui.QToolButton(self, text="New Tab", icon=QtGui.QIcon.fromTheme("document-new"), clicked=self.add_tab, shortcut="Ctrl+t"))
+        self.ui.tab_pages.setCornerWidget(
+            QtWidgets.QToolButton(
+                self,
+                text="New Tab",
+                icon=QtGui.QIcon.fromTheme("document-new"),
+                clicked=self.add_tab,
+                shortcut="Ctrl+t",
+            )
+        )
 
 
-class BrowserTabGUI(QtGui.QTabWidget):
+class BrowserTabGUI(QtWidgets.QTabWidget):
     """
-        The Graphical user interface of the browser tabs
+        The Graphical user interface of the browser tabs.
     """
 
     def __init__(self, parent):
 
-        QtGui.QTabWidget.__init__(self)
+        QtWidgets.QTabWidget.__init__(self)
 
-        self.pg_load = QtGui.QProgressBar(maximumWidth=200, visible=False)
-        self.html = QtWebKit.QWebView(parent.tab_pages.currentWidget())
+        self.pg_load = QtWidgets.QProgressBar(maximumWidth=200, visible=False)
+        self.html = QtWebEngineWidgets.QWebEngineView(parent.tab_pages.currentWidget())
         self.parent = parent
 
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.html)
         layout.addWidget(self.pg_load)
         self.setLayout(layout)
 
 
-class FrmConfigGUI(QtGui.QDialog):
+class FrmConfigGUI(QtWidgets.QDialog):
 
     def __init__(self, parent):
 
-        QtGui.QDialog.__init__(self, parent)
+        QtWidgets.QDialog.__init__(self, parent)
 
         self.config_ui = Ui_FrmConfig()
         self.config_ui.setupUi(self)
 
 
-class FrmSettingsGUI(QtGui.QDialog):
+class FrmSettingsGUI(QtWidgets.QDialog):
 
     def __init__(self, parent):
 
-        QtGui.QDialog.__init__(self, parent)
+        QtWidgets.QDialog.__init__(self, parent)
 
         self.settings_ui = Ui_Settings()
         self.settings_ui.setupUi(self)
-

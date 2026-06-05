@@ -1,15 +1,21 @@
+"""
+    GUI project helpers.
+
+    Wraps the crawley command line project operations (start, validate, load,
+    template generation and run) so they can be driven from the browser GUI.
+"""
+
 import os
 
-from crawley.extractors import PyQueryExtractor
-
-from crawley.manager.commands.startproject import StartProjectCommand
-from crawley.manager.commands.run import RunCommand
-from crawley.manager.projects.template import TemplateProject
 from crawley.exceptions import InvalidProjectError
-from crawley.manager.utils import import_user_module
+from crawley.extractors import PyQueryExtractor
+from crawley.manager.commands.run import RunCommand
+from crawley.manager.commands.startproject import StartProjectCommand
+from crawley.manager.projects.template import TemplateProject
 from crawley.simple_parser.config_parser import ConfigApp
 from crawley.simple_parser.parsers import DSLAnalizer
-from config import SELECTED_CLASS
+from crawley.utils.projects import import_user_module
+from crawley.web_browser.config import SELECTED_CLASS
 
 
 class GUIProject(object):
@@ -52,9 +58,9 @@ class GUIProject(object):
             with open(os.path.join(self.dir_name, self.project_name, "__init__.py"), "r") as f:
                 content = f.read()
 
-            if not 'crawley_version' in content:
+            if 'crawley_version' not in content:
                 raise IOError
-            if not 'template' in content:
+            if 'template' not in content:
                 raise InvalidProjectError("The selected directory isn't a correct crawley project type")
 
         except IOError:
@@ -117,7 +123,7 @@ class GUIProject(object):
         """
 
         project_dir = os.path.join(self.dir_name, self.project_name)
-        
+
         os.chdir(project_dir)
         os.sys.path.insert(0, project_dir)
 

@@ -1,55 +1,30 @@
-import os
-import elixir
-from multiprocessing import Process
+"""The "code" project type."""
 
-from crawley.persistance import Entity, UrlEntity, setup
-from crawley.persistance.relational.connectors import connectors
-
-from crawley.persistance import UrlEntity
-
-from crawley.utils import import_user_module, search_class, generate_template
 from crawley.crawlers import user_crawlers
-
-from base import BaseProject
+from crawley.manager.projects.base import BaseProject
+from crawley.utils import generate_template, import_user_module
 
 
 class CodeProject(BaseProject):
-    """
-        This class represents a code project.
-        It can be started with:
+    """A project whose crawlers/models are written by hand in Python.
 
-            ~$ crawley startproject -t code [name]
+    Created with::
+
+        ~$ crawley startproject -t code [name]
     """
 
     name = "code"
 
     def set_up(self, project_name, **kwargs):
-        """
-            Setups a code project.
-            Generates the crawlers and models files based on a template.
-        """
-
-        BaseProject.set_up(self, project_name, **kwargs)
-
+        super().set_up(project_name, **kwargs)
         generate_template("models", project_name, self.project_dir)
         generate_template("crawlers", project_name, self.project_dir)
 
     def syncdb(self, syncb_command):
-        """
-            Builds the database and find the documents storages.
-            Foreach storage it adds a session to commit the results.
-        """
-
-        BaseProject.syncdb(self, syncb_command)
-
+        super().syncdb(syncb_command)
         if self.connector is not None:
-            self._setup_entities(elixir.entities, syncb_command.settings)
+            self._setup_entities(syncb_command.settings)
 
     def run(self, run_command):
-        """
-            Run the crawler of a code project
-        """
-
         import_user_module("crawlers")
-        BaseProject.run(self, run_command, user_crawlers)
-
+        super().run(run_command, user_crawlers)

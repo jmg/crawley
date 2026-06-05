@@ -2,7 +2,7 @@
     ****************** SimpleWebBrowser v1.0 *********************
 
     A Simple Fully Functional Web Browser implemented over Qt
-    and QtWebKit.
+    and QtWebEngine.
 
     This browser have the basic functions of a clasic web browser
     and it's thought to be easily extended and maintainable.
@@ -28,13 +28,15 @@
 """
 
 import sys
-from PyQt4 import QtGui
-from browser import Browser
+
+from PySide6 import QtWidgets
+
+from crawley.web_browser.browser import Browser
 
 if __name__ == "__main__":
     """ Run the browser """
 
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     main = Browser()
     main.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
