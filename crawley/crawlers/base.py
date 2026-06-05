@@ -110,11 +110,21 @@ class BaseCrawler(metaclass=CrawlerMeta):
     playwright_options = {}
     """Extra options for the Playwright manager (browser_type, headless, ...)."""
 
+    http_cache = False
+    """Cache responses on disk (development helper)."""
+
+    http_cache_dir = ".crawley_cache"
+    """Directory used by the on-disk HTTP cache."""
+
     def __init__(self, sessions=None, settings=None):
         self.sessions = sessions if sessions is not None else []
         self.debug = getattr(settings, "SHOW_DEBUG_INFO", True)
         self.settings = settings
         self._seen = set()
+
+        from crawley.stats import StatsCollector
+
+        self.stats = StatsCollector()
 
         extractor_class = self.extractor or XPathExtractor
         self.extractor = extractor_class()
@@ -142,7 +152,15 @@ class BaseCrawler(metaclass=CrawlerMeta):
 
         self._initialize_scrapers()
 
+    def _make_cache(self):
+        if not self.http_cache:
+            return None
+        from crawley.http.cache import HttpCache
+
+        return HttpCache(self.http_cache_dir, enabled=True)
+
     def _make_request_manager(self):
+        cache = self._make_cache()
         if self.render_js:
             from crawley.http.playwright import PlaywrightRequestManager
 
@@ -153,6 +171,7 @@ class BaseCrawler(metaclass=CrawlerMeta):
                 deviation=self.requests_deviation,
                 retry_policy=self.retry_policy,
                 rate_limiter=self.rate_limiter,
+                cache=cache,
                 **self.playwright_options,
             )
         return RequestManager(
@@ -162,6 +181,7 @@ class BaseCrawler(metaclass=CrawlerMeta):
             deviation=self.requests_deviation,
             retry_policy=self.retry_policy,
             rate_limiter=self.rate_limiter,
+            cache=cache,
         )
 
     def _initialize_scrapers(self):
@@ -228,17 +248,23 @@ class BaseCrawler(metaclass=CrawlerMeta):
             self._seen.add(url)
 
         if self.respect_robots and not await self._robots_allowed(url):
+            self.stats.inc("robots_blocked")
             self.on_robots_blocked(url)
             return
 
         if self.debug:
             log.info("crawling -> %s", url)
 
+        self.stats.inc("requests")
         try:
             response = await self._get_response(url)
         except Exception as ex:  # noqa: BLE001 - delegated to error handler
+            self.stats.inc("request_errors")
             self.on_request_error(url, ex)
             return
+
+        self.stats.inc("responses")
+        self.stats.inc("status/%s" % response.status_code)
 
         urls = self._manage_scrapers(response)
 
@@ -276,6 +302,7 @@ class BaseCrawler(metaclass=CrawlerMeta):
         """Run the crawler (coroutine)."""
         self.pool = AsyncPool(self.max_concurrency_level)
         self._seen = set()
+        self.stats.open()
 
         self.on_start()
         await self._login()
@@ -288,6 +315,9 @@ class BaseCrawler(metaclass=CrawlerMeta):
         finally:
             await self.request_manager.aclose()
 
+        self.stats.close()
+        if self.debug:
+            log.info("stats: %s", self.stats.get_stats())
         self.on_finish()
 
     def run(self):

@@ -34,6 +34,7 @@ class RequestManager:
         deviation=None,
         retry_policy=None,
         rate_limiter=None,
+        cache=None,
     ):
         self.host_counter = HostCounterDict()
         self.cookie_handler = CookieHandler()
@@ -48,6 +49,7 @@ class RequestManager:
         self.rate_limiter = (
             rate_limiter if rate_limiter is not None else HostRateLimiter()
         )
+        self.cache = cache
         self._client = None
 
     # -- client lifecycle ------------------------------------------------
@@ -98,6 +100,13 @@ class RequestManager:
 
     async def make_request(self, url, data=None, extractor=None, headers=None):
         """Issue a request and wrap the result in a :class:`Response`."""
+        method = "POST" if data is not None else "GET"
+
+        if self.cache is not None:
+            cached = self.cache.get(method, url, data)
+            if cached is not None:
+                return self._response_from_cache(cached, extractor)
+
         request = self._get_request(url, headers)
         host = urllib.parse.urlparse(url).netloc
 
@@ -112,6 +121,13 @@ class RequestManager:
                 semaphore.release()
 
         raw_html = response.text
+        final_url = str(response.url)
+
+        if self.cache is not None:
+            self.cache.store(
+                method, url, data, response.status_code, final_url,
+                dict(response.headers), raw_html,
+            )
 
         extracted_html = None
         if extractor is not None:
@@ -120,8 +136,21 @@ class RequestManager:
         return Response(
             raw_html=raw_html,
             extracted_html=extracted_html,
-            url=str(response.url),
+            url=final_url,
             response=response,
+        )
+
+    @staticmethod
+    def _response_from_cache(cached, extractor):
+        from crawley.http.cache import _CachedResponse
+
+        raw_html = cached["body"]
+        extracted = extractor.get_object(raw_html) if extractor is not None else None
+        return Response(
+            raw_html=raw_html,
+            extracted_html=extracted,
+            url=cached["url"],
+            response=_CachedResponse(cached["status"], cached["headers"]),
         )
 
     async def get_response(self, request, data):

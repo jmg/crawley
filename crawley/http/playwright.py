@@ -97,6 +97,11 @@ class PlaywrightRequestManager(RequestManager):
     async def make_request(
         self, url: str, data: Any = None, extractor: Any = None, headers: Any = None
     ) -> Response:
+        if self.cache is not None:
+            cached = self.cache.get("GET", url, data)
+            if cached is not None:
+                return self._response_from_cache(cached, extractor)
+
         host = urlparse(url).netloc
         semaphore = self.rate_limiter.semaphore(host)
         if semaphore is not None:
@@ -107,6 +112,9 @@ class PlaywrightRequestManager(RequestManager):
         finally:
             if semaphore is not None:
                 semaphore.release()
+
+        if self.cache is not None:
+            self.cache.store("GET", url, data, status, final_url, {}, raw_html)
 
         extracted = extractor.get_object(raw_html) if extractor is not None else None
         return Response(

@@ -27,6 +27,7 @@ Auto-generated from the docstrings.
 
 ::: crawley.spider.Spider
 ::: crawley.spider.Request
+::: crawley.spider.FormRequest
 ::: crawley.spider.Item
 ::: crawley.spiders.CrawlSpider
 ::: crawley.spiders.SitemapSpider
@@ -37,6 +38,11 @@ Auto-generated from the docstrings.
 
 ::: crawley.pipelines.ItemPipeline
 ::: crawley.pipelines.DropItem
+
+## Stats & cache
+
+::: crawley.stats.StatsCollector
+::: crawley.http.cache.HttpCache
 
 ## Extractors
 

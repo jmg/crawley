@@ -95,6 +95,90 @@ class Request:
         return "<Request %s %s>" % (self.method, self.url)
 
 
+class FormRequest(Request):
+    """A :class:`Request` that submits form data (POST by default)."""
+
+    def __init__(
+        self, url: str, formdata: Optional[dict] = None, method: str = "POST",
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(url, method=method, data=dict(formdata or {}), **kwargs)
+
+    @classmethod
+    def from_response(
+        cls,
+        response: Any,
+        formdata: Optional[dict] = None,
+        formid: Optional[str] = None,
+        formname: Optional[str] = None,
+        formxpath: Optional[str] = None,
+        callback: Any = None,
+        **kwargs: Any,
+    ) -> "Request":
+        """Build a request from a ``<form>`` in *response*, pre-filling inputs."""
+        from urllib.parse import urlencode, urljoin
+
+        form = cls._find_form(response, formid, formname, formxpath)
+        if form is None:
+            raise ValueError("No <form> found in the response")
+
+        values = cls._form_values(form)
+        if formdata:
+            values.update(formdata)
+
+        action = form.attr("action") or response.url
+        url = urljoin(response.url, action)
+        method = (form.attr("method") or "GET").upper()
+
+        if method == "GET":
+            if values:
+                sep = "&" if "?" in url else "?"
+                url = url + sep + urlencode(values)
+            return Request(url, method="GET", callback=callback, **kwargs)
+        return cls(url, formdata=values, method="POST", callback=callback, **kwargs)
+
+    @staticmethod
+    def _find_form(response, formid, formname, formxpath):
+        doc = response.doc
+        if formid:
+            return doc.css_first("form#%s" % formid)
+        if formname:
+            return doc.css_first('form[name="%s"]' % formname)
+        if formxpath:
+            forms = [el for el in doc.xpath(formxpath) if hasattr(el, "css")]
+            return forms[0] if forms else None
+        return doc.css_first("form")
+
+    @staticmethod
+    def _form_values(form):
+        values: dict = {}
+        for inp in form.css("input"):
+            name = inp.attr("name")
+            if not name:
+                continue
+            itype = (inp.attr("type") or "text").lower()
+            if itype in ("checkbox", "radio") and inp.attr("checked") is None:
+                continue
+            if itype in ("submit", "button", "image", "reset"):
+                continue
+            values[name] = inp.attr("value") or ""
+        for textarea in form.css("textarea"):
+            name = textarea.attr("name")
+            if name:
+                values[name] = textarea.text or ""
+        for select in form.css("select"):
+            name = select.attr("name")
+            if not name:
+                continue
+            options = select.css("option")
+            chosen = [o for o in options if o.attr("selected") is not None]
+            option = chosen[0] if chosen else (options[0] if options else None)
+            if option is not None:
+                value = option.attr("value")
+                values[name] = value if value is not None else option.text
+        return values
+
+
 class Spider(BaseCrawler):
     """A callback-driven spider.
 
@@ -131,6 +215,7 @@ class Spider(BaseCrawler):
     async def start(self) -> None:
         self.pool = AsyncPool(self.max_concurrency_level)
         self._seen = set()
+        self.stats.open()
 
         self.on_start()
         for pipe in self._pipelines:
@@ -148,6 +233,9 @@ class Spider(BaseCrawler):
 
         for pipe in self._pipelines:
             pipe.close_spider(self)
+        self.stats.close()
+        if self.debug:
+            log.info("stats: %s", self.stats.get_stats())
         self.on_finish()
 
     def _schedule(self, request: Request, depth: int) -> None:
@@ -170,12 +258,14 @@ class Spider(BaseCrawler):
         url = request.url
 
         if self.respect_robots and not await self._robots_allowed(url):
+            self.stats.inc("robots_blocked")
             self.on_robots_blocked(url)
             return
 
         if self.debug:
             log.info("crawling -> %s", url)
 
+        self.stats.inc("requests")
         try:
             response = await self.request_manager.make_request(
                 url,
@@ -184,9 +274,12 @@ class Spider(BaseCrawler):
                 headers=request.headers,
             )
         except Exception as ex:  # noqa: BLE001 - routed to the errback/handler
+            self.stats.inc("request_errors")
             self._handle_error(request, ex)
             return
 
+        self.stats.inc("responses")
+        self.stats.inc("status/%s" % response.status_code)
         response.request = request
         callback = request.callback or self.parse
         await self._drive_callback(callback, response)
@@ -234,7 +327,9 @@ class Spider(BaseCrawler):
                 res = pipe.process_item(item, self)
                 item = await res if inspect.iscoroutine(res) else res
         except DropItem:
+            self.stats.inc("items_dropped")
             return
+        self.stats.inc("items")
         self.on_item(item)
 
     def _handle_error(self, request: Request, ex: Exception) -> None:

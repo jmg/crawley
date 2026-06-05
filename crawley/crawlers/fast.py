@@ -13,4 +13,5 @@ class FastCrawler(BaseCrawler):
             headers=self.headers,
             retry_policy=self.retry_policy,
             rate_limiter=self.rate_limiter,
+            cache=self._make_cache(),
         )

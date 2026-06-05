@@ -54,6 +54,31 @@ def parse_item(self, response, rank=None):
 `dont_filter` (bypass de-duplication) and `errback` (per-request error
 handler). De-duplication uses a fingerprint of *method + url + body*.
 
+### Submitting forms
+
+`FormRequest.from_response` reads a `<form>` from the page, pre-fills its inputs
+and lets you override fields — handy for logins and search forms:
+
+```python
+from crawley.spider import FormRequest
+
+class LoginSpider(Spider):
+    start_urls = ["https://site.example/login"]
+
+    def parse(self, response):
+        yield FormRequest.from_response(
+            response,
+            formdata={"username": "me", "password": "secret"},
+            callback=self.after_login,
+        )
+
+    def after_login(self, response):
+        ...
+```
+
+`from_response` accepts `formid` / `formname` / `formxpath` to pick a specific
+form, and honours the form's `method` (GET forms become a query string).
+
 ## Item pipelines
 
 Pipelines post-process every emitted item in order. Raise `DropItem` to discard

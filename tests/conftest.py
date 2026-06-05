@@ -66,6 +66,15 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             self._handle_flaky()
         elif path == "/always-503":
             self._send_status(503, "<html><body>down</body></html>", retry_after=0)
+        elif path == "/login-form":
+            self._send(
+                '<html><body><form action="/echo" method="post">'
+                '<input name="user" value="bob">'
+                '<input name="token" value="xyz">'
+                '<input name="pass" type="password">'
+                '<input type="submit" value="go">'
+                "</form></body></html>"
+            )
         elif path == "/loop-a":
             self._send('<html><body><a href="/loop-b">b</a></body></html>')
         elif path == "/loop-b":

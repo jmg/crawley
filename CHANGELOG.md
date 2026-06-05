@@ -29,6 +29,10 @@ A full port of the legacy Python 2 framework to a modern Python 3 (3.9+) stack.
   **`SitemapSpider`** (`crawley.spiders`).
 - **JavaScript rendering** via Playwright (`render_js = True`, extra
   `crawley[js]`).
+- **Stats collector** (`crawley.stats.StatsCollector`): per-crawl counters
+  (requests/responses/status/errors/items/elapsed), logged on finish.
+- **On-disk HTTP cache** (`http_cache = True`) for development.
+- **`FormRequest.from_response`** to pre-fill and submit forms.
 - Documentation site (MkDocs Material + mkdocstrings) and a set of runnable,
   test-covered `examples/`.
 - **Type hints** on the public modules and a PEP 561 `py.typed` marker so
