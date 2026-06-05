@@ -51,17 +51,23 @@ class RequestManager:
         )
         self.cache = cache
         self._client = None
+        # Optional pool of proxy URLs, rotated per request.
+        self.proxy_pool = list(getattr(self.settings, "PROXY_POOL", None) or [])
+        self._pool_clients = {}
+        self._proxy_rr = 0
 
     # -- client lifecycle ------------------------------------------------
 
-    def _build_client_kwargs(self):
+    def _build_client_kwargs(self, proxy=None):
         kwargs = {
             "cookies": self.cookie_handler.jar,
             "follow_redirects": True,
             "timeout": config.REQUEST_TIMEOUT,
         }
 
-        if has_valid_attr(self.settings, "PROXY_HOST") and has_valid_attr(
+        if proxy:
+            kwargs["proxy"] = proxy
+        elif has_valid_attr(self.settings, "PROXY_HOST") and has_valid_attr(
             self.settings, "PROXY_PORT"
         ):
             user = getattr(self.settings, "PROXY_USER", "")
@@ -79,10 +85,27 @@ class RequestManager:
             self._client = httpx.AsyncClient(**self._build_client_kwargs())
         return self._client
 
+    def _client_for(self, proxy):
+        if proxy not in self._pool_clients:
+            self._pool_clients[proxy] = httpx.AsyncClient(
+                **self._build_client_kwargs(proxy=proxy))
+        return self._pool_clients[proxy]
+
+    def select_client(self):
+        """Return the client for the next request, rotating the proxy pool."""
+        if not self.proxy_pool:
+            return self.client
+        proxy = self.proxy_pool[self._proxy_rr % len(self.proxy_pool)]
+        self._proxy_rr += 1
+        return self._client_for(proxy)
+
     async def aclose(self):
         if self._client is not None:
             await self._client.aclose()
             self._client = None
+        for client in self._pool_clients.values():
+            await client.aclose()
+        self._pool_clients = {}
         self.cookie_handler.save_cookies()
 
     # -- requests --------------------------------------------------------
@@ -163,7 +186,7 @@ class RequestManager:
 
         while True:
             try:
-                response = await request.get_response(self.client, data)
+                response = await request.get_response(self.select_client(), data)
             except Exception as ex:  # noqa: BLE001 - decided by the retry policy
                 if self.retry_policy.should_retry(attempt, exception=ex):
                     await self.retry_policy.sleep(
