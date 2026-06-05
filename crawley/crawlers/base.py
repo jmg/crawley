@@ -101,10 +101,14 @@ class BaseCrawler(metaclass=CrawlerMeta):
     max_concurrency_per_host = config.MAX_CONCURRENCY_PER_HOST
     """Maximum simultaneous requests per host (``None`` disables the limit)."""
 
+    unique_urls = True
+    """Skip urls that have already been visited during the crawl."""
+
     def __init__(self, sessions=None, settings=None):
         self.sessions = sessions if sessions is not None else []
         self.debug = getattr(settings, "SHOW_DEBUG_INFO", True)
         self.settings = settings
+        self._seen = set()
 
         extractor_class = self.extractor or XPathExtractor
         self.extractor = extractor_class()
@@ -200,6 +204,11 @@ class BaseCrawler(metaclass=CrawlerMeta):
         if not self._validate_url(url):
             return
 
+        if self.unique_urls:
+            if url in self._seen:
+                return
+            self._seen.add(url)
+
         if self.respect_robots and not await self._robots_allowed(url):
             self.on_robots_blocked(url)
             return
@@ -248,6 +257,7 @@ class BaseCrawler(metaclass=CrawlerMeta):
     async def start(self):
         """Run the crawler (coroutine)."""
         self.pool = AsyncPool(self.max_concurrency_level)
+        self._seen = set()
 
         self.on_start()
         await self._login()

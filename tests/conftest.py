@@ -66,6 +66,10 @@ class _Handler(http.server.BaseHTTPRequestHandler):
             self._handle_flaky()
         elif path == "/always-503":
             self._send_status(503, "<html><body>down</body></html>", retry_after=0)
+        elif path == "/loop-a":
+            self._send('<html><body><a href="/loop-b">b</a></body></html>')
+        elif path == "/loop-b":
+            self._send('<html><body><a href="/loop-a">a</a></body></html>')
         elif path == "/" or path == "":
             self._send(INDEX)
         elif path.startswith("/private"):

@@ -8,6 +8,12 @@ The crawling core is built on top of :mod:`asyncio` and `httpx`, providing
 high concurrency without the legacy ``eventlet`` dependency.
 """
 
+import logging
+
+# Library best practice: attach a no-op handler so importing crawley never
+# emits "No handlers could be found" warnings. Applications configure logging.
+logging.getLogger("crawley").addHandler(logging.NullHandler())
+
 __version__ = "0.3.0"
 
 __all__ = [

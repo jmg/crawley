@@ -48,6 +48,7 @@ QuotesCrawler().run()               # synchronous entry point
 | `requests_deviation`       | `0.25`           | Random jitter on the delay (s).                    |
 | `search_all_urls`          | `True`           | Follow links found on the page.                    |
 | `search_hidden_urls`       | `False`          | Also discover urls via a regex over the html.      |
+| `unique_urls`              | `True`           | Skip already-visited urls (prevents loops).        |
 | `post_urls`                | `[]`             | `(pattern, data)` tuples to issue POSTs.           |
 | `login`                    | `None`           | `(url, data)` to authenticate before crawling.     |
 
