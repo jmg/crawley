@@ -85,19 +85,20 @@ class RequestManager:
 
     # -- requests --------------------------------------------------------
 
-    def _get_request(self, url):
+    def _get_request(self, url, headers=None):
         host = urllib.parse.urlparse(url).netloc
         self.host_counter.increase(host)
+        merged = {**self.headers, **(headers or {})}
         return DelayedRequest(
             url=url,
-            headers=self.headers,
+            headers=merged,
             delay=self.delay,
             deviation=self.deviation,
         )
 
-    async def make_request(self, url, data=None, extractor=None):
+    async def make_request(self, url, data=None, extractor=None, headers=None):
         """Issue a request and wrap the result in a :class:`Response`."""
-        request = self._get_request(url)
+        request = self._get_request(url, headers)
         host = urllib.parse.urlparse(url).netloc
 
         semaphore = self.rate_limiter.semaphore(host)
@@ -152,7 +153,8 @@ class RequestManager:
 class FastRequestManager(RequestManager):
     """A request manager without per-request delays."""
 
-    def _get_request(self, url):
+    def _get_request(self, url, headers=None):
         host = urllib.parse.urlparse(url).netloc
         self.host_counter.increase(host)
-        return Request(url=url, headers=self.headers)
+        merged = {**self.headers, **(headers or {})}
+        return Request(url=url, headers=merged)

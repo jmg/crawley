@@ -7,7 +7,7 @@ CSS selectors).
 
 from __future__ import annotations
 
-from io import StringIO
+from io import BytesIO
 from typing import Any
 
 from lxml import etree
@@ -33,7 +33,9 @@ class XPathExtractor(BaseExtractor):
 
     def get_object(self, data: str) -> Any:
         parser = etree.HTMLParser()
-        return etree.parse(StringIO(data), parser)
+        # Parse from bytes so documents carrying an XML encoding declaration
+        # (e.g. sitemaps) don't raise "Unicode strings with encoding declaration".
+        return etree.parse(BytesIO(data.encode("utf-8")), parser)
 
 
 class CSSExtractor(BaseExtractor):
@@ -45,7 +47,9 @@ class CSSExtractor(BaseExtractor):
 
     def get_object(self, data: str) -> Any:
         parser = etree.HTMLParser()
-        return etree.parse(StringIO(data), parser)
+        # Parse from bytes so documents carrying an XML encoding declaration
+        # (e.g. sitemaps) don't raise "Unicode strings with encoding declaration".
+        return etree.parse(BytesIO(data.encode("utf-8")), parser)
 
 
 class RawExtractor(BaseExtractor):

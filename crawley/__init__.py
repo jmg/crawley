@@ -34,6 +34,15 @@ __all__ = [
     "parse",
     "Document",
     "Element",
+    "Spider",
+    "Request",
+    "Item",
+    "DropItem",
+    "ItemPipeline",
+    "LinkExtractor",
+    "Rule",
+    "CrawlSpider",
+    "SitemapSpider",
     "__version__",
 ]
 
@@ -66,6 +75,18 @@ def __getattr__(name):
         from crawley.http.response import Response
 
         return Response
+    if name in ("Spider", "Request", "Item"):
+        from crawley import spider
+
+        return getattr(spider, name)
+    if name in ("DropItem", "ItemPipeline"):
+        from crawley import pipelines
+
+        return getattr(pipelines, name)
+    if name in ("LinkExtractor", "Rule", "CrawlSpider", "SitemapSpider"):
+        from crawley import spiders
+
+        return getattr(spiders, name)
     if name in ("fetch", "afetch", "afetch_all", "scrape", "parse", "Document", "Element"):
         from crawley import scraping
 
