@@ -105,6 +105,43 @@ class ShopSpider(Spider):
 Items that survive the pipeline reach `on_item(item)` (override it, or use a
 pipeline, to store them — e.g. with the [persistence](persistence.md) layer).
 
+## Downloader middlewares
+
+Middlewares wrap every download: they run in order on the way out
+(`process_request`) and in reverse on the way back (`process_response` /
+`process_exception`) — like Scrapy. Use them to inject headers, rotate
+proxies/user-agents, short-circuit with a cached response, or recover from
+errors.
+
+```python
+from crawley.middlewares import DownloaderMiddleware
+from crawley.spider import Request
+
+class AuthHeaderMiddleware(DownloaderMiddleware):
+    def process_request(self, request, spider):
+        request.headers["Authorization"] = "Bearer ..."
+        return None              # continue the download
+
+    def process_response(self, request, response, spider):
+        if response.status_code == 302:
+            return Request(response.headers["location"])   # reschedule
+        return response
+
+    def process_exception(self, request, exception, spider):
+        return None              # propagate (or return a Response/Request)
+
+class MySpider(Spider):
+    middlewares = [AuthHeaderMiddleware]
+    ...
+```
+
+- `process_request` -> `None` (continue), a `Response` (skip the download) or a
+  `Request` (reschedule).
+- `process_response` -> a `Response` or a `Request`.
+- `process_exception` -> `None` (propagate), a `Response` or a `Request`.
+
+All methods may be sync or async.
+
 ## Rule-based crawling: `CrawlSpider`
 
 `CrawlSpider` follows links automatically according to a list of `Rule`s, each

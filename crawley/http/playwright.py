@@ -102,13 +102,17 @@ class PlaywrightRequestManager(RequestManager):
             if cached is not None:
                 return self._response_from_cache(cached, extractor)
 
+        import time
+
         host = urlparse(url).netloc
         semaphore = self.rate_limiter.semaphore(host)
         if semaphore is not None:
             await semaphore.acquire()
         try:
             await self.rate_limiter.throttle(host)
+            started = time.monotonic()
             raw_html, final_url, status = await self._render_with_retry(url, headers)
+            latency = time.monotonic() - started
         finally:
             if semaphore is not None:
                 semaphore.release()
@@ -117,12 +121,14 @@ class PlaywrightRequestManager(RequestManager):
             self.cache.store("GET", url, data, status, final_url, {}, raw_html)
 
         extracted = extractor.get_object(raw_html) if extractor is not None else None
-        return Response(
+        result = Response(
             raw_html=raw_html,
             extracted_html=extracted,
             url=final_url,
             response=_RenderResult(status),
         )
+        result.latency = latency
+        return result
 
     async def aclose(self) -> None:
         if self._context is not None:

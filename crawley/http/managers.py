@@ -133,12 +133,16 @@ class RequestManager:
         if extractor is not None:
             extracted_html = extractor.get_object(raw_html)
 
-        return Response(
+        result = Response(
             raw_html=raw_html,
             extracted_html=extracted_html,
             url=final_url,
             response=response,
         )
+        elapsed = getattr(response, "elapsed", None)
+        if elapsed is not None:
+            result.latency = elapsed.total_seconds()
+        return result
 
     @staticmethod
     def _response_from_cache(cached, extractor):

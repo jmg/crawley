@@ -34,15 +34,17 @@ Auto-generated from the docstrings.
 ::: crawley.spiders.LinkExtractor
 ::: crawley.spiders.Rule
 
-## Pipelines
+## Pipelines & middlewares
 
 ::: crawley.pipelines.ItemPipeline
 ::: crawley.pipelines.DropItem
+::: crawley.middlewares.DownloaderMiddleware
 
-## Stats & cache
+## Stats, cache & throttling
 
 ::: crawley.stats.StatsCollector
 ::: crawley.http.cache.HttpCache
+::: crawley.http.autothrottle.AutoThrottle
 
 ## Extractors
 

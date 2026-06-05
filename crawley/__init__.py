@@ -45,6 +45,8 @@ __all__ = [
     "CrawlSpider",
     "SitemapSpider",
     "StatsCollector",
+    "DownloaderMiddleware",
+    "AutoThrottle",
     "__version__",
 ]
 
@@ -93,6 +95,14 @@ def __getattr__(name):
         from crawley.stats import StatsCollector
 
         return StatsCollector
+    if name == "DownloaderMiddleware":
+        from crawley.middlewares import DownloaderMiddleware
+
+        return DownloaderMiddleware
+    if name == "AutoThrottle":
+        from crawley.http.autothrottle import AutoThrottle
+
+        return AutoThrottle
     if name in ("fetch", "afetch", "afetch_all", "scrape", "parse", "Document", "Element"):
         from crawley import scraping
 

@@ -32,6 +32,7 @@ class Response:
         self.url = url
         self.response = response
         self.request: Any = None
+        self.latency: Optional[float] = None
         self._doc: Optional[Document] = None
 
         if response is not None:

@@ -38,6 +38,13 @@ from crawley.pipelines import DropItem
 log = logging.getLogger("crawley.spider")
 
 
+async def _maybe_await(value: Any) -> Any:
+    """Await *value* if it is awaitable, otherwise return it as-is."""
+    if inspect.isawaitable(value):
+        return await value
+    return value
+
+
 class Item(dict):
     """A scraped item. Just a ``dict`` you may subclass for clarity."""
 
@@ -192,9 +199,13 @@ class Spider(BaseCrawler):
     pipelines: list = []
     """Item pipeline classes applied, in order, to every emitted item."""
 
+    middlewares: list = []
+    """Downloader middleware classes wrapping every download."""
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._pipelines = [pipe() for pipe in self.pipelines]
+        self._middlewares = [mw() for mw in self.middlewares]
 
     # -- overridables ----------------------------------------------------
 
@@ -265,24 +276,69 @@ class Spider(BaseCrawler):
         if self.debug:
             log.info("crawling -> %s", url)
 
-        self.stats.inc("requests")
-        try:
-            response = await self.request_manager.make_request(
-                url,
-                data=request.data,
-                extractor=self.extractor,
-                headers=request.headers,
-            )
-        except Exception as ex:  # noqa: BLE001 - routed to the errback/handler
-            self.stats.inc("request_errors")
-            self._handle_error(request, ex)
-            return
+        # process_request chain (in order).
+        response = None
+        for mw in self._middlewares:
+            outcome = await _maybe_await(mw.process_request(request, self))
+            if isinstance(outcome, Request):
+                self._reschedule(outcome, request)
+                return
+            if outcome is not None:  # a Response: short-circuit the download
+                response = outcome
+                break
 
-        self.stats.inc("responses")
-        self.stats.inc("status/%s" % response.status_code)
+        if response is None:
+            self.stats.inc("requests")
+            try:
+                response = await self.request_manager.make_request(
+                    url,
+                    data=request.data,
+                    extractor=self.extractor,
+                    headers=request.headers,
+                )
+            except Exception as ex:  # noqa: BLE001 - middleware/errback decide
+                self.stats.inc("request_errors")
+                handled = await self._process_exception(request, ex)
+                if isinstance(handled, Request):
+                    self._reschedule(handled, request)
+                    return
+                if handled is None:
+                    self._handle_error(request, ex)
+                    return
+                response = handled
+            else:
+                self.stats.inc("responses")
+                self.stats.inc("status/%s" % response.status_code)
+                self._record_latency(url, response)
+
+        # process_response chain (reverse order).
+        for mw in reversed(self._middlewares):
+            outcome = await _maybe_await(
+                mw.process_response(request, response, self)
+            )
+            if isinstance(outcome, Request):
+                self._reschedule(outcome, request)
+                return
+            response = outcome
+
         response.request = request
         callback = request.callback or self.parse
         await self._drive_callback(callback, response)
+
+    async def _process_exception(self, request: Request, ex: Exception) -> Any:
+        for mw in reversed(self._middlewares):
+            outcome = await _maybe_await(
+                mw.process_exception(request, ex, self)
+            )
+            if outcome is not None:
+                return outcome
+        return None
+
+    def _reschedule(self, request: Request, base_request: Request) -> None:
+        depth = request.meta.get("depth")
+        if depth is None:
+            depth = base_request.meta.get("depth", 0)
+        self._schedule(request, depth)
 
     async def _drive_callback(self, callback: Any, response: Any) -> None:
         depth = response.meta.get("depth", 0)
