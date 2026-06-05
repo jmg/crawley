@@ -104,6 +104,12 @@ class BaseCrawler(metaclass=CrawlerMeta):
     unique_urls = True
     """Skip urls that have already been visited during the crawl."""
 
+    render_js = False
+    """Render pages with a headless browser (Playwright). Needs ``crawley[js]``."""
+
+    playwright_options = {}
+    """Extra options for the Playwright manager (browser_type, headless, ...)."""
+
     def __init__(self, sessions=None, settings=None):
         self.sessions = sessions if sessions is not None else []
         self.debug = getattr(settings, "SHOW_DEBUG_INFO", True)
@@ -137,6 +143,18 @@ class BaseCrawler(metaclass=CrawlerMeta):
         self._initialize_scrapers()
 
     def _make_request_manager(self):
+        if self.render_js:
+            from crawley.http.playwright import PlaywrightRequestManager
+
+            return PlaywrightRequestManager(
+                settings=self.settings,
+                headers=self.headers,
+                delay=self.requests_delay,
+                deviation=self.requests_deviation,
+                retry_policy=self.retry_policy,
+                rate_limiter=self.rate_limiter,
+                **self.playwright_options,
+            )
         return RequestManager(
             settings=self.settings,
             headers=self.headers,

@@ -23,6 +23,21 @@ Auto-generated from the docstrings.
 ::: crawley.scrapers.base.BaseScraper
 ::: crawley.scrapers.smart.SmartScraper
 
+## Spiders
+
+::: crawley.spider.Spider
+::: crawley.spider.Request
+::: crawley.spider.Item
+::: crawley.spiders.CrawlSpider
+::: crawley.spiders.SitemapSpider
+::: crawley.spiders.LinkExtractor
+::: crawley.spiders.Rule
+
+## Pipelines
+
+::: crawley.pipelines.ItemPipeline
+::: crawley.pipelines.DropItem
+
 ## Extractors
 
 ::: crawley.extractors.XPathExtractor

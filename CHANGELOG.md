@@ -21,12 +21,20 @@ A full port of the legacy Python 2 framework to a modern Python 3 (3.9+) stack.
   `retry_statuses`).
 - **Visited-url de-duplication** (`unique_urls`) preventing redundant fetches
   and crawl loops.
+- **Callback-driven `Spider`** (`crawley.spider`): `Request` with
+  callback / `meta` / `cb_kwargs` / `errback`, `response.follow()`, `Item`, and
+  fingerprint-based de-duplication — for list→detail crawls.
+- **Item pipelines** (`crawley.pipelines`): `ItemPipeline` + `DropItem`.
+- **`CrawlSpider`** with `Rule` / `LinkExtractor` (allow/deny/restrict) and
+  **`SitemapSpider`** (`crawley.spiders`).
+- **JavaScript rendering** via Playwright (`render_js = True`, extra
+  `crawley[js]`).
 - Documentation site (MkDocs Material + mkdocstrings) and a set of runnable,
   test-covered `examples/`.
 - **Type hints** on the public modules and a PEP 561 `py.typed` marker so
   downstream code gets type information; `mypy` runs in CI.
 - A `LICENSE` file (GPL-3.0).
-- A hermetic `pytest` suite (~170 tests, ~92% core coverage).
+- A hermetic `pytest` suite (~185 tests, ~90% core coverage).
 
 ### Changed
 - Concurrency moved from `eventlet` green pools to **asyncio** (`AsyncPool`);

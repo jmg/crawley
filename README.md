@@ -139,6 +139,39 @@ The same shortcuts (`response.css`, `response.css_first`, `response.extract`,
 
 ---
 
+## Spiders (callbacks, items, rules, JS)
+
+For full crawls there's a Scrapy-style `Spider`: yield `Request`s (or
+`response.follow(...)`) to navigate and dicts/`Item`s to emit data, with item
+pipelines, rule-based crawling and optional JavaScript rendering. See
+[`docs/spiders.md`](docs/spiders.md).
+
+```python
+from crawley.spider import Spider
+
+class BlogSpider(Spider):
+    start_urls = ["https://example.com/blog/"]
+
+    def parse(self, response):                       # default callback
+        for href in response.css("a.post::attr(href)"):
+            yield response.follow(href, callback=self.parse_post)
+        nxt = response.css_first("a.next::attr(href)")
+        if nxt:
+            yield response.follow(nxt)               # follows pagination
+
+    def parse_post(self, response):
+        yield {"title": response.css_first("h1").text, "url": response.url}
+
+BlogSpider().run()
+```
+
+- **Item pipelines**: `crawley.pipelines.ItemPipeline` + `DropItem`.
+- **Rule-based**: `CrawlSpider` + `Rule(LinkExtractor(allow=..., deny=...))`.
+- **Sitemaps**: `SitemapSpider(sitemap_urls=[...])`.
+- **JavaScript**: `render_js = True` (install `crawley[js]` + `playwright install`).
+
+---
+
 ## Quick start (as a framework / CLI)
 
 ### 1. Start a new project
