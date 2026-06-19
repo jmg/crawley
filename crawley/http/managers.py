@@ -13,6 +13,17 @@ from crawley.http.throttle import HostRateLimiter
 from crawley.utils import has_valid_attr
 
 
+async def _ssrf_request_hook(request):
+    """Abort any request (incl. a redirect hop) to a non-public/internal host."""
+    try:
+        from crawley_site.service.urlguard import is_safe_url
+    except Exception:
+        return  # urlguard only present inside the Django app; no-op otherwise
+    if not is_safe_url(str(request.url)):
+        raise httpx.RequestError("Blocked non-public/SSRF URL: %s" % request.url,
+                                 request=request)
+
+
 class HostCounterDict(dict):
     """A counter dictionary for requested hosts."""
 
@@ -63,6 +74,9 @@ class RequestManager:
             "cookies": self.cookie_handler.jar,
             "follow_redirects": True,
             "timeout": config.REQUEST_TIMEOUT,
+            # SSRF: re-validate every request URL incl. redirect hops. The hook
+            # inspects request.url (no TCP connect), so it's kept even when proxied.
+            "event_hooks": {"request": [_ssrf_request_hook]},
         }
 
         if proxy:
