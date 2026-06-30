@@ -1,0 +1,6737 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A pythonic crawling / scraping framework for Python 3, built on asyncio and httpx.">
+      
+      
+      
+      
+        <link rel="prev" href="../cli/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>API Reference - crawley</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#api-reference" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="crawley" class="md-header__button md-logo" aria-label="crawley" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            crawley
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              API Reference
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="teal"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jmg/crawley" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jmg/crawley
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="crawley" class="md-nav__button md-logo" aria-label="crawley" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    crawley
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jmg/crawley" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jmg/crawley
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../scraping/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scraping API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../crawler/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Crawlers & Scrapers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../spiders/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spiders (callbacks, items, rules)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../politeness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Politeness — robots, rate limiting, retries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Persistence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI & Framework
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scraping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scraping
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scraping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fetch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.afetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        afetch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.afetch_all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        afetch_all
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.scrape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scrape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.parse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Document">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Document.title" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        title
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Document.extract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Document.links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        links
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Element
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Element">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.attrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        attrs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        html
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.attr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        attr
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.css" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        css
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.css_first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        css_first
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.xpath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xpath
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crawlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crawlers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Crawlers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseCrawler
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseCrawler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.allowed_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        allowed_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.autothrottle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        autothrottle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.autothrottle_max_delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        autothrottle_max_delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.autothrottle_start_delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        autothrottle_start_delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.autothrottle_target_concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        autothrottle_target_concurrency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.black_list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        black_list
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.crawl_delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        crawl_delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.extractor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extractor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.headers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        headers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.http_cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        http_cache
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.http_cache_dir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        http_cache_dir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.login" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        login
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.max_concurrency_level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        max_concurrency_level
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.max_concurrency_per_host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        max_concurrency_per_host
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.max_depth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        max_depth
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.max_retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        max_retries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.playwright_options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        playwright_options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.post_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        post_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.render_js" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        render_js
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.requests_delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        requests_delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.requests_deviation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        requests_deviation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.respect_robots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        respect_robots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.retry_backoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        retry_backoff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.retry_statuses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        retry_statuses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.scrapers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scrapers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.search_all_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        search_all_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.search_hidden_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        search_hidden_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.start_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        start_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.unique_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unique_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.get_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.on_finish" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_finish
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.on_request_error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_request_error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.on_robots_blocked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_robots_blocked
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.on_start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        start
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.fast.FastCrawler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FastCrawler
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.offline.OffLineCrawler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OffLineCrawler
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scrapers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scrapers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scrapers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.base.BaseScraper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseScraper
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseScraper">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.base.BaseScraper.get_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.base.BaseScraper.on_cannot_scrape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_cannot_scrape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.base.BaseScraper.on_scrape_error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_scrape_error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.base.BaseScraper.scrape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scrape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.base.BaseScraper.try_scrape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        try_scrape
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.smart.SmartScraper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SmartScraper
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spiders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spiders
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spiders">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Spider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spider
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spider">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Spider.middlewares" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        middlewares
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Spider.pipelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pipelines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Spider.on_item" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_item
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Spider.parse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Spider.start_requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        start_requests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Request">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Request.fingerprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fingerprint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Request.replace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        replace
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.FormRequest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FormRequest
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FormRequest">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.FormRequest.from_response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        from_response
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Item" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Item
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spiders.CrawlSpider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CrawlSpider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spiders.SitemapSpider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SitemapSpider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spiders.LinkExtractor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LinkExtractor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LinkExtractor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spiders.LinkExtractor.extract_links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract_links
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spiders.Rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipelines-middlewares" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipelines &amp; middlewares
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipelines &amp; middlewares">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.pipelines.ItemPipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ItemPipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ItemPipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.pipelines.ItemPipeline.close_spider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        close_spider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.pipelines.ItemPipeline.open_spider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        open_spider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.pipelines.ItemPipeline.process_item" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        process_item
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.pipelines.DropItem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DropItem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.middlewares.DownloaderMiddleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DownloaderMiddleware
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stats-cache-throttling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stats, cache &amp; throttling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stats, cache &amp; throttling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.stats.StatsCollector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StatsCollector
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="StatsCollector">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.stats.StatsCollector.close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        close
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.stats.StatsCollector.open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        open
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.cache.HttpCache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HttpCache
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.autothrottle.AutoThrottle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AutoThrottle
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AutoThrottle">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.autothrottle.AutoThrottle.adjust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        adjust
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extractors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extractors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Extractors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.extractors.XPathExtractor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        XPathExtractor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.extractors.CSSExtractor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CSSExtractor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.extractors.PyQueryExtractor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PyQueryExtractor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.extractors.RawExtractor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RawExtractor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#http" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HTTP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Response">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response.doc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        doc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response.meta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        meta
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response.css" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        css
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response.css_first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        css_first
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response.extract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response.follow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        follow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.retry.RetryPolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RetryPolicy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RetryPolicy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.retry.RetryPolicy.backoff_time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        backoff_time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.retry.RetryPolicy.should_retry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        should_retry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.throttle.HostRateLimiter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HostRateLimiter
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HostRateLimiter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.throttle.HostRateLimiter.semaphore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        semaphore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.throttle.HostRateLimiter.set_delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.throttle.HostRateLimiter.throttle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        throttle
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.robots.RobotsPolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RobotsPolicy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RobotsPolicy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.robots.RobotsPolicy.allowed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        allowed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.robots.RobotsPolicy.crawl_delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        crawl_delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#scraping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scraping
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scraping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.fetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fetch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.afetch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        afetch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.afetch_all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        afetch_all
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.scrape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scrape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.parse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Document
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Document">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Document.title" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        title
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Document.extract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Document.links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        links
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Element
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Element">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.attrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        attrs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        html
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.attr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        attr
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.css" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        css
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.css_first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        css_first
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scraping.Element.xpath" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        xpath
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#crawlers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Crawlers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Crawlers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseCrawler
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseCrawler">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.allowed_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        allowed_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.autothrottle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        autothrottle
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.autothrottle_max_delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        autothrottle_max_delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.autothrottle_start_delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        autothrottle_start_delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.autothrottle_target_concurrency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        autothrottle_target_concurrency
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.black_list" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        black_list
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.crawl_delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        crawl_delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.extractor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extractor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.headers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        headers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.http_cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        http_cache
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.http_cache_dir" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        http_cache_dir
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.login" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        login
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.max_concurrency_level" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        max_concurrency_level
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.max_concurrency_per_host" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        max_concurrency_per_host
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.max_depth" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        max_depth
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.max_retries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        max_retries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.playwright_options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        playwright_options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.post_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        post_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.render_js" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        render_js
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.requests_delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        requests_delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.requests_deviation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        requests_deviation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.respect_robots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        respect_robots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.retry_backoff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        retry_backoff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.retry_statuses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        retry_statuses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.scrapers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scrapers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.search_all_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        search_all_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.search_hidden_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        search_hidden_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.start_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        start_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.unique_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unique_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.get_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.on_finish" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_finish
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.on_request_error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_request_error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.on_robots_blocked" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_robots_blocked
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.on_start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_start
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.base.BaseCrawler.start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        start
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.fast.FastCrawler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FastCrawler
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.crawlers.offline.OffLineCrawler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OffLineCrawler
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scrapers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scrapers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scrapers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.base.BaseScraper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BaseScraper
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="BaseScraper">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.base.BaseScraper.get_urls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_urls
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.base.BaseScraper.on_cannot_scrape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_cannot_scrape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.base.BaseScraper.on_scrape_error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_scrape_error
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.base.BaseScraper.scrape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        scrape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.base.BaseScraper.try_scrape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        try_scrape
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.scrapers.smart.SmartScraper" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SmartScraper
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#spiders" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spiders
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spiders">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Spider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spider
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Spider">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Spider.middlewares" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        middlewares
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Spider.pipelines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pipelines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Spider.on_item" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        on_item
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Spider.parse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        parse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Spider.start_requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        start_requests
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Request
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Request">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Request.fingerprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        fingerprint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Request.replace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        replace
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.FormRequest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FormRequest
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FormRequest">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.FormRequest.from_response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        from_response
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spider.Item" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Item
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spiders.CrawlSpider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CrawlSpider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spiders.SitemapSpider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SitemapSpider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spiders.LinkExtractor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LinkExtractor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LinkExtractor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spiders.LinkExtractor.extract_links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract_links
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.spiders.Rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pipelines-middlewares" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipelines &amp; middlewares
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipelines &amp; middlewares">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.pipelines.ItemPipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ItemPipeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ItemPipeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.pipelines.ItemPipeline.close_spider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        close_spider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.pipelines.ItemPipeline.open_spider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        open_spider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.pipelines.ItemPipeline.process_item" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        process_item
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.pipelines.DropItem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DropItem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.middlewares.DownloaderMiddleware" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DownloaderMiddleware
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stats-cache-throttling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stats, cache &amp; throttling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Stats, cache &amp; throttling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.stats.StatsCollector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StatsCollector
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="StatsCollector">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.stats.StatsCollector.close" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        close
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.stats.StatsCollector.open" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        open
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.cache.HttpCache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HttpCache
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.autothrottle.AutoThrottle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AutoThrottle
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="AutoThrottle">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.autothrottle.AutoThrottle.adjust" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        adjust
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extractors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Extractors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Extractors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.extractors.XPathExtractor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        XPathExtractor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.extractors.CSSExtractor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CSSExtractor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.extractors.PyQueryExtractor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PyQueryExtractor
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.extractors.RawExtractor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RawExtractor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#http" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HTTP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HTTP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Response
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Response">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response.doc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        doc
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response.meta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        meta
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response.css" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        css
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response.css_first" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        css_first
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response.extract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.response.Response.follow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        follow
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.retry.RetryPolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RetryPolicy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RetryPolicy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.retry.RetryPolicy.backoff_time" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        backoff_time
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.retry.RetryPolicy.should_retry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        should_retry
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.throttle.HostRateLimiter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HostRateLimiter
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="HostRateLimiter">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.throttle.HostRateLimiter.semaphore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        semaphore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.throttle.HostRateLimiter.set_delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        set_delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.throttle.HostRateLimiter.throttle" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        throttle
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.robots.RobotsPolicy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RobotsPolicy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RobotsPolicy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.robots.RobotsPolicy.allowed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        allowed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#crawley.http.robots.RobotsPolicy.crawl_delay" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        crawl_delay
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="api-reference">API Reference<a class="headerlink" href="#api-reference" title="Permanent link">&para;</a></h1>
+<p>Auto-generated from the docstrings.</p>
+<h2 id="scraping">Scraping<a class="headerlink" href="#scraping" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="crawley.scraping.fetch" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">crawley</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+<a href="#crawley.scraping.fetch" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Fetch <em>url</em> and return a parsed :class:<code>Document</code> (synchronous).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="crawley.scraping.afetch" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">crawley</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">afetch</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">client</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#crawley.scraping.afetch" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Fetch <em>url</em> asynchronously and return a :class:<code>Document</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="crawley.scraping.afetch_all" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">crawley</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">afetch_all</span><span class="p">(</span><span class="n">urls</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#crawley.scraping.afetch_all" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Fetch many urls concurrently, returning a list of :class:<code>Document</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="crawley.scraping.scrape" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">crawley</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">scrape</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+<a href="#crawley.scraping.scrape" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Fetch <em>url</em> and immediately :meth:<code>Document.extract</code> it with <em>rules</em>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="crawley.scraping.parse" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">crawley</span><span class="o">.</span><span class="n">scraping</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">html</span><span class="p">,</span> <span class="n">url</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#crawley.scraping.parse" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+        <p>Parse an html string into a :class:<code>Document</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.scraping.Document" class="doc doc-heading">
+            <code>crawley.scraping.Document</code>
+
+
+<a href="#crawley.scraping.Document" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="crawley.scraping.Element" href="#crawley.scraping.Element">Element</a></code></p>
+
+
+
+        <p>A parsed html document ready to be scraped.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.scraping.Document.title" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">title</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#crawley.scraping.Document.title" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The page <code>&lt;title&gt;</code> text, if any.</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.scraping.Document.extract" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">extract</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span></code>
+
+<a href="#crawley.scraping.Document.extract" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Extract a dict of fields from the document.</p>
+<p><em>rules</em> maps field names to selectors. A plain string selector yields
+a single value (the first match); a one-element list selector yields
+the list of every match::</p>
+<div class="highlight"><pre><span></span><code>doc.extract({
+    &quot;title&quot;: &quot;h1::text&quot;,
+    &quot;price&quot;: &quot;span.price::text&quot;,
+    &quot;images&quot;: [&quot;img::attr(src)&quot;],
+})
+</code></pre></div>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.scraping.Document.links" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">links</span><span class="p">(</span><span class="n">selector</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span></code>
+
+<a href="#crawley.scraping.Document.links" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the (absolute, de-duplicated) hrefs found in the page.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.scraping.Element" class="doc doc-heading">
+            <code>crawley.scraping.Element</code>
+
+
+<a href="#crawley.scraping.Element" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>A thin, convenient wrapper around an <code>lxml</code> html element.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.scraping.Element.attrs" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">attrs</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#crawley.scraping.Element.attrs" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>A dict of the element's attributes.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.scraping.Element.html" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">html</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#crawley.scraping.Element.html" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The element serialized back to html.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.scraping.Element.text" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">text</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#crawley.scraping.Element.text" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The normalized recursive text of the element.</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.scraping.Element.attr" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">attr</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#crawley.scraping.Element.attr" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the <em>name</em> attribute (or <em>default</em>).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.scraping.Element.css" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">css</span><span class="p">(</span><span class="n">selector</span><span class="p">)</span></code>
+
+<a href="#crawley.scraping.Element.css" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the descendants matching the CSS <em>selector</em>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.scraping.Element.css_first" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">css_first</span><span class="p">(</span><span class="n">selector</span><span class="p">)</span></code>
+
+<a href="#crawley.scraping.Element.css_first" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the first descendant matching <em>selector</em> (or <code>None</code>).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.scraping.Element.xpath" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">xpath</span><span class="p">(</span><span class="n">query</span><span class="p">)</span></code>
+
+<a href="#crawley.scraping.Element.xpath" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the result of an XPath <em>query</em>.</p>
+<p>String results (e.g. <code>"//a/@href"</code>) are returned as-is; element
+results are wrapped in :class:<code>Element</code>.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="crawlers">Crawlers<a class="headerlink" href="#crawlers" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.crawlers.base.BaseCrawler" class="doc doc-heading">
+            <code>crawley.crawlers.base.BaseCrawler</code>
+
+
+<a href="#crawley.crawlers.base.BaseCrawler" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>User crawlers must inherit from this class.</p>
+<p>Override the relevant methods and define <code>start_urls</code>, <code>scrapers</code> and
+the <code>max_depth</code> to control the crawl.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.allowed_urls" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">allowed_urls</span> <span class="o">=</span> <span class="p">[]</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.allowed_urls" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>A list of url patterns allowed for crawl.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.autothrottle" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">autothrottle</span> <span class="o">=</span> <span class="kc">False</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.autothrottle" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Adapt the per-host delay to the observed response latency.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.autothrottle_max_delay" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">autothrottle_max_delay</span> <span class="o">=</span> <span class="mf">60.0</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.autothrottle_max_delay" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Maximum per-host delay AutoThrottle may set (seconds).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.autothrottle_start_delay" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">autothrottle_start_delay</span> <span class="o">=</span> <span class="mf">1.0</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.autothrottle_start_delay" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Initial per-host delay used by AutoThrottle (seconds).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.autothrottle_target_concurrency" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">autothrottle_target_concurrency</span> <span class="o">=</span> <span class="mf">1.0</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.autothrottle_target_concurrency" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Target number of concurrent requests per host for AutoThrottle.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.black_list" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">black_list</span> <span class="o">=</span> <span class="p">[]</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.black_list" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>A list of blocked url patterns that are never crawled.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.crawl_delay" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">crawl_delay</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">CRAWL_DELAY</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.crawl_delay" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Minimum seconds between two requests to the same host.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.extractor" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">extractor</span> <span class="o">=</span> <span class="n">extractor_class</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.extractor" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The extractor class. Defaults to :class:<code>XPathExtractor</code>.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.headers" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">headers</span> <span class="o">=</span> <span class="p">{}</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.headers" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The default request headers.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.http_cache" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">http_cache</span> <span class="o">=</span> <span class="kc">False</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.http_cache" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Cache responses on disk (development helper).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.http_cache_dir" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">http_cache_dir</span> <span class="o">=</span> <span class="s1">&#39;.crawley_cache&#39;</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.http_cache_dir" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Directory used by the on-disk HTTP cache.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.login" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">login</span> <span class="o">=</span> <span class="kc">None</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.login" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Login data: a tuple of <code>(url, login_dict)</code>.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.max_concurrency_level" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">max_concurrency_level</span> <span class="o">=</span> <span class="kc">None</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.max_concurrency_level" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The maximum number of concurrent requests.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.max_concurrency_per_host" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">max_concurrency_per_host</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">MAX_CONCURRENCY_PER_HOST</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.max_concurrency_per_host" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Maximum simultaneous requests per host (<code>None</code> disables the limit).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.max_depth" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">max_depth</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.max_depth" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The maximum crawling recursive level (<code>-1</code> means unlimited).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.max_retries" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">max_retries</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">REQUEST_MAX_RETRIES</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.max_retries" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>How many times a failed request is retried.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.playwright_options" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">playwright_options</span> <span class="o">=</span> <span class="p">{}</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.playwright_options" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Extra options for the Playwright manager (browser_type, headless, ...).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.post_urls" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">post_urls</span> <span class="o">=</span> <span class="p">[]</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.post_urls" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>POST data for urls: a list of <code>(url, data_dict)</code> tuples.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.render_js" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">render_js</span> <span class="o">=</span> <span class="kc">False</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.render_js" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Render pages with a headless browser (Playwright). Needs <code>crawley[js]</code>.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.requests_delay" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">requests_delay</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">REQUEST_DELAY</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.requests_delay" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The average delay time between requests.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.requests_deviation" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">requests_deviation</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">REQUEST_DEVIATION</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.requests_deviation" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The requests deviation time.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.respect_robots" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">respect_robots</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">RESPECT_ROBOTS</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.respect_robots" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>When <code>True</code> the crawler honours each site's <code>robots.txt</code>.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.retry_backoff" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">retry_backoff</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">RETRY_BACKOFF_FACTOR</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.retry_backoff" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Base seconds for the exponential retry backoff.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.retry_statuses" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">retry_statuses</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">RETRY_STATUSES</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.retry_statuses" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>HTTP status codes that trigger a retry.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.scrapers" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">scrapers</span> <span class="o">=</span> <span class="p">[]</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.scrapers" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>A list of scraper classes.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.search_all_urls" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">search_all_urls</span> <span class="o">=</span> <span class="kc">True</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.search_all_urls" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Search for urls in the page when scrapers don't return any.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.search_hidden_urls" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">search_hidden_urls</span> <span class="o">=</span> <span class="kc">False</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.search_hidden_urls" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Search for urls hidden anywhere in the html (not only <code>&lt;a&gt;</code> tags).</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.start_urls" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">start_urls</span> <span class="o">=</span> <span class="p">[]</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.start_urls" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>A list containing the start urls for the crawler.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.unique_urls" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">unique_urls</span> <span class="o">=</span> <span class="kc">True</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.unique_urls" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Skip urls that have already been visited during the crawl.</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.get_urls" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_urls</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></code>
+
+<a href="#crawley.crawlers.base.BaseCrawler.get_urls" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the urls found in the current html page.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.on_finish" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">on_finish</span><span class="p">()</span></code>
+
+<a href="#crawley.crawlers.base.BaseCrawler.on_finish" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Override to run code when the crawler finishes.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.on_request_error" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">on_request_error</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span></code>
+
+<a href="#crawley.crawlers.base.BaseCrawler.on_request_error" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Override to customize the request error handler.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.on_robots_blocked" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">on_robots_blocked</span><span class="p">(</span><span class="n">url</span><span class="p">)</span></code>
+
+<a href="#crawley.crawlers.base.BaseCrawler.on_robots_blocked" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Override to react when robots.txt disallows crawling <em>url</em>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.on_start" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">on_start</span><span class="p">()</span></code>
+
+<a href="#crawley.crawlers.base.BaseCrawler.on_start" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Override to run code when the crawler starts.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.run" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">run</span><span class="p">()</span></code>
+
+<a href="#crawley.crawlers.base.BaseCrawler.run" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Convenience synchronous entry point.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.crawlers.base.BaseCrawler.start" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">start</span><span class="p">()</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#crawley.crawlers.base.BaseCrawler.start" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Run the crawler (coroutine).</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.crawlers.fast.FastCrawler" class="doc doc-heading">
+            <code>crawley.crawlers.fast.FastCrawler</code>
+
+
+<a href="#crawley.crawlers.fast.FastCrawler" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="crawley.crawlers.base.BaseCrawler" href="#crawley.crawlers.base.BaseCrawler">BaseCrawler</a></code></p>
+
+
+
+        <p>Like :class:<code>BaseCrawler</code> but issues requests without delays.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.crawlers.offline.OffLineCrawler" class="doc doc-heading">
+            <code>crawley.crawlers.offline.OffLineCrawler</code>
+
+
+<a href="#crawley.crawlers.offline.OffLineCrawler" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="crawley.crawlers.base.BaseCrawler" href="#crawley.crawlers.base.BaseCrawler">BaseCrawler</a></code></p>
+
+
+
+        <p>A crawler that fixes relative asset urls in the fetched html.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="scrapers">Scrapers<a class="headerlink" href="#scrapers" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.scrapers.base.BaseScraper" class="doc doc-heading">
+            <code>crawley.scrapers.base.BaseScraper</code>
+
+
+<a href="#crawley.scrapers.base.BaseScraper" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>User scrapers must inherit from this class.</p>
+<p>Implement :meth:<code>scrape</code> with the data extraction logic and define the
+<code>matching_urls</code> that this scraper is able to process.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.scrapers.base.BaseScraper.get_urls" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_urls</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></code>
+
+<a href="#crawley.scrapers.base.BaseScraper.get_urls" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return a list of urls found in the current html.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.scrapers.base.BaseScraper.on_cannot_scrape" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">on_cannot_scrape</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></code>
+
+<a href="#crawley.scrapers.base.BaseScraper.on_cannot_scrape" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Customize the can't-scrape handler.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.scrapers.base.BaseScraper.on_scrape_error" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">on_scrape_error</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span></code>
+
+<a href="#crawley.scrapers.base.BaseScraper.on_scrape_error" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Customize the scrape error handler.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.scrapers.base.BaseScraper.scrape" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">scrape</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></code>
+
+<a href="#crawley.scrapers.base.BaseScraper.scrape" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Define the data you want to extract here.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.scrapers.base.BaseScraper.try_scrape" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">try_scrape</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></code>
+
+<a href="#crawley.scrapers.base.BaseScraper.try_scrape" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Try to parse the html page, returning the urls it discovers.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.scrapers.smart.SmartScraper" class="doc doc-heading">
+            <code>crawley.scrapers.smart.SmartScraper</code>
+
+
+<a href="#crawley.scrapers.smart.SmartScraper" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="crawley.scrapers.base.BaseScraper" href="#crawley.scrapers.base.BaseScraper">BaseScraper</a></code></p>
+
+
+
+        <p>Scrape only pages whose html structure is similar to a template page.</p>
+<p>The structure of <code>template_url</code> is fetched once (synchronously) at
+construction time and every candidate page is compared against it.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="spiders">Spiders<a class="headerlink" href="#spiders" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.spider.Spider" class="doc doc-heading">
+            <code>crawley.spider.Spider</code>
+
+
+<a href="#crawley.spider.Spider" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="crawley.crawlers.base.BaseCrawler" href="#crawley.crawlers.base.BaseCrawler">BaseCrawler</a></code></p>
+
+
+
+        <p>A callback-driven spider.</p>
+<p>Define :meth:<code>parse</code> (the default callback) and yield :class:<code>Request</code>
+objects (or :func:<code>response.follow(...)</code>) to crawl further, and dicts /
+:class:<code>Item</code> objects to emit data.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.spider.Spider.middlewares" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">middlewares</span> <span class="o">=</span> <span class="p">[]</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.spider.Spider.middlewares" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Downloader middleware classes wrapping every download.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.spider.Spider.pipelines" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">pipelines</span> <span class="o">=</span> <span class="p">[]</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-class-attribute"><code>class-attribute</code></small>
+      <small class="doc doc-label doc-label-instance-attribute"><code>instance-attribute</code></small>
+  </span>
+
+<a href="#crawley.spider.Spider.pipelines" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Item pipeline classes applied, in order, to every emitted item.</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.spider.Spider.on_item" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">on_item</span><span class="p">(</span><span class="n">item</span><span class="p">)</span></code>
+
+<a href="#crawley.spider.Spider.on_item" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Called for every item that survives the pipelines.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.spider.Spider.parse" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></code>
+
+<a href="#crawley.spider.Spider.parse" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Default callback. Override to extract data and follow links.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.spider.Spider.start_requests" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">start_requests</span><span class="p">()</span></code>
+
+<a href="#crawley.spider.Spider.start_requests" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Yield the initial requests (defaults to <code>start_urls</code>).</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.spider.Request" class="doc doc-heading">
+            <code>crawley.spider.Request</code>
+
+
+<a href="#crawley.spider.Request" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>A scheduled HTTP request with a callback to process its response.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.spider.Request.fingerprint" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">fingerprint</span><span class="p">()</span></code>
+
+<a href="#crawley.spider.Request.fingerprint" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>A stable fingerprint (method + url + body) used for de-duplication.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.spider.Request.replace" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">replace</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+<a href="#crawley.spider.Request.replace" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return a copy of this request with some attributes replaced.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.spider.FormRequest" class="doc doc-heading">
+            <code>crawley.spider.FormRequest</code>
+
+
+<a href="#crawley.spider.FormRequest" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="crawley.spider.Request" href="#crawley.spider.Request">Request</a></code></p>
+
+
+
+        <p>A :class:<code>Request</code> that submits form data (POST by default).</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.spider.FormRequest.from_response" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_response</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">formdata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">formid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">formname</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">formxpath</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+<a href="#crawley.spider.FormRequest.from_response" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Build a request from a <code>&lt;form&gt;</code> in <em>response</em>, pre-filling inputs.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.spider.Item" class="doc doc-heading">
+            <code>crawley.spider.Item</code>
+
+
+<a href="#crawley.spider.Item" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="dict">dict</span></code></p>
+
+
+
+        <p>A scraped item. Just a <code>dict</code> you may subclass for clarity.</p>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.spiders.CrawlSpider" class="doc doc-heading">
+            <code>crawley.spiders.CrawlSpider</code>
+
+
+<a href="#crawley.spiders.CrawlSpider" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="crawley.spider.Spider" href="#crawley.spider.Spider">Spider</a></code></p>
+
+
+
+        <p>A spider that follows links according to a list of :class:<code>Rule</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.spiders.SitemapSpider" class="doc doc-heading">
+            <code>crawley.spiders.SitemapSpider</code>
+
+
+<a href="#crawley.spiders.SitemapSpider" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="crawley.spider.Spider" href="#crawley.spider.Spider">Spider</a></code></p>
+
+
+
+        <p>Seed the crawl from <code>sitemap.xml</code> files (incl. sitemap indexes).</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.spiders.LinkExtractor" class="doc doc-heading">
+            <code>crawley.spiders.LinkExtractor</code>
+
+
+<a href="#crawley.spiders.LinkExtractor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Extract links from a response, filtered by allow/deny rules.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.spiders.LinkExtractor.extract_links" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">extract_links</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></code>
+
+<a href="#crawley.spiders.LinkExtractor.extract_links" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the (absolute, filtered) links found in <em>response</em>.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.spiders.Rule" class="doc doc-heading">
+            <code>crawley.spiders.Rule</code>
+
+
+<a href="#crawley.spiders.Rule" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Bind a :class:<code>LinkExtractor</code> to a callback and/or a follow behaviour.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="pipelines-middlewares">Pipelines &amp; middlewares<a class="headerlink" href="#pipelines-middlewares" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.pipelines.ItemPipeline" class="doc doc-heading">
+            <code>crawley.pipelines.ItemPipeline</code>
+
+
+<a href="#crawley.pipelines.ItemPipeline" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Base class for item pipelines (all methods are optional).</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.pipelines.ItemPipeline.close_spider" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">close_spider</span><span class="p">(</span><span class="n">spider</span><span class="p">)</span></code>
+
+<a href="#crawley.pipelines.ItemPipeline.close_spider" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Called once when the spider finishes.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.pipelines.ItemPipeline.open_spider" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">open_spider</span><span class="p">(</span><span class="n">spider</span><span class="p">)</span></code>
+
+<a href="#crawley.pipelines.ItemPipeline.open_spider" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Called once when the spider starts.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.pipelines.ItemPipeline.process_item" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">process_item</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">spider</span><span class="p">)</span></code>
+
+<a href="#crawley.pipelines.ItemPipeline.process_item" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the (possibly transformed) item, or raise :class:<code>DropItem</code>.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.pipelines.DropItem" class="doc doc-heading">
+            <code>crawley.pipelines.DropItem</code>
+
+
+<a href="#crawley.pipelines.DropItem" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="Exception">Exception</span></code></p>
+
+
+
+        <p>Raise from <code>process_item</code> to discard the current item.</p>
+
+
+
+
+
+
+
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.middlewares.DownloaderMiddleware" class="doc doc-heading">
+            <code>crawley.middlewares.DownloaderMiddleware</code>
+
+
+<a href="#crawley.middlewares.DownloaderMiddleware" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Base class for downloader middlewares (all methods optional).</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="stats-cache-throttling">Stats, cache &amp; throttling<a class="headerlink" href="#stats-cache-throttling" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.stats.StatsCollector" class="doc doc-heading">
+            <code>crawley.stats.StatsCollector</code>
+
+
+<a href="#crawley.stats.StatsCollector" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Collect counters and values during a crawl.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.stats.StatsCollector.close" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">close</span><span class="p">()</span></code>
+
+<a href="#crawley.stats.StatsCollector.close" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Record the total elapsed time.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.stats.StatsCollector.open" class="doc doc-heading">
+            <code class="highlight language-python"><span class="nb">open</span><span class="p">()</span></code>
+
+<a href="#crawley.stats.StatsCollector.open" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Reset the stats and start the clock.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.http.cache.HttpCache" class="doc doc-heading">
+            <code>crawley.http.cache.HttpCache</code>
+
+
+<a href="#crawley.http.cache.HttpCache" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>A tiny JSON-on-disk response cache.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.http.autothrottle.AutoThrottle" class="doc doc-heading">
+            <code>crawley.http.autothrottle.AutoThrottle</code>
+
+
+<a href="#crawley.http.autothrottle.AutoThrottle" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Compute a per-host delay from observed latencies.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.http.autothrottle.AutoThrottle.adjust" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">adjust</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">latency</span><span class="p">)</span></code>
+
+<a href="#crawley.http.autothrottle.AutoThrottle.adjust" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Update and return the new delay for <em>host</em> given a <em>latency</em>.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="extractors">Extractors<a class="headerlink" href="#extractors" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.extractors.XPathExtractor" class="doc doc-heading">
+            <code>crawley.extractors.XPathExtractor</code>
+
+
+<a href="#crawley.extractors.XPathExtractor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="crawley.extractors.BaseExtractor">BaseExtractor</span></code></p>
+
+
+
+        <p>Extractor exposing an :mod:<code>lxml</code> tree, ready to be queried via XPath.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.extractors.CSSExtractor" class="doc doc-heading">
+            <code>crawley.extractors.CSSExtractor</code>
+
+
+<a href="#crawley.extractors.CSSExtractor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="crawley.extractors.BaseExtractor">BaseExtractor</span></code></p>
+
+
+
+        <p>Extractor exposing an :mod:<code>lxml</code> tree queryable with CSS selectors.</p>
+<p>The returned tree supports <code>tree.cssselect("div.foo a")</code> thanks to the
+<code>cssselect</code> package.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.extractors.PyQueryExtractor" class="doc doc-heading">
+            <code>crawley.extractors.PyQueryExtractor</code>
+
+
+<a href="#crawley.extractors.PyQueryExtractor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="crawley.extractors.BaseExtractor">BaseExtractor</span></code></p>
+
+
+
+        <p>Extractor using PyQuery (a jQuery-like library for Python).</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.extractors.RawExtractor" class="doc doc-heading">
+            <code>crawley.extractors.RawExtractor</code>
+
+
+<a href="#crawley.extractors.RawExtractor" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="crawley.extractors.BaseExtractor">BaseExtractor</span></code></p>
+
+
+
+        <p>Returns the raw html data untouched.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="http">HTTP<a class="headerlink" href="#http" title="Permanent link">&para;</a></h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.http.response.Response" class="doc doc-heading">
+            <code>crawley.http.response.Response</code>
+
+
+<a href="#crawley.http.response.Response" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Encapsulates an HTTP response.</p>
+
+
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="crawley.http.response.Response.raw_html">raw_html</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the decoded body of the response (<code>str</code>).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="crawley.http.response.Response.html">html</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the body parsed by the crawler's extractor (lxml tree, PyQuery
+object, ...). <code>None</code> when no extractor was used.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="crawley.http.response.Response.url">url</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the final url of the request (after redirects).</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="crawley.http.response.Response.status_code">status_code</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the HTTP status code.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="crawley.http.response.Response.headers">headers</span></code></td>
+            <td>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>the response headers.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.http.response.Response.doc" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">doc</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#crawley.http.response.Response.doc" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the body as a high level :class:<code>~crawley.scraping.Document</code>.</p>
+<p>Lets you scrape a crawler response with the modern, ergonomic API::</p>
+<div class="highlight"><pre><span></span><code>def scrape(self, response):
+    title = response.doc.css_first(&quot;h1&quot;).text
+</code></pre></div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h4 id="crawley.http.response.Response.meta" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">meta</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#crawley.http.response.Response.meta" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>The <code>meta</code> dict carried by the originating request (if any).</p>
+
+    </div>
+
+</div>
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.http.response.Response.css" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">css</span><span class="p">(</span><span class="n">selector</span><span class="p">)</span></code>
+
+<a href="#crawley.http.response.Response.css" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Shortcut for <code>response.doc.css(selector)</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.http.response.Response.css_first" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">css_first</span><span class="p">(</span><span class="n">selector</span><span class="p">)</span></code>
+
+<a href="#crawley.http.response.Response.css_first" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Shortcut for <code>response.doc.css_first(selector)</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.http.response.Response.extract" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">extract</span><span class="p">(</span><span class="n">rules</span><span class="p">)</span></code>
+
+<a href="#crawley.http.response.Response.extract" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Shortcut for <code>response.doc.extract(rules)</code>.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.http.response.Response.follow" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">follow</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+<a href="#crawley.http.response.Response.follow" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Build a :class:<code>~crawley.spider.Request</code> to a (possibly relative) url.</p>
+<p>Relative urls are resolved against this response's url, and <code>meta</code> is
+inherited from the current request unless overridden.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.http.retry.RetryPolicy" class="doc doc-heading">
+            <code>crawley.http.retry.RetryPolicy</code>
+
+
+<a href="#crawley.http.retry.RetryPolicy" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Configurable retry/backoff strategy.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.http.retry.RetryPolicy.backoff_time" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">backoff_time</span><span class="p">(</span><span class="n">attempt</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#crawley.http.retry.RetryPolicy.backoff_time" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Seconds to wait before retry number <em>attempt</em> (0-based).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.http.retry.RetryPolicy.should_retry" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">should_retry</span><span class="p">(</span><span class="n">attempt</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">exception</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#crawley.http.retry.RetryPolicy.should_retry" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return <code>True</code> if a further attempt should be made.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.http.throttle.HostRateLimiter" class="doc doc-heading">
+            <code>crawley.http.throttle.HostRateLimiter</code>
+
+
+<a href="#crawley.http.throttle.HostRateLimiter" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Throttle requests on a per-host basis.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.http.throttle.HostRateLimiter.semaphore" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">semaphore</span><span class="p">(</span><span class="n">host</span><span class="p">)</span></code>
+
+<a href="#crawley.http.throttle.HostRateLimiter.semaphore" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the per-host semaphore (or <code>None</code> when uncapped).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.http.throttle.HostRateLimiter.set_delay" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">set_delay</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">delay</span><span class="p">)</span></code>
+
+<a href="#crawley.http.throttle.HostRateLimiter.set_delay" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Override the minimum delay for a single <em>host</em> (e.g. from robots).</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.http.throttle.HostRateLimiter.throttle" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">throttle</span><span class="p">(</span><span class="n">host</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#crawley.http.throttle.HostRateLimiter.throttle" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Wait so that requests to <em>host</em> respect the configured delay.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="crawley.http.robots.RobotsPolicy" class="doc doc-heading">
+            <code>crawley.http.robots.RobotsPolicy</code>
+
+
+<a href="#crawley.http.robots.RobotsPolicy" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents first">
+
+
+
+        <p>Cache and evaluate <code>robots.txt</code> rules per host.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.http.robots.RobotsPolicy.allowed" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">allowed</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+<a href="#crawley.http.robots.RobotsPolicy.allowed" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return <code>True</code> if <em>url</em> may be fetched according to robots.txt.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="crawley.http.robots.RobotsPolicy.crawl_delay" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">crawl_delay</span><span class="p">(</span><span class="n">url</span><span class="p">)</span></code>
+
+<a href="#crawley.http.robots.RobotsPolicy.crawl_delay" class="headerlink" title="Permanent link">&para;</a></h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Return the <code>Crawl-delay</code> for <em>url</em>'s host, if any.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.top", "content.code.copy", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
