@@ -33,7 +33,11 @@ async def test_different_hosts_not_blocked():
     assert time.monotonic() - start < 0.1
 
 
-def test_semaphore_only_when_capped():
+# async so a running event loop exists: asyncio.Semaphore() raises "no current
+# event loop" if constructed outside one on Python <=3.11 (pytest-asyncio 0.23+
+# no longer provides a loop for sync tests). In production semaphore() is only
+# ever called from async request paths, so a loop is always present there.
+async def test_semaphore_only_when_capped():
     assert HostRateLimiter().semaphore("h") is None
 
     limiter = HostRateLimiter(max_per_host=2)
