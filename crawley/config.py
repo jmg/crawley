@@ -13,6 +13,12 @@ REQUEST_TIMEOUT = 30.0  # in seconds, ``None`` disables the timeout
 REQUEST_DELAY = 0.5  # average delay between requests, in seconds
 REQUEST_DEVIATION = 0.25  # random deviation applied to the delay, in seconds
 
+# Hard cap on a single response body read into memory. A crawl (esp. a link_css
+# follow) can hit a media file / tarball / mislabeled multi-GB page; without a
+# cap that body OOM-kills the box. The GET path streams and stops reading past
+# this. 25 MB is generous for any real HTML page.
+MAX_RESPONSE_BYTES = 25 * 1024 * 1024
+
 MOZILLA_USER_AGENT = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/120.0 Safari/537.36"

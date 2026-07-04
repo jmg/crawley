@@ -4,7 +4,36 @@ import asyncio
 import random
 import urllib.parse
 
+import httpx
+
 from crawley import config
+
+
+async def _capped_get(client, url, headers):
+    """Stream a GET and stop reading past ``config.MAX_RESPONSE_BYTES``.
+
+    A plain ``client.get`` buffers the whole body into RAM, so one huge or
+    mislabeled response (a media file / tarball caught by a link follow) can
+    OOM-kill the process. This streams and hard-stops mid-body, then buffers the
+    capped bytes back onto the SAME response object (``_content`` — exactly what
+    ``Response.read()`` does) so ``.text`` / ``.headers`` / ``.url`` / history /
+    cookies are all preserved. Uses ``client.stream()`` so redirects, the SSRF
+    request hook and connection-pool release work exactly like ``client.get()``.
+    """
+    max_bytes = getattr(config, "MAX_RESPONSE_BYTES", 25 * 1024 * 1024)
+    async with client.stream("GET", url, headers=headers) as resp:
+        clen = resp.headers.get("content-length")
+        if clen and clen.isdigit() and int(clen) > max_bytes:
+            resp._content = b""
+        else:
+            buf = bytearray()
+            async for chunk in resp.aiter_bytes():   # aiter_bytes yields DECODED bytes
+                buf += chunk
+                if len(buf) > max_bytes:
+                    del buf[max_bytes:]
+                    break
+            resp._content = bytes(buf)
+        return resp
 
 
 class Request:
@@ -38,6 +67,10 @@ class Request:
 
         if data is not None:
             return await client.post(self.url, data=data, headers=self.headers)
+        # Size-capped streaming GET for the httpx path (the default). Non-httpx
+        # clients (curl_cffi impersonate/stealth) fall back to a plain get.
+        if isinstance(client, httpx.AsyncClient):
+            return await _capped_get(client, self.url, self.headers)
         return await client.get(self.url, headers=self.headers)
 
 

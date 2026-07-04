@@ -61,7 +61,10 @@ class RetryPolicy:
         if response is not None:
             retry_after = self._retry_after(response)
             if retry_after is not None:
-                return retry_after
+                # Cap Retry-After like the exponential path: a hostile/misconfigured
+                # `Retry-After: 86400` would otherwise sleep for a day while holding
+                # a concurrency slot, defeating the crawl time backstop.
+                return min(retry_after, self.max_backoff)
 
         backoff = self.backoff_factor * (2**attempt)
         backoff = min(backoff, self.max_backoff)
