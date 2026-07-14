@@ -57,3 +57,9 @@ def test_autothrottle_uses_rate_limiter_delay_override():
     limiter = HostRateLimiter(delay=0)
     limiter.set_delay("h", 1.23)
     assert limiter._delay_for("h") == 1.23
+
+
+def test_disabled_returns_fixed_delay_without_mutating():
+    at = AutoThrottle(start_delay=1.0, enabled=False)
+    assert at.adjust("h", 5.0) == 1.0   # returns start_delay, ignores latency
+    assert "h" not in at._delays          # and never mutates state

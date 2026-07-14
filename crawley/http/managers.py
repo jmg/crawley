@@ -5,6 +5,7 @@ import urllib.parse
 import httpx
 
 from crawley import config
+from crawley.http import urlguard
 from crawley.http.cookies import CookieHandler
 from crawley.http.request import DelayedRequest, Request
 from crawley.http.response import Response
@@ -14,14 +15,16 @@ from crawley.utils import has_valid_attr
 
 
 async def _ssrf_request_hook(request):
-    """Abort any request (incl. a redirect hop) to a non-public/internal host."""
-    try:
-        from crawley_site.service.urlguard import is_safe_url
-    except Exception:
-        return  # urlguard only present inside the Django app; no-op otherwise
-    if not is_safe_url(str(request.url)):
-        raise httpx.RequestError("Blocked non-public/SSRF URL: %s" % request.url,
-                                 request=request)
+    """Abort any request (incl. a redirect hop) to a non-public/internal host.
+
+    Runs the active :func:`crawley.http.urlguard.current_guard` on every request
+    URL. Installed only when ``SSRF_PROTECT`` is enabled (see
+    :meth:`RequestManager._build_client_kwargs`), so it costs nothing by default.
+    """
+    if not urlguard.current_guard()(str(request.url)):
+        raise httpx.RequestError(
+            "Blocked non-public/SSRF URL: %s" % request.url, request=request
+        )
 
 
 class HostCounterDict(dict):
@@ -62,6 +65,12 @@ class RequestManager:
         )
         self.cache = cache
         self._client = None
+        # Opt-in SSRF protection (block private/loopback/metadata targets incl.
+        # redirect hops). Off by default so local-dev crawls of localhost work;
+        # a host app enables it via a ``SSRF_PROTECT`` setting or config default.
+        self.ssrf_protect = bool(
+            getattr(self.settings, "SSRF_PROTECT", config.SSRF_PROTECT)
+        )
         # Optional pool of proxy URLs, rotated per request.
         self.proxy_pool = list(getattr(self.settings, "PROXY_POOL", None) or [])
         self._pool_clients = {}
@@ -69,19 +78,12 @@ class RequestManager:
 
     # -- client lifecycle ------------------------------------------------
 
-    def _build_client_kwargs(self, proxy=None):
-        kwargs = {
-            "cookies": self.cookie_handler.jar,
-            "follow_redirects": True,
-            "timeout": config.REQUEST_TIMEOUT,
-            # SSRF: re-validate every request URL incl. redirect hops. The hook
-            # inspects request.url (no TCP connect), so it's kept even when proxied.
-            "event_hooks": {"request": [_ssrf_request_hook]},
-        }
-
+    def _proxy_url(self, proxy=None):
+        """The proxy URL for a request: an explicit one, else the settings' single
+        managed proxy (PROXY_HOST/PORT/USER/PASS), else None."""
         if proxy:
-            kwargs["proxy"] = proxy
-        elif has_valid_attr(self.settings, "PROXY_HOST") and has_valid_attr(
+            return proxy
+        if has_valid_attr(self.settings, "PROXY_HOST") and has_valid_attr(
             self.settings, "PROXY_PORT"
         ):
             user = getattr(self.settings, "PROXY_USER", "")
@@ -89,20 +91,57 @@ class RequestManager:
             host = getattr(self.settings, "PROXY_HOST", "")
             port = getattr(self.settings, "PROXY_PORT", 80)
             auth = "%s:%s@" % (user, password) if user else ""
-            kwargs["proxy"] = "http://%s%s:%s" % (auth, host, port)
+            return "http://%s%s:%s" % (auth, host, port)
+        return None
 
+    def _build_client_kwargs(self, proxy=None):
+        kwargs = {
+            "cookies": self.cookie_handler.jar,
+            "follow_redirects": True,
+            "timeout": config.REQUEST_TIMEOUT,
+        }
+        if self.ssrf_protect:
+            # Re-validate every request URL incl. redirect hops. The hook inspects
+            # request.url (no TCP connect), so it's kept even when proxied.
+            kwargs["event_hooks"] = {"request": [_ssrf_request_hook]}
+        p = self._proxy_url(proxy)
+        if p:
+            kwargs["proxy"] = p
         return kwargs
+
+    def _make_client(self, proxy=None):
+        """Build the HTTP client for a request.
+
+        With ``settings.IMPERSONATE`` set (crawler stealth) and the optional
+        ``curl_cffi`` dependency installed, use an
+        :class:`~crawley.http.impersonate.ImpersonateClient` for a real browser
+        TLS/JA3 fingerprint; it preserves the same per-hop SSRF guard. Falls back
+        to ``httpx`` if ``curl_cffi`` isn't installed.
+        """
+        imp = getattr(self.settings, "IMPERSONATE", None)
+        if imp:
+            try:
+                from crawley.http.impersonate import ImpersonateClient
+
+                return ImpersonateClient(
+                    impersonate=imp,
+                    proxy=self._proxy_url(proxy),
+                    timeout=config.REQUEST_TIMEOUT,
+                    ssrf_protect=self.ssrf_protect,
+                )
+            except Exception:
+                pass  # curl_cffi missing / import error → plain httpx
+        return httpx.AsyncClient(**self._build_client_kwargs(proxy=proxy))
 
     @property
     def client(self):
         if self._client is None:
-            self._client = httpx.AsyncClient(**self._build_client_kwargs())
+            self._client = self._make_client()
         return self._client
 
     def _client_for(self, proxy):
         if proxy not in self._pool_clients:
-            self._pool_clients[proxy] = httpx.AsyncClient(
-                **self._build_client_kwargs(proxy=proxy))
+            self._pool_clients[proxy] = self._make_client(proxy=proxy)
         return self._pool_clients[proxy]
 
     def select_client(self):
@@ -160,7 +199,14 @@ class RequestManager:
         raw_html = response.text
         final_url = str(response.url)
 
-        if self.cache is not None:
+        if getattr(self.settings, "AUTOTHROTTLE", False):
+            self._autothrottle(host, getattr(response, "status_code", 200))
+
+        # Only cache success / redirect responses. The cache has no TTL, so
+        # storing a transient 429/500/503 (or any error) would replay that
+        # failure on every later run for the same url — turning a momentary blip
+        # into permanent, silent data loss.
+        if self.cache is not None and 200 <= (response.status_code or 0) < 400:
             self.cache.store(
                 method, url, data, response.status_code, final_url,
                 dict(response.headers), raw_html,
@@ -193,6 +239,26 @@ class RequestManager:
             url=cached["url"],
             response=_CachedResponse(cached["status"], cached["headers"]),
         )
+
+    # Adaptive per-host politeness (a Scrapy AutoThrottle analog): back off when
+    # the target pushes back, relax toward the base delay when it's healthy —
+    # bounded so it can never stall a crawl indefinitely.
+    AUTOTHROTTLE_MAX = 15.0
+
+    def _autothrottle(self, host, status):
+        base = self.rate_limiter.delay
+        cur = self.rate_limiter._delay_for(host)
+        # Only the unambiguous overload codes — 403 is usually a hard block on a
+        # SUBSET of a host's URLs (auth/WAF/hotlink), so throttling the whole host
+        # on it both false-positives and doesn't help (a ban needs a new IP, not a
+        # slower one). Never cap below the user's own delay (ceiling honors base).
+        if status in (429, 503):
+            new = min(max(cur, 0.5) * 2.0, max(self.AUTOTHROTTLE_MAX, base))  # slow down hard
+        elif cur > base:
+            new = max(base, cur * 0.9)  # healthy → ease back toward the base delay
+        else:
+            return
+        self.rate_limiter.set_delay(host, new)
 
     async def get_response(self, request, data):
         """Perform the request, retrying with backoff per the retry policy."""

@@ -87,3 +87,19 @@ async def test_manager_gives_up_returns_last_response(server):
         assert resp.status_code == 503
     finally:
         await manager.aclose()
+
+
+def test_backoff_does_not_overflow_on_huge_attempt():
+    # 2**attempt for attempt>=1024 overflows float in min(); must stay capped.
+    policy = RetryPolicy(backoff_factor=1, max_backoff=10, jitter=False)
+    assert policy.backoff_time(5000) == 10
+
+
+def test_retry_after_naive_http_date_is_read_as_utc():
+    # A "-0000" HTTP-date parses to a NAIVE datetime; it must be treated as UTC
+    # (not local wall-clock) so the wait isn't off by the worker's UTC offset.
+    policy = RetryPolicy(max_backoff=1000)
+    when = datetime.now(timezone.utc) + timedelta(seconds=30)
+    header = when.strftime("%a, %d %b %Y %H:%M:%S -0000")
+    value = policy.backoff_time(0, response=_Resp(503, {"Retry-After": header}))
+    assert 20 <= value <= 40

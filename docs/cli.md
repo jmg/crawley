@@ -76,6 +76,14 @@ CSV_DOCUMENT = ""
 # MONGO_DB_HOST / MONGO_DB_NAME, COUCH_DB_HOST / COUCH_DB_NAME
 MAX_CONCURRENCY = 100
 SHOW_DEBUG_INFO = True
+
+# Security & stealth (see docs/security.md)
+SSRF_PROTECT = False             # block private/loopback/metadata targets
+IMPERSONATE = None               # e.g. "chrome" (needs crawley[impersonate])
+PROXY_HOST = ""                  # single proxy: host/port/user/pass
+PROXY_PORT = 80
+PROXY_POOL = None                # or a list of proxy URLs, rotated per request
+MAX_RESPONSE_BYTES = 26214400    # per-response body cap (25 MB), streamed + truncated
 ```
 
 Then run:

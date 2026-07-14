@@ -39,11 +39,28 @@ def test_links_without_href_are_ignored():
     assert urls == {"http://site.com/ok"}
 
 
-def test_query_and_fragment_preserved():
+def test_query_preserved_fragment_stripped():
+    # The query is significant and kept; the fragment addresses a spot on the
+    # SAME resource, so it's stripped (else #a and #b look like distinct pages).
     html = "<html><body><a href='/s?q=1#frag'>x</a></body></html>"
     response = Response(raw_html=html, url="http://site.com/dir/")
     urls = UrlFinder(response).get_urls()
-    assert "http://site.com/s?q=1#frag" in urls
+    assert "http://site.com/s?q=1" in urls
+    assert "http://site.com/s?q=1#frag" not in urls
+
+
+def test_non_web_scheme_links_are_dropped():
+    html = (
+        "<html><body>"
+        "<a href='mailto:a@b.com'>mail</a>"
+        "<a href='javascript:void(0)'>js</a>"
+        "<a href='tel:+123'>tel</a>"
+        "<a href='/ok'>ok</a>"
+        "</body></html>"
+    )
+    response = Response(raw_html=html, url="http://site.com/")
+    urls = UrlFinder(response).get_urls()
+    assert urls == {"http://site.com/ok"}
 
 
 def test_empty_document_returns_no_urls():

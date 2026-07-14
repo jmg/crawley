@@ -134,3 +134,50 @@ async def test_errback_is_called():
     spider.retry_policy.max_retries = 0
     await spider.start()
     assert errors == ["http://127.0.0.1:1/down"]
+
+
+async def test_callback_exception_is_surfaced_not_swallowed(server):
+    # A user parse() that raises must not vanish into the pool's gather — it
+    # increments callback_errors and routes to on_request_error.
+    errors = []
+
+    class BoomSpider(Spider):
+        start_urls = [server + "/page1"]
+        requests_delay = 0
+        requests_deviation = 0
+
+        def parse(self, response):
+            raise ValueError("boom in parse")
+
+        def on_request_error(self, url, ex):
+            errors.append((url, ex))
+
+    spider = BoomSpider()
+    await spider.start()
+    assert spider.stats.get("callback_errors", 0) >= 1
+    assert errors and isinstance(errors[0][1], ValueError)
+
+
+async def test_async_errback_is_awaited():
+    # An async def errback must actually run (a bare call would only create an
+    # un-awaited coroutine).
+    ran = []
+
+    class ErrSpider(Spider):
+        requests_delay = 0
+        requests_deviation = 0
+
+        def start_requests(self):
+            async def errback(request, ex):
+                ran.append(ex)
+
+            # Connection refused at port 1 -> download error -> errback path.
+            yield Request(
+                "http://127.0.0.1:1/never", callback=self.parse, errback=errback
+            )
+
+        def parse(self, response):
+            pass
+
+    await ErrSpider().start()
+    assert len(ran) == 1

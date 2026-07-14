@@ -42,6 +42,60 @@ async def test_retries_then_raises():
     await manager.aclose()
 
 
+async def test_get_body_is_size_capped_not_discarded(server, monkeypatch):
+    # An oversized body must be TRUNCATED to the cap, never discarded to "" — a
+    # discarded body would cache an empty 200 and silently lose the page.
+    from crawley import config
+
+    monkeypatch.setattr(config, "MAX_RESPONSE_BYTES", 50)
+    manager = RequestManager(delay=0, deviation=0)
+    try:
+        response = await manager.make_request(server + "/page1")
+        assert response.status_code == 200
+        assert 0 < len(response.raw_html) <= 50
+    finally:
+        await manager.aclose()
+
+
+async def test_post_body_is_size_capped(server, monkeypatch):
+    from crawley import config
+
+    monkeypatch.setattr(config, "MAX_RESPONSE_BYTES", 50)
+    manager = RequestManager(delay=0, deviation=0)
+    try:
+        response = await manager.make_request(server + "/echo", data={"k": "v"})
+        assert 0 < len(response.raw_html) <= 50
+    finally:
+        await manager.aclose()
+
+
+async def test_ssrf_hook_blocks_loopback_when_enabled(server):
+    from crawley.http.retry import RetryPolicy
+
+    class _S:
+        SSRF_PROTECT = True
+
+    manager = RequestManager(
+        settings=_S(), delay=0, deviation=0, retry_policy=RetryPolicy(max_retries=0)
+    )
+    try:
+        # The default guard blocks 127.0.0.1 (loopback) on every request.
+        with pytest.raises(Exception):
+            await manager.make_request(server + "/page1")
+    finally:
+        await manager.aclose()
+
+
+async def test_ssrf_hook_off_by_default(server):
+    # Without SSRF_PROTECT the loopback test server is reachable (dev default).
+    manager = RequestManager(delay=0, deviation=0)
+    try:
+        response = await manager.make_request(server + "/page1")
+        assert response.status_code == 200
+    finally:
+        await manager.aclose()
+
+
 def test_cookie_handler_roundtrip(tmp_path):
     cookie_file = os.path.join(tmp_path, "cookies")
     handler = CookieHandler(cookie_file=cookie_file)

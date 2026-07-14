@@ -1,7 +1,7 @@
 """Discover urls inside html pages."""
 
 from re import compile as re_compile
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urldefrag, urljoin, urlparse
 
 from crawley.extractors import XPathExtractor
 
@@ -45,17 +45,29 @@ class UrlFinder:
         return urls
 
     def _normalize_url(self, url):
-        """Resolve relative urls against the response url."""
+        """Resolve a relative href, drop its fragment, and reject non-web links.
+
+        Returns ``None`` for anything that isn't an ``http(s)`` resource — a
+        ``mailto:`` / ``javascript:`` / ``tel:`` / ``data:`` href would otherwise
+        be enqueued and fetched. The URL fragment is stripped so ``page#a`` and
+        ``page#b`` aren't treated as two distinct pages by the visited-url dedup.
+        """
         url = url.strip()
+        if not url:
+            return None
 
         if url.startswith("//"):
             scheme = urlparse(self.response.url).scheme or "http"
-            return "%s:%s" % (scheme, url)
+            resolved = "%s:%s" % (scheme, url)
+        elif not urlparse(url).netloc:
+            resolved = urljoin(self.response.url, url)
+        else:
+            resolved = url
 
-        if not urlparse(url).netloc:
-            return urljoin(self.response.url, url)
-
-        return url
+        resolved = urldefrag(resolved).url
+        if urlparse(resolved).scheme not in ("http", "https"):
+            return None
+        return resolved or None
 
     def search_hiddens(self, urls):
         """Search the entire html for urls via a regex."""

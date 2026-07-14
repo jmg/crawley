@@ -43,3 +43,18 @@ async def test_cookies_persist_to_disk(server, tmp_path):
     finally:
         await manager.aclose()
     assert os.path.exists(os.path.join(tmp_path, "jar"))
+
+
+def test_corrupt_cookie_file_does_not_crash(tmp_path):
+    # A truncated/garbage jar (e.g. a crawl killed mid-save) must not crash
+    # RequestManager construction — load treats it as "no cookies yet".
+    import os
+
+    from crawley.http.cookies import CookieHandler
+
+    path = os.path.join(tmp_path, "cookies")
+    with open(path, "w") as fh:
+        fh.write("not a valid LWP cookie file at all")
+    handler = CookieHandler(cookie_file=path)
+    handler.load_cookies()  # must not raise
+    handler.save_cookies()  # a fresh jar is usable

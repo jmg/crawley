@@ -82,3 +82,24 @@ async def test_sitemap_spider(quotes_server):
 
     assert len(pages) == 3
     assert any(p.endswith("/page/2/") for p in pages)
+
+
+def test_sitemap_body_gunzips_gz_sitemap():
+    import gzip
+
+    from crawley.http.response import Response
+    from crawley.spiders import SitemapSpider
+
+    xml = (
+        b'<?xml version="1.0" encoding="UTF-8"?>'
+        b'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+        b"<url><loc>https://a.test/1</loc></url></urlset>"
+    )
+
+    class _Underlying:
+        content = gzip.compress(xml)
+
+    resp = Response(raw_html="�� garbage", url="http://x/sitemap.xml.gz")
+    resp.response = _Underlying()
+    reqs = list(SitemapSpider()._parse_sitemap(resp))
+    assert [r.url for r in reqs] == ["https://a.test/1"]

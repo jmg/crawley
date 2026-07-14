@@ -303,7 +303,7 @@ class Spider(BaseCrawler):
                     self._reschedule(handled, request)
                     return
                 if handled is None:
-                    self._handle_error(request, ex)
+                    await self._handle_error(request, ex)
                     return
                 response = handled
             else:
@@ -311,19 +311,29 @@ class Spider(BaseCrawler):
                 self.stats.inc("status/%s" % response.status_code)
                 self._record_latency(url, response)
 
-        # process_response chain (reverse order).
-        for mw in reversed(self._middlewares):
-            outcome = await _maybe_await(
-                mw.process_response(request, response, self)
-            )
-            if isinstance(outcome, Request):
-                self._reschedule(outcome, request)
-                return
-            response = outcome
+        # process_response chain (reverse order) + the user callback. Guard the
+        # whole post-download path: an exception in process_response, the user's
+        # parse(), a pipeline, or on_item would otherwise propagate out of the
+        # pool task and vanish into join()'s gather(return_exceptions=True) — the
+        # item silently lost with no stat, no log, no errback. Surface it exactly
+        # like a download error instead.
+        try:
+            for mw in reversed(self._middlewares):
+                outcome = await _maybe_await(
+                    mw.process_response(request, response, self)
+                )
+                if isinstance(outcome, Request):
+                    self._reschedule(outcome, request)
+                    return
+                response = outcome
 
-        response.request = request
-        callback = request.callback or self.parse
-        await self._drive_callback(callback, response)
+            response.request = request
+            callback = request.callback or self.parse
+            await self._drive_callback(callback, response)
+        except Exception as ex:  # noqa: BLE001 - surfaced via stats/log/errback
+            self.stats.inc("callback_errors")
+            log.exception("callback failed for %s", url)
+            await self._handle_error(request, ex)
 
     async def _process_exception(self, request: Request, ex: Exception) -> Any:
         for mw in reversed(self._middlewares):
@@ -388,8 +398,11 @@ class Spider(BaseCrawler):
         self.stats.inc("items")
         self.on_item(item)
 
-    def _handle_error(self, request: Request, ex: Exception) -> None:
+    async def _handle_error(self, request: Request, ex: Exception) -> None:
         if request.errback is not None:
-            request.errback(request, ex)
+            # Drive the errback like a callback so an ``async def`` errback is
+            # actually awaited (a bare call would only create an un-awaited
+            # coroutine that never runs).
+            await _maybe_await(request.errback(request, ex))
         else:
             self.on_request_error(request.url, ex)

@@ -73,3 +73,24 @@ async def test_crawler_http_cache_attribute(server, tmp_path):
 
     await C().start()
     assert len(os.listdir(tmp_path)) >= 1
+
+
+async def test_error_responses_are_not_cached(server, tmp_path):
+    # A transient 503 must not be cached (the cache has no TTL, so it would
+    # replay the failure forever). Success responses still cache.
+    from crawley.http.retry import RetryPolicy
+
+    cache = HttpCache(str(tmp_path), enabled=True)
+    manager = FastRequestManager(
+        cache=cache, retry_policy=RetryPolicy(max_retries=0)
+    )
+    try:
+        resp = await manager.make_request(server + "/always-503")
+        assert resp.status_code == 503
+        assert cache.get("GET", server + "/always-503", None) is None  # NOT cached
+
+        ok = await manager.make_request(server + "/page1")
+        assert ok.status_code == 200
+        assert cache.get("GET", server + "/page1", None) is not None  # cached
+    finally:
+        await manager.aclose()

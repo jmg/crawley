@@ -58,7 +58,17 @@ class RobotsPolicy:
         async with lock:
             if key in self._cache:
                 return self._cache[key]
-            parser = await self._fetch_parser(key, client)
+            try:
+                parser = await self._fetch_parser(key, client)
+            except Exception:
+                # A TRANSIENT fetch failure (network error / timeout) must not be
+                # cached: this policy lives for the whole crawl, so caching an
+                # allow-all here would permanently skip robots.txt for the host
+                # after one blip. Allow this request but leave the cache empty so
+                # a later request re-fetches.
+                fallback = RobotFileParser()
+                fallback.allow_all = True  # type: ignore[attr-defined]
+                return fallback
             self._cache[key] = parser
             return parser
 
@@ -69,13 +79,10 @@ class RobotsPolicy:
         robots_url = "%s://%s/robots.txt" % (scheme, netloc)
         parser = RobotFileParser()
 
-        try:
-            response = await client.get(robots_url)
-        except Exception:
-            # If robots.txt can't be fetched, default to allowing the crawl.
-            parser.allow_all = True  # type: ignore[attr-defined]
-            return parser
+        # A network error propagates to _get_parser, which declines to cache it.
+        response = await client.get(robots_url)
 
+        # These are DEFINITIVE outcomes and safe to cache for the crawl.
         if response.status_code in (401, 403):
             parser.disallow_all = True  # type: ignore[attr-defined]
         elif response.status_code >= 400:

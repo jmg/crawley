@@ -142,7 +142,7 @@ class SitemapSpider(Spider):
 
     def _parse_sitemap(self, response: Any) -> Any:
         try:
-            root = etree.fromstring((response.raw_html or "").encode("utf-8"))
+            root = etree.fromstring(self._sitemap_body(response))
         except etree.XMLSyntaxError:
             return
 
@@ -155,3 +155,27 @@ class SitemapSpider(Spider):
                 yield Request(url, callback=self._parse_sitemap)
             else:
                 yield Request(url, callback=self.parse)
+
+    @staticmethod
+    def _sitemap_body(response: Any) -> bytes:
+        """Return the sitemap bytes, transparently gunzipping a ``.xml.gz``.
+
+        A gzipped sitemap is commonly served as ``application/gzip`` with no
+        ``Content-Encoding``, so httpx never inflates it and the raw gzip would
+        fail XML parsing. Prefer the undecoded body and gunzip it when the gzip
+        magic number is present.
+        """
+        import gzip
+
+        data = None
+        underlying = getattr(response, "response", None)
+        if underlying is not None:
+            data = getattr(underlying, "content", None)
+        if not data:
+            data = (response.raw_html or "").encode("utf-8", "replace")
+        if data[:2] == b"\x1f\x8b":  # gzip magic number
+            try:
+                data = gzip.decompress(data)
+            except OSError:
+                pass
+        return data

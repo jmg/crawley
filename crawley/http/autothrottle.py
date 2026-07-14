@@ -28,6 +28,10 @@ class AutoThrottle:
 
     def adjust(self, host: str, latency: Optional[float]) -> float:
         """Update and return the new delay for *host* given a *latency*."""
+        if not self.enabled:
+            # Honour the on/off switch: return a fixed delay without adapting or
+            # mutating state (mirrors RobotsPolicy / HttpCache).
+            return self._delays.get(host, self.start_delay)
         previous = self._delays.get(host, self.start_delay)
         if latency is None:
             return previous

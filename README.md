@@ -21,9 +21,12 @@ locally (see [Development](#development)).
   **PyQuery** (a jQuery-like API).
 * **Politeness** built in: `robots.txt`, per-host rate limiting and retries with
   exponential backoff.
+* **Security & stealth**: opt-in [SSRF protection](docs/security.md) (blocks
+  private/loopback/metadata targets on every redirect hop), a per-response size
+  cap, and optional real-browser TLS/JA3 [impersonation](docs/security.md).
 * Persist to relational databases (SQLite, PostgreSQL, MySQL, Oracle) via
   SQLAlchemy 2.x, to **MongoDB** / **CouchDB**, or export to **JSON / XML / CSV**.
-* Cookie handling and proxies out of the box.
+* Cookie handling, single proxies and rotating **proxy pools** out of the box.
 * A small DSL to define scrapers declaratively.
 * Command line tools (`crawley startproject`, `crawley run`, ...).
 * Optional visual scraping browser (PySide6).
@@ -37,11 +40,12 @@ locally (see [Development](#development)).
 ### Install
 
 ```bash
-~$ pip install crawley            # core (httpx, lxml, pyquery, cssselect)
-~$ pip install "crawley[sql]"     # + SQLAlchemy for relational storage
-~$ pip install "crawley[mongo]"   # + pymongo
-~$ pip install "crawley[gui]"     # + PySide6 visual browser
-~$ pip install "crawley[dev]"     # tests + linters
+~$ pip install crawley                # core (httpx, lxml, pyquery, cssselect)
+~$ pip install "crawley[sql]"         # + SQLAlchemy for relational storage
+~$ pip install "crawley[mongo]"       # + pymongo
+~$ pip install "crawley[gui]"         # + PySide6 visual browser
+~$ pip install "crawley[impersonate]" # + curl_cffi for browser TLS/JA3 stealth
+~$ pip install "crawley[dev]"         # tests + linters
 ```
 
 From a checkout:
@@ -253,6 +257,27 @@ class PoliteCrawler(BaseCrawler):
 
 Retries honour the `Retry-After` header, and `on_robots_blocked(url)` lets you
 react to disallowed urls.
+
+---
+
+## Security & stealth
+
+For crawling untrusted or user-supplied URLs — see [`docs/security.md`](docs/security.md):
+
+```python
+class Crawler(BaseCrawler):
+    start_urls = ["https://example.com/"]
+    SSRF_PROTECT = True                 # block private/loopback/metadata (every redirect hop)
+    IMPERSONATE = "chrome"              # real browser TLS/JA3 fingerprint (needs crawley[impersonate])
+    PROXY_POOL = ["http://a:1", "http://b:2"]   # rotated one-per-request
+```
+
+- **SSRF guard** — `crawley.http.urlguard` (`is_safe_url` / `set_url_guard`), off
+  by default, applied on every request and redirect hop when enabled.
+- **Impersonation** — `crawley.http.impersonate` via `curl_cffi`; falls back to
+  `httpx` if not installed.
+- **Response size cap** — `MAX_RESPONSE_BYTES` (default 25 MB) streamed +
+  truncated so an oversized body can't OOM the process.
 
 ---
 

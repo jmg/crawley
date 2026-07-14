@@ -91,3 +91,24 @@ async def test_crawler_respects_robots(server):
     assert any("/page1" in u for u in scraped)
     assert any("/private/secret" in u for u in blocked)
     assert not any("/private" in u for u in scraped)
+
+
+class RaisingClient:
+    async def get(self, url):
+        raise httpx.ConnectError("boom")
+
+
+async def test_transient_fetch_failure_is_not_cached():
+    # A network blip fetching robots.txt must allow this request but NOT cache
+    # the allow-all verdict, so a later request re-fetches robots.txt.
+    policy = RobotsPolicy(enabled=True)
+    assert await policy.allowed("http://x.test/p", RaisingClient()) is True
+    assert policy._cache == {}
+
+
+async def test_definitive_result_is_cached():
+    policy = RobotsPolicy(enabled=True)
+    client = FakeClient(FakeResponse(200, "User-agent: *\nDisallow: /no\n"))
+    assert await policy.allowed("http://x.test/ok", client) is True
+    assert await policy.allowed("http://x.test/no", client) is False
+    assert client.calls == 1  # cached: robots.txt fetched once

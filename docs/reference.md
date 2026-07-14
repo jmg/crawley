@@ -59,3 +59,9 @@ Auto-generated from the docstrings.
 ::: crawley.http.retry.RetryPolicy
 ::: crawley.http.throttle.HostRateLimiter
 ::: crawley.http.robots.RobotsPolicy
+
+## Security & stealth
+
+::: crawley.http.urlguard
+::: crawley.http.impersonate.ImpersonateClient
+::: crawley.http.impersonate.is_available

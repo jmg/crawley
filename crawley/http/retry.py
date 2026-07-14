@@ -66,7 +66,11 @@ class RetryPolicy:
                 # a concurrency slot, defeating the crawl time backstop.
                 return min(retry_after, self.max_backoff)
 
-        backoff = self.backoff_factor * (2**attempt)
+        # Clamp the exponent before the shift: at attempt >= 1024, 2**attempt is a
+        # huge int and coercing it to float (for the min() below) raises
+        # OverflowError. 2**30 * backoff_factor already dwarfs max_backoff, so the
+        # clamp changes no observable delay.
+        backoff = self.backoff_factor * (2 ** min(attempt, 30))
         backoff = min(backoff, self.max_backoff)
         if self.jitter and backoff > 0:
             # Full jitter in the [backoff/2, backoff] range.
@@ -91,5 +95,11 @@ class RetryPolicy:
             when = parsedate_to_datetime(value)
         except (TypeError, ValueError):
             return None
-        now = datetime.datetime.now(when.tzinfo)
+        # An HTTP-date with a "-0000" zone (or asctime form) parses to a NAIVE
+        # datetime; treat it as UTC and compare against a UTC `now`, otherwise we
+        # subtract a GMT instant from local wall-clock and mis-compute the wait by
+        # the worker's UTC offset (stalling, or retrying immediately).
+        if when.tzinfo is None:
+            when = when.replace(tzinfo=datetime.timezone.utc)
+        now = datetime.datetime.now(datetime.timezone.utc)
         return max(0.0, (when - now).total_seconds())

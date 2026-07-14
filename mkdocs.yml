@@ -31,6 +31,7 @@ nav:
   - Crawlers & Scrapers: crawler.md
   - Spiders (callbacks, items, rules): spiders.md
   - Politeness — robots, rate limiting, retries: politeness.md
+  - Security & stealth — SSRF, proxies, impersonation: security.md
   - Persistence: persistence.md
   - CLI & Framework: cli.md
   - API Reference: reference.md

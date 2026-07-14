@@ -31,6 +31,26 @@ RETRY_MAX_BACKOFF = 30.0  # cap, in seconds
 RETRY_STATUSES = frozenset({429, 500, 502, 503, 504})
 """HTTP status codes that trigger a retry."""
 
+# Security
+SSRF_PROTECT = False
+"""When ``True`` the HTTP layer blocks requests to private / loopback / link-local
+/ reserved addresses and the cloud metadata endpoint — on every request *and each
+redirect hop*. Off by default so local-dev crawls of ``localhost`` keep working;
+enable it globally here, per crawler (a ``SSRF_PROTECT`` class attribute), or per
+project (in ``settings.py``). See :mod:`crawley.http.urlguard`."""
+
+# Stealth
+IMPERSONATE = None
+"""When set to a ``curl_cffi`` browser profile (e.g. ``"chrome"``) *and* the
+optional ``curl_cffi`` dependency is installed (``pip install crawley[impersonate]``),
+requests use a real browser TLS/JA3 + HTTP/2 fingerprint instead of vanilla
+``httpx``. Usually set per crawler. See :mod:`crawley.http.impersonate`."""
+
+PROXY_POOL = None
+"""An optional list of proxy URLs rotated round-robin, one per request. Overrides
+the single ``PROXY_HOST`` / ``PROXY_PORT`` proxy when set. Usually set per
+crawler / project rather than here."""
+
 # Politeness
 RESPECT_ROBOTS = False
 """When ``True`` the crawler honours each site's ``robots.txt``."""
