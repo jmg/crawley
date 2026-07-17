@@ -11,10 +11,10 @@
       
       
       
-        <link rel="prev" href="../spiders/">
+        <link rel="prev" href="../politeness/">
       
       
-        <link rel="next" href="../security/">
+        <link rel="next" href="../persistence/">
       
       
         
@@ -25,7 +25,7 @@
     
     
       
-        <title>Politeness — robots, rate limiting, retries - crawley</title>
+        <title>Security & stealth — SSRF, proxies, impersonation - crawley</title>
       
     
     
@@ -78,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#politeness-robots-rate-limiting-retries" class="md-skip">
+        <a href="#security-stealth" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Politeness — robots, rate limiting, retries
+              Security & stealth — SSRF, proxies, impersonation
             
           </span>
         </div>
@@ -392,6 +392,33 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../politeness/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Politeness — robots, rate limiting, retries
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -411,7 +438,7 @@
   <span class="md-ellipsis">
     
   
-    Politeness — robots, rate limiting, retries
+    Security & stealth — SSRF, proxies, impersonation
   
 
     
@@ -429,7 +456,7 @@
   <span class="md-ellipsis">
     
   
-    Politeness — robots, rate limiting, retries
+    Security & stealth — SSRF, proxies, impersonation
   
 
     
@@ -455,10 +482,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#robotstxt" class="md-nav__link">
+  <a href="#ssrf-protection" class="md-nav__link">
     <span class="md-ellipsis">
       
-        robots.txt
+        SSRF protection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SSRF protection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#browser-tlsja3-impersonation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Browser TLS/JA3 impersonation
       
     </span>
   </a>
@@ -466,10 +521,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#per-host-rate-limiting" class="md-nav__link">
+  <a href="#proxies-proxy-pools" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Per-host rate limiting
+        Proxies &amp; proxy pools
       
     </span>
   </a>
@@ -477,10 +532,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#retries-with-backoff" class="md-nav__link">
+  <a href="#response-size-cap" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Retries with backoff
+        Response size cap
       
     </span>
   </a>
@@ -488,21 +543,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#autothrottle" class="md-nav__link">
+  <a href="#settings-summary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        AutoThrottle
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#putting-it-together" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Putting it together
+        Settings summary
       
     </span>
   </a>
@@ -513,33 +557,6 @@
   
 </nav>
       
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../security/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Security & stealth — SSRF, proxies, impersonation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -652,10 +669,38 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#robotstxt" class="md-nav__link">
+  <a href="#ssrf-protection" class="md-nav__link">
     <span class="md-ellipsis">
       
-        robots.txt
+        SSRF protection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SSRF protection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#browser-tlsja3-impersonation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Browser TLS/JA3 impersonation
       
     </span>
   </a>
@@ -663,10 +708,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#per-host-rate-limiting" class="md-nav__link">
+  <a href="#proxies-proxy-pools" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Per-host rate limiting
+        Proxies &amp; proxy pools
       
     </span>
   </a>
@@ -674,10 +719,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#retries-with-backoff" class="md-nav__link">
+  <a href="#response-size-cap" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Retries with backoff
+        Response size cap
       
     </span>
   </a>
@@ -685,21 +730,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#autothrottle" class="md-nav__link">
+  <a href="#settings-summary" class="md-nav__link">
     <span class="md-ellipsis">
       
-        AutoThrottle
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#putting-it-together" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Putting it together
+        Settings summary
       
     </span>
   </a>
@@ -726,94 +760,129 @@
   
 
 
-<h1 id="politeness-robots-rate-limiting-retries">Politeness — robots, rate limiting, retries<a class="headerlink" href="#politeness-robots-rate-limiting-retries" title="Permanent link">&para;</a></h1>
-<p>crawley ships the building blocks to crawl responsibly and robustly: it can
-honour <code>robots.txt</code>, throttle requests per host and retry transient failures
-with exponential backoff.</p>
-<h2 id="robotstxt">robots.txt<a class="headerlink" href="#robotstxt" title="Permanent link">&para;</a></h2>
-<p>Set <code>respect_robots = True</code> to make the crawler fetch and obey each host's
-<code>robots.txt</code>:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCrawler</span><span class="p">(</span><span class="n">BaseCrawler</span><span class="p">):</span>
+<h1 id="security-stealth">Security &amp; stealth<a class="headerlink" href="#security-stealth" title="Permanent link">&para;</a></h1>
+<p>Crawling untrusted or user-supplied URLs at scale needs a few guardrails.
+<code>crawley</code> ships them as opt-in features on the HTTP layer.</p>
+<h2 id="ssrf-protection">SSRF protection<a class="headerlink" href="#ssrf-protection" title="Permanent link">&para;</a></h2>
+<p>A crawler that follows links (or HTTP redirects) is a classic
+<a href="https://owasp.org/www-community/attacks/Server_Side_Request_Forgery">SSRF</a>
+vector: a link can point at <code>127.0.0.1</code>, a private <code>10.0.0.0/8</code> host, or the
+cloud metadata endpoint <code>169.254.169.254</code> and read secrets. Enable the guard to
+refuse those targets:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">SafeCrawler</span><span class="p">(</span><span class="n">BaseCrawler</span><span class="p">):</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    <span class="n">start_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;https://example.com/&quot;</span><span class="p">]</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">respect_robots</span> <span class="o">=</span> <span class="kc">True</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">SSRF_PROTECT</span> <span class="o">=</span> <span class="kc">True</span>        <span class="c1"># block private / loopback / metadata targets</span>
 </code></pre></div>
+<p>or globally in <code>settings.py</code> (<code>SSRF_PROTECT = True</code>), or via
+<code>crawley.config.SSRF_PROTECT</code>.</p>
+<p>When enabled, an <code>httpx</code> request event-hook runs on <strong>every request and every
+redirect hop</strong> (it only inspects the URL, so it adds no extra connection) and
+rejects:</p>
 <ul>
-<li>Each host's <code>robots.txt</code> is fetched once and cached.</li>
-<li>Disallowed urls are skipped and <code>on_robots_blocked(url)</code> is called.</li>
-<li>A <code>404</code> robots.txt allows everything; a <code>401</code>/<code>403</code> disallows everything.</li>
-<li>A <code>Crawl-delay</code> directive is automatically applied as the per-host delay.</li>
+<li>non-HTTP(S) schemes,</li>
+<li>URLs with embedded <code>user:pass@</code> credentials,</li>
+<li>the built-in blocked host names (<code>localhost</code>, cloud-metadata aliases, …),</li>
+<li>any host that resolves to a private, loopback, link-local, reserved,
+  multicast or unspecified address.</li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCrawler</span><span class="p">(</span><span class="n">BaseCrawler</span><span class="p">):</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>    <span class="n">respect_robots</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">on_robots_blocked</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;skipped (robots):&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+<p>It is <strong>off by default</strong> so local-development crawls of <code>localhost</code> keep working.</p>
+<p>The helpers are importable directly:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">crawley.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlguard</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">urlguard</span><span class="o">.</span><span class="n">is_safe_url</span><span class="p">(</span><span class="s2">&quot;http://169.254.169.254/&quot;</span><span class="p">)</span>   <span class="c1"># -&gt; False</span>
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">urlguard</span><span class="o">.</span><span class="n">assert_safe_url</span><span class="p">(</span><span class="s2">&quot;https://example.com/&quot;</span><span class="p">)</span>  <span class="c1"># returns the url or raises UnsafeUrl</span>
 </code></pre></div>
-<p>You can use the policy on its own too:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">httpx</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">crawley.http.robots</span><span class="w"> </span><span class="kn">import</span> <span class="n">RobotsPolicy</span>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">policy</span> <span class="o">=</span> <span class="n">RobotsPolicy</span><span class="p">(</span><span class="n">user_agent</span><span class="o">=</span><span class="s2">&quot;my-bot&quot;</span><span class="p">)</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="k">async</span> <span class="k">with</span> <span class="n">httpx</span><span class="o">.</span><span class="n">AsyncClient</span><span class="p">()</span> <span class="k">as</span> <span class="n">client</span><span class="p">:</span>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="k">await</span> <span class="n">policy</span><span class="o">.</span><span class="n">allowed</span><span class="p">(</span><span class="s2">&quot;https://example.com/private&quot;</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>  <span class="c1"># -&gt; bool</span>
+<h3 id="custom-policy">Custom policy<a class="headerlink" href="#custom-policy" title="Permanent link">&para;</a></h3>
+<p>To enforce your own policy (an allow-list, IP pinning, …), register it once at
+start-up — the HTTP layer will use it everywhere the guard runs:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">crawley.http</span><span class="w"> </span><span class="kn">import</span> <span class="n">urlguard</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">my_guard</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="k">return</span> <span class="n">url</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;https://api.mysite.com/&quot;</span><span class="p">)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="n">urlguard</span><span class="o">.</span><span class="n">set_url_guard</span><span class="p">(</span><span class="n">my_guard</span><span class="p">)</span>     <span class="c1"># urlguard.reset_url_guard() restores the default</span>
 </code></pre></div>
-<h2 id="per-host-rate-limiting">Per-host rate limiting<a class="headerlink" href="#per-host-rate-limiting" title="Permanent link">&para;</a></h2>
-<p>Two knobs control how hard a single host is hit:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCrawler</span><span class="p">(</span><span class="n">BaseCrawler</span><span class="p">):</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>    <span class="n">crawl_delay</span> <span class="o">=</span> <span class="mf">1.0</span>                 <span class="c1"># &gt;= 1s between requests to the same host</span>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>    <span class="n">max_concurrency_per_host</span> <span class="o">=</span> <span class="mi">2</span>      <span class="c1"># at most 2 concurrent requests per host</span>
+<h2 id="browser-tlsja3-impersonation">Browser TLS/JA3 impersonation<a class="headerlink" href="#browser-tlsja3-impersonation" title="Permanent link">&para;</a></h2>
+<p>Header-only "stealth" (spoofing the <code>User-Agent</code>) is trivially detected: anti-bot
+services fingerprint the <strong>TLS handshake (JA3)</strong> and <strong>HTTP/2 frame order</strong>,
+which a header doesn't change. Send a real browser fingerprint instead:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;crawley[impersonate]&quot;</span><span class="w">     </span><span class="c1"># pulls in curl_cffi</span>
 </code></pre></div>
-<p><code>crawl_delay</code> enforces a minimum spacing between consecutive requests to the
-same host, while <code>max_concurrency_level</code> still bounds the <em>global</em> number of
-in-flight requests. Different hosts are throttled independently.</p>
-<p>The underlying primitive is <code>crawley.http.throttle.HostRateLimiter</code>.</p>
-<h2 id="retries-with-backoff">Retries with backoff<a class="headerlink" href="#retries-with-backoff" title="Permanent link">&para;</a></h2>
-<p>Failed requests — network errors and retryable HTTP statuses such as
-<code>429</code>, <code>500</code>, <code>502</code>, <code>503</code>, <code>504</code> — are retried automatically:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCrawler</span><span class="p">(</span><span class="n">BaseCrawler</span><span class="p">):</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="n">max_retries</span> <span class="o">=</span> <span class="mi">3</span>                   <span class="c1"># attempts after the first failure</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">retry_backoff</span> <span class="o">=</span> <span class="mf">0.5</span>               <span class="c1"># base seconds for the backoff</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="n">retry_statuses</span> <span class="o">=</span> <span class="p">{</span><span class="mi">429</span><span class="p">,</span> <span class="mi">503</span><span class="p">}</span>       <span class="c1"># which statuses to retry</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">StealthCrawler</span><span class="p">(</span><span class="n">BaseCrawler</span><span class="p">):</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>    <span class="n">start_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;https://example.com/&quot;</span><span class="p">]</span>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>    <span class="n">IMPERSONATE</span> <span class="o">=</span> <span class="s2">&quot;chrome&quot;</span>       <span class="c1"># any curl_cffi browser profile</span>
 </code></pre></div>
-<ul>
-<li>Backoff is exponential with jitter: roughly
-  <code>retry_backoff * 2 ** attempt</code>, capped at 30s.</li>
-<li>A <code>Retry-After</code> response header (seconds or HTTP date) takes precedence.</li>
-<li>After exhausting the retries, the last response is returned (so you can
-  inspect a final <code>503</code>); persistent network errors are re-raised and routed
-  to <code>on_request_error</code>.</li>
-</ul>
-<p>The policy is <code>crawley.http.retry.RetryPolicy</code> and can be used standalone:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">crawley.http.retry</span><span class="w"> </span><span class="kn">import</span> <span class="n">RetryPolicy</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">policy</span> <span class="o">=</span> <span class="n">RetryPolicy</span><span class="p">(</span><span class="n">max_retries</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">backoff_factor</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">statuses</span><span class="o">=</span><span class="p">{</span><span class="mi">503</span><span class="p">})</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">policy</span><span class="o">.</span><span class="n">should_retry</span><span class="p">(</span><span class="n">attempt</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">resp</span><span class="p">)</span>   <span class="c1"># -&gt; bool</span>
-<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">policy</span><span class="o">.</span><span class="n">backoff_time</span><span class="p">(</span><span class="n">attempt</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>                  <span class="c1"># -&gt; seconds</span>
+<p>When <code>IMPERSONATE</code> is set and <code>curl_cffi</code> is installed, requests use a
+<code>curl_cffi</code>-backed client with a real Chrome TLS/HTTP2 fingerprint; if the
+dependency is missing it falls back to <code>httpx</code> automatically. SSRF protection
+(when enabled) and the response size cap apply to this path too — redirects are
+followed manually so each hop is guarded.</p>
+<h2 id="proxies-proxy-pools">Proxies &amp; proxy pools<a class="headerlink" href="#proxies-proxy-pools" title="Permanent link">&para;</a></h2>
+<p>A single proxy:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Crawler</span><span class="p">(</span><span class="n">BaseCrawler</span><span class="p">):</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>    <span class="n">PROXY_HOST</span> <span class="o">=</span> <span class="s2">&quot;gw.example.com&quot;</span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>    <span class="n">PROXY_PORT</span> <span class="o">=</span> <span class="mi">7000</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>    <span class="n">PROXY_USER</span> <span class="o">=</span> <span class="s2">&quot;user&quot;</span>          <span class="c1"># optional</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>    <span class="n">PROXY_PASS</span> <span class="o">=</span> <span class="s2">&quot;pass&quot;</span>          <span class="c1"># optional</span>
 </code></pre></div>
-<h2 id="autothrottle">AutoThrottle<a class="headerlink" href="#autothrottle" title="Permanent link">&para;</a></h2>
-<p>Instead of a fixed <code>crawl_delay</code>, let crawley adapt the per-host delay to the
-observed response latency, aiming to keep roughly <code>target_concurrency</code> requests
-in flight per host:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyCrawler</span><span class="p">(</span><span class="n">BaseCrawler</span><span class="p">):</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="n">start_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;https://example.com/&quot;</span><span class="p">]</span>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>    <span class="n">autothrottle</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">autothrottle_target_concurrency</span> <span class="o">=</span> <span class="mf">2.0</span>   <span class="c1"># ~2 concurrent req/host</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">autothrottle_start_delay</span> <span class="o">=</span> <span class="mf">1.0</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">autothrottle_max_delay</span> <span class="o">=</span> <span class="mf">30.0</span>
+<p>Or a pool rotated round-robin, one proxy per request (overrides the single
+proxy above) — useful to spread load across residential/rotating exits:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Crawler</span><span class="p">(</span><span class="n">BaseCrawler</span><span class="p">):</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="n">PROXY_POOL</span> <span class="o">=</span> <span class="p">[</span>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>        <span class="s2">&quot;http://user:pass@a.proxy:7000&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>        <span class="s2">&quot;http://user:pass@b.proxy:7000&quot;</span><span class="p">,</span>
+<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="p">]</span>
 </code></pre></div>
-<p>After each response the per-host delay is nudged towards
-<code>latency / target_concurrency</code> (smoothed and clamped to <code>max_delay</code>). Slower
-servers are hit more gently, faster ones a bit harder. The primitive is
-<code>crawley.http.autothrottle.AutoThrottle</code>.</p>
-<h2 id="putting-it-together">Putting it together<a class="headerlink" href="#putting-it-together" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">PoliteCrawler</span><span class="p">(</span><span class="n">BaseCrawler</span><span class="p">):</span>
+<h2 id="response-size-cap">Response size cap<a class="headerlink" href="#response-size-cap" title="Permanent link">&para;</a></h2>
+<p>Every response body is streamed and hard-stopped at
+<code>config.MAX_RESPONSE_BYTES</code> (default <strong>25 MB</strong>), then truncated — never
+discarded — so a mislabeled multi-GB body caught by a link-follow can't OOM the
+process while the extractor still sees the leading HTML. Raise or lower it
+globally, per project (<code>settings.py</code>), or per crawler:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="k">class</span><span class="w"> </span><span class="nc">Crawler</span><span class="p">(</span><span class="n">BaseCrawler</span><span class="p">):</span>
 <a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>    <span class="n">start_urls</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;https://example.com/&quot;</span><span class="p">]</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="n">respect_robots</span> <span class="o">=</span> <span class="kc">True</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">crawl_delay</span> <span class="o">=</span> <span class="mf">1.0</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="n">max_concurrency_per_host</span> <span class="o">=</span> <span class="mi">2</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>    <span class="n">max_retries</span> <span class="o">=</span> <span class="mi">3</span>
-<a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>    <span class="n">retry_backoff</span> <span class="o">=</span> <span class="mf">0.5</span>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>    <span class="c1"># inherited from crawley.config; override in settings.py to change globally</span>
 </code></pre></div>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># settings.py</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">MAX_RESPONSE_BYTES</span> <span class="o">=</span> <span class="mi">50</span> <span class="o">*</span> <span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span>
+</code></pre></div>
+<h2 id="settings-summary">Settings summary<a class="headerlink" href="#settings-summary" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SSRF_PROTECT</code></td>
+<td><code>False</code></td>
+<td>Block private/loopback/metadata targets (every hop).</td>
+</tr>
+<tr>
+<td><code>IMPERSONATE</code></td>
+<td><code>None</code></td>
+<td><code>curl_cffi</code> browser profile for a real TLS/JA3 fingerprint.</td>
+</tr>
+<tr>
+<td><code>PROXY_HOST</code> / <code>PROXY_PORT</code> / <code>PROXY_USER</code> / <code>PROXY_PASS</code></td>
+<td>—</td>
+<td>A single upstream proxy.</td>
+</tr>
+<tr>
+<td><code>PROXY_POOL</code></td>
+<td><code>None</code></td>
+<td>List of proxy URLs rotated one-per-request.</td>
+</tr>
+<tr>
+<td><code>MAX_RESPONSE_BYTES</code></td>
+<td><code>26214400</code></td>
+<td>Hard per-response body cap (streamed + truncated).</td>
+</tr>
+</tbody>
+</table>
 
 
 
