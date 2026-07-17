@@ -33,7 +33,11 @@ async def test_different_hosts_not_blocked():
     assert time.monotonic() - start < 0.1
 
 
-def test_semaphore_only_when_capped():
+# async so a running event loop exists when the Semaphore is constructed — on
+# Python 3.9 asyncio.Semaphore() binds to the current loop at construction and
+# raises "no current event loop" if called from sync code (in real use it's
+# always built inside make_request's running loop).
+async def test_semaphore_only_when_capped():
     assert HostRateLimiter().semaphore("h") is None
 
     limiter = HostRateLimiter(max_per_host=2)

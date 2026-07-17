@@ -20,6 +20,7 @@ the active :func:`crawley.http.urlguard.current_guard` on every hop.
 
 import datetime
 import urllib.parse
+from typing import Optional
 
 from crawley import config
 from crawley.http import urlguard
@@ -33,7 +34,7 @@ _REDIRECT_CODES = (301, 302, 303, 307, 308)
 _MAX_HOPS = 8
 
 
-def is_available():
+def is_available() -> bool:
     """Return ``True`` if the optional ``curl_cffi`` dependency is importable."""
     try:
         import curl_cffi  # noqa: F401
@@ -80,7 +81,11 @@ class ImpersonateClient:
     """
 
     def __init__(
-        self, impersonate=DEFAULT_IMPERSONATE, proxy=None, timeout=30, ssrf_protect=False
+        self,
+        impersonate: str = DEFAULT_IMPERSONATE,
+        proxy: Optional[str] = None,
+        timeout: float = 30,
+        ssrf_protect: bool = False,
     ):
         from curl_cffi.requests import AsyncSession
 

@@ -23,6 +23,7 @@ import functools
 import ipaddress
 import socket
 import urllib.parse
+from typing import Callable
 
 __all__ = [
     "UnsafeUrl",
@@ -70,7 +71,7 @@ def _ip_is_blocked(ip):
     )
 
 
-def host_is_obviously_internal(host):
+def host_is_obviously_internal(host: str) -> bool:
     """No-DNS check: is *host* a literal internal IP or a known metadata name?
 
     Cheap, resolution-free screen for hot paths (e.g. a headless browser firing
@@ -110,7 +111,7 @@ def _resolve_blocked(host, port):
     return any(_ip_is_blocked(info[4][0]) for info in infos)
 
 
-def is_safe_url(url):
+def is_safe_url(url: str) -> bool:
     """True if *url* is an ``http(s)`` URL that resolves only to public IPs.
 
     Rejects non-HTTP schemes, embedded ``user:pass@`` credentials (which can mask
@@ -139,7 +140,7 @@ def is_safe_url(url):
     return not _resolve_blocked(host, parsed.port)
 
 
-def assert_safe_url(url):
+def assert_safe_url(url: str) -> str:
     """Return *url* if safe, else raise :class:`UnsafeUrl`.
 
     Args:
@@ -162,7 +163,7 @@ def assert_safe_url(url):
 _GUARD = is_safe_url
 
 
-def set_url_guard(fn):
+def set_url_guard(fn: Callable[[str], bool]) -> None:
     """Install *fn* as the active guard used by the HTTP layer.
 
     Args:
@@ -174,12 +175,12 @@ def set_url_guard(fn):
     _GUARD = fn
 
 
-def current_guard():
+def current_guard() -> Callable[[str], bool]:
     """Return the active guard callable (the built-in :func:`is_safe_url` by default)."""
     return _GUARD
 
 
-def reset_url_guard():
+def reset_url_guard() -> None:
     """Restore the built-in :func:`is_safe_url` guard (mainly for tests)."""
     global _GUARD
     _GUARD = is_safe_url
