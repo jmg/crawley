@@ -83,9 +83,11 @@ class RobotsPolicy:
         response = await client.get(robots_url)
 
         # These are DEFINITIVE outcomes and safe to cache for the crawl.
-        if response.status_code in (401, 403):
-            parser.disallow_all = True  # type: ignore[attr-defined]
-        elif response.status_code >= 400:
+        # RFC 9309 §2.3.1.3: any 4xx — 401/403 included — means robots.txt is
+        # "unavailable" and the crawler MAY access everything. (Treating 403 as
+        # disallow-all, as urllib.robotparser does, silently skipped whole sites
+        # whose firewall answers 403 to robots.txt fetches.)
+        if response.status_code >= 400:
             parser.allow_all = True  # type: ignore[attr-defined]
         else:
             parser.parse(response.text.splitlines())

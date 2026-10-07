@@ -41,10 +41,12 @@ async def test_missing_robots_allows_all():
     assert await policy.allowed("http://x.test/anything", client) is True
 
 
-async def test_forbidden_robots_disallows_all():
-    policy = RobotsPolicy()
-    client = FakeClient(FakeResponse(403))
-    assert await policy.allowed("http://x.test/anything", client) is False
+async def test_forbidden_robots_allows_all():
+    # RFC 9309: a 4xx (401/403 included) means "unavailable" -> crawl allowed.
+    for status in (401, 403):
+        policy = RobotsPolicy()
+        client = FakeClient(FakeResponse(status))
+        assert await policy.allowed("http://x.test/anything", client) is True
 
 
 async def test_robots_is_cached():
